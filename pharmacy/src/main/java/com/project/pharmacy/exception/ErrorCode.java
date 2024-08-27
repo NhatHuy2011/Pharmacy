@@ -28,8 +28,12 @@ public enum ErrorCode {
     INVALID_PRODUCT_OBJECT_USE("Please fill out Product Object Use", 400, HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_INSTRUCTION("Please fill out Product Instruction", 400, HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_PRESERVE("Please fill out Product Preserve", 400, HttpStatus.BAD_REQUEST),
-    INVALID_PRODUCT_ADVICE("Please fill out Product Doctor Advice", 400, HttpStatus.BAD_REQUEST)
-    ;
+    INVALID_PRODUCT_ADVICE("Please fill out Product Doctor Advice", 400, HttpStatus.BAD_REQUEST),
+    MISSING_PART("Missing required part", 400, HttpStatus.BAD_REQUEST),
+    FILE_SIZE_EXCEEDED("File size exceeds the maximum limit", 400, HttpStatus.BAD_REQUEST),
+    UNEXPECTED_ERROR("Unexpected error", 500, HttpStatus.INTERNAL_SERVER_ERROR),
+    EMPTY_FILE("Empty file", 500, HttpStatus.INTERNAL_SERVER_ERROR),
+    GENERAL_ERROR("Unexpected error",500 , HttpStatus.INTERNAL_SERVER_ERROR);
     private int code;
     private String message;
     private HttpStatusCode statusCode;

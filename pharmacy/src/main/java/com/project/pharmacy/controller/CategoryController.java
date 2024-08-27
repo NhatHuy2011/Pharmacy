@@ -7,11 +7,8 @@ import com.project.pharmacy.dto.response.CategoryResponse;
 import com.project.pharmacy.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +43,7 @@ public class CategoryController {
     @PostMapping
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestPart("createCategory") CategoryCreateRequest request,
                                                         @RequestPart("file") MultipartFile multipartFile) throws IOException {
+
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.createCategory(request, multipartFile))
                 .build();
@@ -56,9 +54,15 @@ public class CategoryController {
     public ApiResponse<CategoryResponse> updateCategory(@RequestPart("updateCategory") CategoryUpdateRequest request,
                                                         @PathVariable String id,
                                                         @RequestPart("file") MultipartFile multipartFile) throws IOException{
-        return ApiResponse.<CategoryResponse>builder()
-                .result(categoryService.updateCategory(id, request, multipartFile))
-                .build();
+        if(multipartFile!=null && !multipartFile.isEmpty()) {
+            return ApiResponse.<CategoryResponse>builder()
+                    .result(categoryService.updateCategory(id, request, multipartFile))
+                    .build();
+        } else{
+            return ApiResponse.<CategoryResponse>builder()
+                    .result(categoryService.updateCategory(id, request, null))
+                    .build();
+        }
     }
 
     @DeleteMapping("{id}")

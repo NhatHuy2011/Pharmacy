@@ -104,12 +104,19 @@ public class CategoryService {
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         }
 
-        String urlImage = imageService.uploadImage(multipartFile);
+        if(multipartFile!=null && !multipartFile.isEmpty()){
+            String urlImage = imageService.uploadImage(multipartFile);
 
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
-        category.setImage(urlImage);
-        category.setParent(parent);
+            category.setName(request.getName());
+            category.setDescription(request.getDescription());
+            category.setImage(urlImage);
+            category.setParent(parent);
+        }
+        else{
+            category.setName(request.getName());
+            category.setDescription(request.getDescription());
+            category.setParent(parent);
+        }
 
         categoryRepository.save(category);
 
