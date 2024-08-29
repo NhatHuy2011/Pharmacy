@@ -12,5 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class CompanyCreateRequest {
     @NotNull(message = "INVALID_COMPANY")
     String name;
+    String image;
     String origin;
 }

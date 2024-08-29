@@ -14,7 +14,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,18 +27,24 @@ public class CompanyService {
     CompanyRepository companyRepository;
 
     ProductRepository productRepository;
+
+    ImageService imageService;
     //Them cong ty
-    public CompanyResponse createCompany(CompanyCreateRequest request){
+    public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
         if(companyRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.COMPANY_EXISTED);
+        String url = imageService.uploadImage(files);
+
         Company company = new Company();
         company.setName(request.getName());
+        company.setImage(url);
         company.setOrigin(request.getOrigin());
         companyRepository.save(company);
 
         return CompanyResponse.builder()
                 .id(company.getId())
                 .name(company.getName())
+                .image(url)
                 .origin(company.getOrigin())
                 .build();
     }
@@ -50,6 +58,7 @@ public class CompanyService {
             CompanyResponse temp = CompanyResponse.builder()
                     .id(company.getId())
                     .name(company.getName())
+                    .image(company.getImage())
                     .origin(company.getOrigin())
                     .build();
             companyResponses.add(temp);
@@ -58,15 +67,23 @@ public class CompanyService {
     }
 
     //Sua cong ty
-    public CompanyResponse updateCompany(CompanyUpdateRequest request, String id){
+    public CompanyResponse updateCompany(CompanyUpdateRequest request, String id, MultipartFile files) throws IOException{
         Company company = companyRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.COMPANY_NOT_FOUND));
-        company.setName(request.getName());
-        company.setOrigin(request.getOrigin());
+        if(files != null && !files.isEmpty()){
+            String url = imageService.uploadImage(files);
+            company.setName(request.getName());
+            company.setOrigin(request.getOrigin());
+            company.setImage(url);
+        } else{
+            company.setName(request.getName());
+            company.setOrigin(request.getOrigin());
+        }
         companyRepository.save(company);
         return CompanyResponse.builder()
                 .id(company.getId())
                 .name(company.getName())
+                .image(company.getImage())
                 .origin(company.getOrigin())
                 .build();
     }

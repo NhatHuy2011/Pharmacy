@@ -21,6 +21,9 @@ public class Company {
     String name;
 
     @Column(nullable = false)
+    String image;
+
+    @Column(nullable = false)
     String origin;
 
     @OneToMany(mappedBy = "company")

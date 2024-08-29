@@ -13,5 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class CompanyResponse {
     String id;
     String name;
+    String image;
     String origin;
 }

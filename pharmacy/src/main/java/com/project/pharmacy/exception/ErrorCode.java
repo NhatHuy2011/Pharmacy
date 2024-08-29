@@ -33,7 +33,8 @@ public enum ErrorCode {
     FILE_SIZE_EXCEEDED("File size exceeds the maximum limit", 400, HttpStatus.BAD_REQUEST),
     UNEXPECTED_ERROR("Unexpected error", 500, HttpStatus.INTERNAL_SERVER_ERROR),
     EMPTY_FILE("Empty file", 500, HttpStatus.INTERNAL_SERVER_ERROR),
-    GENERAL_ERROR("Unexpected error",500 , HttpStatus.INTERNAL_SERVER_ERROR);
+    GENERAL_ERROR("Unexpected error",500 , HttpStatus.INTERNAL_SERVER_ERROR),
+    COLUMN_CANNOT_BE_NULL("Colume can not be null", 500 , HttpStatus.INTERNAL_SERVER_ERROR);
     private int code;
     private String message;
     private HttpStatusCode statusCode;
