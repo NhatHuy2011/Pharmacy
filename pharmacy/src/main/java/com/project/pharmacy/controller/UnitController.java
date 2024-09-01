@@ -35,10 +35,10 @@ public class UnitController {
                 .build();
     }
 
-    @PutMapping("{id}")
-    public ApiResponse<UnitResponse> updateUnit(@RequestBody UnitUpdateRequest request, @PathVariable("id") String id){
+    @PutMapping
+    public ApiResponse<UnitResponse> updateUnit(@RequestBody UnitUpdateRequest request){
         return ApiResponse.<UnitResponse>builder()
-                .result(unitService.updateUnit(request, id))
+                .result(unitService.updateUnit(request))
                 .build();
     }
 

@@ -4,9 +4,11 @@ import com.project.pharmacy.dto.request.CategoryCreateRequest;
 import com.project.pharmacy.dto.request.CategoryUpdateRequest;
 import com.project.pharmacy.dto.response.CategoryResponse;
 import com.project.pharmacy.entity.Category;
+import com.project.pharmacy.entity.Product;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.CategoryRepository;
+import com.project.pharmacy.repository.ImageRepository;
 import com.project.pharmacy.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class CategoryService {
     ImageService imageService;
 
     ProductRepository productRepository;
+
+    ImageRepository imageRepository;
     //Xem danh muc goc
     public List<CategoryResponse> getRootCategories(){
         List<Category> categories = categoryRepository.findByParent(null);
@@ -94,8 +98,8 @@ public class CategoryService {
     }
 
     //Sua danh muc
-    public CategoryResponse updateCategory(String id, CategoryUpdateRequest request, MultipartFile multipartFile) throws IOException{
-        Category category = categoryRepository.findById(id)
+    public CategoryResponse updateCategory(CategoryUpdateRequest request, MultipartFile multipartFile) throws IOException{
+        Category category = categoryRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Category parent = null;
@@ -134,7 +138,11 @@ public class CategoryService {
     public void deleteCategory(String id){
         Category category = categoryRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-        productRepository.updateCategoryIdToNull(id);
+        List<Product> products = productRepository.findByCategoryId(id);
+        for(Product product: products){
+            imageRepository.deleteAllByProductId(product.getId());
+        }
+        productRepository.deleteAllByCategoryId(id);
         deleteCategoryRecursive(category);
     }
 

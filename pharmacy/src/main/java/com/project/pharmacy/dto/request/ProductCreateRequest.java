@@ -13,13 +13,9 @@ public class ProductCreateRequest {
     @NotNull(message = "INVALID_PRODUCT_NAME")
     String name;
 
-    @NotNull(message = "INVALID_PRODUCT_PRICE")
-    int price;
-
     @NotNull(message = "INVALID_PRODUCT_QUANTITY")
     int quantity;
 
-    String unitId;
     String categoryId;
 
     @NotNull(message = "INVALID_PRODUCT_BENEFITS")

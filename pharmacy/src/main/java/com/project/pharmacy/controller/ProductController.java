@@ -6,7 +6,6 @@ import com.project.pharmacy.dto.response.ApiResponse;
 import com.project.pharmacy.dto.response.ProductResponse;
 import com.project.pharmacy.service.ProductService;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
@@ -45,19 +44,18 @@ public class ProductController {
                 .build();
     }
 
-    @PutMapping("{id}")
-    public ApiResponse<ProductResponse> updateProduct(@PathVariable String id,
-                                                      @RequestPart("updateProduct") ProductUpdateRequest request,
+    @PutMapping
+    public ApiResponse<ProductResponse> updateProduct(@RequestPart("updateProduct") ProductUpdateRequest request,
                                                       @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException{
         if (files != null && !files.isEmpty()) {
             // Xử lý hình ảnh nếu có
             return ApiResponse.<ProductResponse>builder()
-                    .result(productService.updateProduct(id, request, files))
+                    .result(productService.updateProduct(request, files))
                     .build();
         } else {
             // Xử lý trường hợp không có hình ảnh
             return ApiResponse.<ProductResponse>builder()
-                    .result(productService.updateProduct(id, request, null))
+                    .result(productService.updateProduct(request, null))
                     .build();
         }
     }

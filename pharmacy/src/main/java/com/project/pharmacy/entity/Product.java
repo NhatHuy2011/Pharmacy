@@ -1,12 +1,8 @@
 package com.project.pharmacy.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import java.util.Set;
 
 @Entity
@@ -24,14 +20,7 @@ public class Product {
     String name;
 
     @Column(nullable = false)
-    int price;
-
-    @Column(nullable = false)
     int quantity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id")
-    Unit unit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -68,4 +57,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     Set<Image> images;
+
+    @OneToMany(mappedBy = "product")
+    Set<ProductUnit> productUnits;
 }

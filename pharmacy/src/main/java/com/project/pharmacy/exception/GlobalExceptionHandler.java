@@ -18,23 +18,13 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<ApiResponse> handlingRunTimeException(RuntimeException exception){
-        String errorMessage = exception.getMessage();
-
-        ErrorCode errorCode;
-
-        if ("Empty file".equals(errorMessage)) {
-            errorCode = ErrorCode.EMPTY_FILE;
-        } else {
-            errorCode = ErrorCode.GENERAL_ERROR; // Một mã lỗi chung cho các RuntimeException khác
-        }
 
         ApiResponse apiResponse = new ApiResponse();
-
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
+        apiResponse.setCode(400);
+        apiResponse.setMessage(exception.getMessage());
 
         return ResponseEntity
-                .status(errorCode.getStatusCode())
+                .status(400)
                 .body(apiResponse);
     }
 

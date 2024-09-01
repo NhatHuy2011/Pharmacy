@@ -40,18 +40,17 @@ public class CompanyController {
                 .build();
     }
 
-    @PutMapping("{id}")
+    @PutMapping
     public ApiResponse<CompanyResponse> updateCompany(@RequestPart("updateCompany") CompanyUpdateRequest request,
-                                                      @PathVariable String id,
                                                       @RequestPart("files") MultipartFile files) throws IOException{
         if(files!=null && !files.isEmpty()) {
             return ApiResponse.<CompanyResponse>builder()
-                    .result(companyService.updateCompany(request, id, files))
+                    .result(companyService.updateCompany(request, files))
                     .build();
         }
         else {
             return ApiResponse.<CompanyResponse>builder()
-                    .result(companyService.updateCompany(request, id, null))
+                    .result(companyService.updateCompany(request,null))
                     .build();
         }
     }

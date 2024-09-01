@@ -9,10 +9,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompanyCreateRequest {
-    @NotNull(message = "INVALID_COMPANY_NAME")
-    String name;
-
-    @NotNull(message = "INVALID_COMPANY_ORIGIN")
-    String origin;
+public class ProductUnitCreateRequest {
+    @NotNull(message = "INVALID_PRODUCT_ID")
+    String productId;
+    @NotNull(message = "INVALID_UNIT_ID")
+    String unitId;
+    int price;
+    String description;
 }

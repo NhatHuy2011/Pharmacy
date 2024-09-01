@@ -4,9 +4,11 @@ import com.project.pharmacy.dto.request.CompanyCreateRequest;
 import com.project.pharmacy.dto.request.CompanyUpdateRequest;
 import com.project.pharmacy.dto.response.CompanyResponse;
 import com.project.pharmacy.entity.Company;
+import com.project.pharmacy.entity.Product;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.CompanyRepository;
+import com.project.pharmacy.repository.ImageRepository;
 import com.project.pharmacy.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class CompanyService {
     ProductRepository productRepository;
 
     ImageService imageService;
+
+    ImageRepository imageRepository;
     //Them cong ty
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
         if(companyRepository.existsByName(request.getName()))
@@ -67,8 +71,8 @@ public class CompanyService {
     }
 
     //Sua cong ty
-    public CompanyResponse updateCompany(CompanyUpdateRequest request, String id, MultipartFile files) throws IOException{
-        Company company = companyRepository.findById(id)
+    public CompanyResponse updateCompany(CompanyUpdateRequest request, MultipartFile files) throws IOException{
+        Company company = companyRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.COMPANY_NOT_FOUND));
         if(files != null && !files.isEmpty()){
             String url = imageService.uploadImage(files);
@@ -93,8 +97,11 @@ public class CompanyService {
     public void deleteCompany(String id){
         Company company = companyRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.COMPANY_NOT_FOUND));
-
-        productRepository.updateCompanyIdToNull(id);
-        companyRepository.deleteById(id);
+        List<Product> products = productRepository.findByCompanyId(id);
+        for(Product product: products){
+            imageRepository.deleteAllByProductId(product.getId());
+        }
+        productRepository.deleteAllByCompanyId(id);
+        companyRepository.deleteById(company.getId());
     }
 }

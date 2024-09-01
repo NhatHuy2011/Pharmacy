@@ -10,15 +10,12 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, String> {
     boolean existsByName(String name);
 
-    @Modifying
-    @Query("UPDATE Product p SET p.unit = null WHERE p.unit.id = :unitId")
-    void updateUnitIdToNull(String unitId);
+    void deleteAllByCategoryId(String categoryId);
 
-    @Modifying
-    @Query("UPDATE Product p SET p.company = null WHERE p.company.id = :companyId")
-    void updateCompanyIdToNull(String companyId);
+    void deleteAllByCompanyId(String companyId);
 
-    @Modifying
-    @Query("UPDATE Product p SET p.category = null WHERE p.category.id = :categoryId")
-    void updateCategoryIdToNull(String categoryId);
+
+    List<Product> findByCategoryId(String categoryId);
+
+    List<Product> findByCompanyId(String companyId);
 }

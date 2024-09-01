@@ -8,8 +8,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UnitUpdateRequest {
-    String id;
-    String name;
+public class ProductUnitUpdateRequest {
+    String productId;
+    String unitId;
+    int price;
     String description;
 }

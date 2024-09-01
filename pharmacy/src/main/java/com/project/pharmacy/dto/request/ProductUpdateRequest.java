@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductUpdateRequest {
+    String id;
     String name;
     int price;
     int quantity;

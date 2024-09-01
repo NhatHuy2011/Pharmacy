@@ -10,6 +10,7 @@ import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.ImageRepository;
 import com.project.pharmacy.repository.ProductRepository;
+import com.project.pharmacy.repository.ProductUnitRepository;
 import com.project.pharmacy.repository.UnitRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,7 @@ import java.util.List;
 public class UnitService {
     UnitRepository unitRepository;
 
-    ProductRepository productRepository;
-
-    ImageRepository imageRepository;
+    ProductUnitRepository productUnitRepository;
     //Them Don Vi
     public UnitResponse createUnit(UnitCreateRequest request){
         if(unitRepository.existsByName(request.getName()))
@@ -63,8 +62,8 @@ public class UnitService {
     }
 
     //Sua don vi
-    public UnitResponse updateUnit(UnitUpdateRequest request, String id){
-        Unit unit = unitRepository.findById(id)
+    public UnitResponse updateUnit(UnitUpdateRequest request){
+        Unit unit = unitRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.UNIT_NOT_FOUND));
 
         unit.setName(request.getName());
@@ -84,9 +83,7 @@ public class UnitService {
     public void deleteUnit(String id){
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-        productRepository.updateUnitIdToNull(id);
-
-        unitRepository.deleteById(id);
+        productUnitRepository.deleteAllByUnitId(id);
+        unitRepository.deleteById(unit.getId());
     }
 }

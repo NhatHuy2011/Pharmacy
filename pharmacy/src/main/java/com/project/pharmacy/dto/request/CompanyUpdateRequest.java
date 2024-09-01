@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyUpdateRequest {
+    String id;
     String name;
     String image;
     String origin;

@@ -50,17 +50,16 @@ public class CategoryController {
     }
 
     //Sua danh muc
-    @PutMapping("{id}")
+    @PutMapping
     public ApiResponse<CategoryResponse> updateCategory(@RequestPart("updateCategory") CategoryUpdateRequest request,
-                                                        @PathVariable String id,
                                                         @RequestPart("file") MultipartFile multipartFile) throws IOException{
         if(multipartFile!=null && !multipartFile.isEmpty()) {
             return ApiResponse.<CategoryResponse>builder()
-                    .result(categoryService.updateCategory(id, request, multipartFile))
+                    .result(categoryService.updateCategory(request, multipartFile))
                     .build();
         } else{
             return ApiResponse.<CategoryResponse>builder()
-                    .result(categoryService.updateCategory(id, request, null))
+                    .result(categoryService.updateCategory(request, null))
                     .build();
         }
     }

@@ -16,12 +16,10 @@ import java.util.List;
 public class ProductResponse {
     String id;
     String name;
-    int price;
+    List<Integer> price;
     int quantity;
-    @JsonInclude(JsonInclude.Include.ALWAYS)
-    String unit;
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     String category;
+    List<String> unit;
     String benefits;
     String ingredients;
     String constraindication;
@@ -31,7 +29,6 @@ public class ProductResponse {
     String description;
     String note;
     boolean doctor_advice;
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     String company;
     List<String> images;
     String image;
