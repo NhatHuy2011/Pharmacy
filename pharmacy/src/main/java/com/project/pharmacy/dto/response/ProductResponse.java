@@ -16,10 +16,12 @@ import java.util.List;
 public class ProductResponse {
     String id;
     String name;
-    List<Integer> price;
+    List<Integer> price1;
+    Integer price;
     int quantity;
     String category;
-    List<String> unit;
+    List<String> unit1;
+    String unit;
     String benefits;
     String ingredients;
     String constraindication;

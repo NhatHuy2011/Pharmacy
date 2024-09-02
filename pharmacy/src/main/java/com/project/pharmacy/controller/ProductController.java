@@ -38,8 +38,8 @@ public class ProductController {
     }
 
     @GetMapping("{id}")
-    public ApiResponse<ProductResponse> getOne(@PathVariable String id){
-        return ApiResponse.<ProductResponse>builder()
+    public ApiResponse<List<ProductResponse>> getOne(@PathVariable String id){
+        return ApiResponse.<List<ProductResponse>>builder()
                 .result(productService.getOne(id))
                 .build();
     }

@@ -89,6 +89,14 @@ public class ProductService {
                 .id(product.getId())
                 .name(product.getName())
                 .quantity(product.getQuantity())
+                .benefits(product.getBenefits())
+                .ingredients(product.getIngredients())
+                .constraindication(product.getConstraindication())
+                .object_use(product.getObject_use())
+                .instruction(product.getInstruction())
+                .preserve(product.getPreserve())
+                .description(product.getDescription())
+                .note(product.getNote())
                 .doctor_advice(product.isDoctor_advice())
                 .category(product.getCategory().getName())
                 .company(product.getCompany().getName())
@@ -116,9 +124,17 @@ public class ProductService {
             ProductResponse productResponse = ProductResponse.builder()
                     .id(product.getId())
                     .name(product.getName())
-                    .price(price)
-                    .unit(unit)
+                    .price1(price)
+                    .unit1(unit)
                     .quantity(product.getQuantity())
+                    .benefits(product.getBenefits())
+                    .ingredients(product.getIngredients())
+                    .constraindication(product.getConstraindication())
+                    .object_use(product.getObject_use())
+                    .instruction(product.getInstruction())
+                    .preserve(product.getPreserve())
+                    .description(product.getDescription())
+                    .note(product.getNote())
                     .category(product.getCategory().getName())
                     .doctor_advice(product.isDoctor_advice())
                     .company(product.getCompany().getName())
@@ -202,30 +218,42 @@ public class ProductService {
     }
 
     //Lấy 1 sản phẩm
-    public ProductResponse getOne(String id){
+    public List<ProductResponse> getOne(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         List<Image> images = imageRepository.findByProductId(product.getId());
-        List<String> imageUrls = new ArrayList<>();
-        imageUrls = images.stream()
+        List<String> imageUrls = images.stream()
                 .map(Image::getSource)
                 .collect(Collectors.toList());
         List<ProductUnit> productUnits = productUnitRepository.findByProductId(product.getId());
-        List<Integer> price = new ArrayList<>();
-        List<String> unit = new ArrayList<>();
-        for(ProductUnit productUnit:productUnits){
-            price.add(productUnit.getPrice());
-            unit.add(productUnit.getUnit().getName());
+
+        List<ProductResponse> productResponses = new ArrayList<>();
+
+        for (ProductUnit productUnit : productUnits) {
+            ProductResponse response = ProductResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .price(productUnit.getPrice()) // Giá trị price là int
+                    .quantity(product.getQuantity())
+                    .category(product.getCategory().getName())
+                    .benefits(product.getBenefits())
+                    .ingredients(product.getIngredients())
+                    .constraindication(product.getConstraindication())
+                    .object_use(product.getObject_use())
+                    .instruction(product.getInstruction())
+                    .preserve(product.getPreserve())
+                    .description(product.getDescription())
+                    .note(product.getNote())
+                    .unit(productUnit.getUnit().getName()) // Đơn vị của sản phẩm
+                    .company(product.getCompany().getName())
+                    .images(imageUrls)
+                    .build();
+            productResponses.add(response);
         }
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(price)
-                .unit(unit)
-                .company(product.getCompany().getName())
-                .images(imageUrls)
-                .build();
+
+        return productResponses;
     }
+
 
     //Xoá sản phẩm
     @Transactional
