@@ -233,7 +233,7 @@ public class ProductService {
             ProductResponse response = ProductResponse.builder()
                     .id(product.getId())
                     .name(product.getName())
-                    .price(productUnit.getPrice()) // Giá trị price là int
+                    .price(productUnit.getPrice())
                     .quantity(product.getQuantity())
                     .category(product.getCategory().getName())
                     .benefits(product.getBenefits())
@@ -244,7 +244,7 @@ public class ProductService {
                     .preserve(product.getPreserve())
                     .description(product.getDescription())
                     .note(product.getNote())
-                    .unit(productUnit.getUnit().getName()) // Đơn vị của sản phẩm
+                    .unit(productUnit.getUnit().getName())
                     .company(product.getCompany().getName())
                     .images(imageUrls)
                     .build();

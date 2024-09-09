@@ -27,6 +27,12 @@ public enum ErrorCode {
     PRODUCT_UNIT_EXISTED("Product and Unit existed", 400, HttpStatus.BAD_REQUEST),
     PRODUCT_UNIT_NOT_FOUND("Product and Unit not found", 400, HttpStatus.BAD_REQUEST),
 
+    //User exception
+    USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
+
+    //Login exception
+    USER_NOT_EXISTED("Username not existed", 400, HttpStatus.BAD_REQUEST),
+
     //Exception relate to validation key
     INVALID_VALIDATION_KEY("Invalid validation key", 400, HttpStatus.BAD_REQUEST),
 
@@ -44,6 +50,10 @@ public enum ErrorCode {
     INVALID_PRODUCT_INSTRUCTION("Please fill out Product Instruction", 400, HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_PRESERVE("Please fill out Product Preserve", 400, HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_ADVICE("Please fill out Product Doctor Advice", 400, HttpStatus.BAD_REQUEST),
+
+    //Valid User
+    INVALID_USERNAME("Username must has at least 3 characters", 400, HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD("Password must has at least 8 characters", 400, HttpStatus.BAD_REQUEST),
 
     //Valid ProductUnit
     INVALID_PRODUCT_ID("Please fill out Product Info", 400, HttpStatus.BAD_REQUEST),

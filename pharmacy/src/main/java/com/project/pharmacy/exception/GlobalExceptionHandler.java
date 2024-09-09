@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
                 .body(apiResponse);
     }
 
-    @ExceptionHandler(value = MissingServletRequestPartException.class)
+   @ExceptionHandler(value = MissingServletRequestPartException.class)
     ResponseEntity<ApiResponse> handlingValidException(MissingServletRequestPartException exception){
         ErrorCode errorCode = ErrorCode.MISSING_PART;
 
