@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CompanyUpdateRequest {
-    String id;
-    String name;
-    String origin;
+public class LogoutRequest {
+    String token;
 }

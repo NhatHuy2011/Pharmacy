@@ -37,6 +37,7 @@ public class ProductCreateRequest {
     String preserve;
 
     String description;
+
     String note;
 
     @NotNull(message = "INVALID_PRODUCT_ADVICE")

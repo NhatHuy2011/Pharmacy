@@ -7,6 +7,7 @@ import com.project.pharmacy.entity.Category;
 import com.project.pharmacy.entity.Product;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
+import com.project.pharmacy.mapper.CategoryMapper;
 import com.project.pharmacy.repository.CategoryRepository;
 import com.project.pharmacy.repository.ImageRepository;
 import com.project.pharmacy.repository.ProductRepository;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,75 +36,58 @@ public class CategoryService {
     ProductRepository productRepository;
 
     ImageRepository imageRepository;
-    //Xem danh muc goc
-    public List<CategoryResponse> getRootCategories(){
-        List<Category> categories = categoryRepository.findByParent(null);
-        List<CategoryResponse> categoryResponses = new ArrayList<>();
 
-        for(Category category : categories){
-            CategoryResponse temp = CategoryResponse.builder()
-                    .id(category.getId())
-                    .name(category.getName())
-                    .description(category.getDescription())
-                    .build();
-            categoryResponses.add(temp);
-        }
-        return categoryResponses;
+    CategoryMapper categoryMapper;
+    //Xem danh muc goc
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<CategoryResponse> getRootCategories(){
+        return categoryRepository.findByParent(null).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
     }
 
     //Xem danh muc con cua mot danh muc
+    @PreAuthorize("hasRole('ADMIN')")
     public List<CategoryResponse> getSubCategories(String parentId){
         Category parent = categoryRepository.findById(parentId)
                 .orElseThrow();
-        List<Category> categories = categoryRepository.findByParent(parent);
-        List<CategoryResponse> categoryResponses = new ArrayList<>();
-
-        for(Category category : categories){
-            CategoryResponse temp = CategoryResponse.builder()
-                    .id(category.getId())
-                    .name(category.getName())
-                    .description(category.getDescription())
-                    .parent(category.getParent().getName())
-                    .build();
-            categoryResponses.add(temp);
-        }
-        return categoryResponses;
+        return categoryRepository.findByParent(parent).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
     }
 
     //Them danh muc
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request, MultipartFile multipartFile) throws IOException {
         if(categoryRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.CATEGORY_EXISTED);
 
+        //Check parent
         Category parent = null;
         if(request.getParent() != null){
             parent = categoryRepository.findById(request.getParent())
                     .orElseThrow(() -> new AppException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
         }
 
+        //Image
         String urlImage = imageService.uploadImage(multipartFile);
 
-        Category category = new Category();
-        category.setName(request.getName());
-        category.setImage(urlImage);
-        category.setDescription(request.getDescription());
+        //Mapper
+        Category category = categoryMapper.toCategory(request);
         category.setParent(parent);
+        category.setImage(urlImage);
         categoryRepository.save(category);
 
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .image(urlImage)
-                .description(category.getDescription())
-                .parent(category.getParent() != null ? category.getParent().getName() : null)
-                .build();
+        return categoryMapper.toCategoryResponse(category);
     }
 
     //Sua danh muc
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(CategoryUpdateRequest request, MultipartFile multipartFile) throws IOException{
         Category category = categoryRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        //Check parent
         Category parent = null;
         if (request.getParent() != null) {
             parent = categoryRepository.findById(request.getParent())
@@ -111,30 +97,24 @@ public class CategoryService {
         if(multipartFile!=null && !multipartFile.isEmpty()){
             String urlImage = imageService.uploadImage(multipartFile);
 
-            category.setName(request.getName());
-            category.setDescription(request.getDescription());
-            category.setImage(urlImage);
+            //Mapper
+            categoryMapper.updateCategory(category, request);
             category.setParent(parent);
+            category.setImage(urlImage);
         }
         else{
-            category.setName(request.getName());
-            category.setDescription(request.getDescription());
+            categoryMapper.updateCategory(category, request);
             category.setParent(parent);
         }
 
         categoryRepository.save(category);
 
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .image(category.getImage())
-                .description(category.getDescription())
-                .parent(parent!= null ? parent.getName() : null)
-                .build();
+        return categoryMapper.toCategoryResponse(category);
     }
 
     //Xoa danh muc
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(String id){
         Category category = categoryRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));

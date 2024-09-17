@@ -3,6 +3,7 @@ package com.project.pharmacy.controller;
 import com.nimbusds.jose.JOSEException;
 import com.project.pharmacy.dto.request.AuthenticateRequest;
 import com.project.pharmacy.dto.request.InstrospectTokenRequest;
+import com.project.pharmacy.dto.request.LogoutRequest;
 import com.project.pharmacy.dto.response.ApiResponse;
 import com.project.pharmacy.dto.response.AuthenticationResponse;
 import com.project.pharmacy.dto.response.IntrospectTokenResponse;
@@ -35,6 +36,14 @@ public class AuthenticationController {
     public ApiResponse<IntrospectTokenResponse> introspectToken(@RequestBody InstrospectTokenRequest request) throws ParseException, JOSEException {
         return ApiResponse.<IntrospectTokenResponse>builder()
                 .result(authenticationService.introspectToken(request))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .message("Log-out successfull")
                 .build();
     }
 }

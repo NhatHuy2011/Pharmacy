@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -16,11 +17,12 @@ import java.time.LocalDate;
 public class UserResponse {
     String id;
     String username;
-    String password;
     String fullname;
     LocalDate dob;
     String sex;
     Integer phone_number;
     String email;
     String image;
+    int point;
+    Set<String> roles;
 }

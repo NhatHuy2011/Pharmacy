@@ -34,6 +34,9 @@ public enum ErrorCode {
     USER_NOT_EXISTED("Username not existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_INCORRECT("Password is incorrect", 400, HttpStatus.BAD_REQUEST),
 
+    //Logout exception
+    UNAUTHENTICATED("Unauthenticated", 400, HttpStatus.BAD_REQUEST),
+
     //Exception relate to validation key
     INVALID_VALIDATION_KEY("Invalid validation key", 400, HttpStatus.BAD_REQUEST),
 
