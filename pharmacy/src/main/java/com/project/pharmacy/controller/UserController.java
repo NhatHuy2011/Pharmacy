@@ -1,6 +1,8 @@
 package com.project.pharmacy.controller;
 
 import com.project.pharmacy.dto.request.UserCreateRequest;
+import com.project.pharmacy.dto.request.UserUpdateBio;
+import com.project.pharmacy.dto.request.UserUpdateRole;
 import com.project.pharmacy.dto.response.ApiResponse;
 import com.project.pharmacy.dto.response.UserResponse;
 import com.project.pharmacy.service.UserService;
@@ -28,13 +30,6 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("{id}")
-    public ApiResponse<UserResponse> getUser(@PathVariable String id) {
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.getUser(id))
-                .build();
-    }
-
     @GetMapping
     public ApiResponse<List<UserResponse>> getAll(){
         return ApiResponse.<List<UserResponse>>builder()
@@ -46,6 +41,21 @@ public class UserController {
     public ApiResponse<UserResponse> getMyInFo(){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
+                .build();
+    }
+
+    @PutMapping("/updateBio")
+    public ApiResponse<UserResponse> updateBio(@RequestPart("updateUser") UserUpdateBio request,
+                                               @RequestPart("file") MultipartFile file) throws IOException{
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateBio(request, file))
+                .build();
+    }
+
+    @PutMapping("/updateRole")
+    public ApiResponse<UserResponse> updateRole(@RequestBody UserUpdateRole request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateRole(request))
                 .build();
     }
 }

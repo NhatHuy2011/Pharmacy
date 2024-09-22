@@ -24,11 +24,20 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND("Product not found", 400, HttpStatus.BAD_REQUEST),
 
     //Product and Unit exception
-    PRODUCT_UNIT_EXISTED("Product and Unit existed", 400, HttpStatus.BAD_REQUEST),
-    PRODUCT_UNIT_NOT_FOUND("Product and Unit not found", 400, HttpStatus.BAD_REQUEST),
+    PRICE_EXISTED("Price existed", 400, HttpStatus.BAD_REQUEST),
+    PRICE_NOT_FOUND("Price not found", 400, HttpStatus.BAD_REQUEST),
+    PRICE_NOT_BE_EQUAL("Price not be equal", 400, HttpStatus.BAD_REQUEST),
 
     //User exception
     USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
+
+    //Role exception
+    ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND("Role not found", 400, HttpStatus.BAD_REQUEST),
+
+    //Permission exception
+    PERMISSION_EXISTED("Permission existed", 400, HttpStatus.BAD_REQUEST),
+    PERMISSION_NOT_FOUND("Permission not found", 400, HttpStatus.BAD_REQUEST),
 
     //Login exception
     USER_NOT_EXISTED("Username not existed", 400, HttpStatus.BAD_REQUEST),

@@ -12,16 +12,20 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Unit {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(nullable = false)
     String name;
 
     String description;
 
-    @OneToMany(mappedBy = "unit")
-    Set<Price> prices;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "role_permissions",
+        joinColumns = @JoinColumn (name = "role_id"),
+        inverseJoinColumns = @JoinColumn (name = "permission_id")
+    )
+    Set<Permission> permissions;
 }

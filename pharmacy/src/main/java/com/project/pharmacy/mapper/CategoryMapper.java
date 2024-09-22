@@ -13,7 +13,6 @@ public interface CategoryMapper {
     @Mapping(target = "parent", ignore = true)
     Category toCategory(CategoryCreateRequest request);
 
-    @Mapping(source = "parent.name", target = "parent")
     CategoryResponse toCategoryResponse(Category category);
 
     @Mapping(target = "parent", ignore = true)

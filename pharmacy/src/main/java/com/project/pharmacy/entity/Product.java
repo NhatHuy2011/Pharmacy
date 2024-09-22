@@ -22,10 +22,6 @@ public class Product {
     @Column(nullable = false)
     int quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    Category category;
-
     @Column(nullable = false)
     String benefits;
 
@@ -52,6 +48,10 @@ public class Product {
     boolean doctor_advice;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     Company company;
 
@@ -59,5 +59,5 @@ public class Product {
     Set<Image> images;
 
     @OneToMany(mappedBy = "product")
-    Set<ProductUnit> productUnits;
+    Set<Price> prices;
 }

@@ -3,14 +3,14 @@ package com.project.pharmacy.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductUnitUpdateRequest {
-    String productId;
-    String unitId;
-    int price;
-    String description;
+public class UserUpdateRole {
+    String id;
+    String role;
 }

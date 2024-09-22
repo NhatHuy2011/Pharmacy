@@ -92,9 +92,18 @@ public class AuthenticationService {
 
     private String buildScope(User user){//Lay ra role cua user de cho vao scope trong token
         StringJoiner stringJoiner = new StringJoiner(" ");
+        log.info("User roles: " + user.getRoles());
+
         if(!CollectionUtils.isEmpty(user.getRoles())){
-            user.getRoles().forEach(stringJoiner::add);//s->stringJoiner.add(s)
+            user.getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getName());
+                if(!CollectionUtils.isEmpty(role.getPermissions()))
+                    role.getPermissions().forEach(permission ->
+                        stringJoiner.add(permission.getName()));
+                log.info("Permissions: " + role.getPermissions());
+            });
         }
+
         return stringJoiner.toString();
     }
 

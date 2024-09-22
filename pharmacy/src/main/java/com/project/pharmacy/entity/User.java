@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -46,5 +45,11 @@ public class User {
     @Column
     int point;
 
-    Set<String> roles;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    Set<Role> roles;
 }

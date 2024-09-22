@@ -3,15 +3,11 @@ package com.project.pharmacy.service;
 import com.project.pharmacy.dto.request.UnitCreateRequest;
 import com.project.pharmacy.dto.request.UnitUpdateRequest;
 import com.project.pharmacy.dto.response.UnitResponse;
-import com.project.pharmacy.entity.Category;
-import com.project.pharmacy.entity.Product;
 import com.project.pharmacy.entity.Unit;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.UnitMapper;
-import com.project.pharmacy.repository.ImageRepository;
-import com.project.pharmacy.repository.ProductRepository;
-import com.project.pharmacy.repository.ProductUnitRepository;
+import com.project.pharmacy.repository.PriceRepository;
 import com.project.pharmacy.repository.UnitRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +25,7 @@ import java.util.stream.Collectors;
 public class UnitService {
     UnitRepository unitRepository;
 
-    ProductUnitRepository productUnitRepository;
+    PriceRepository priceRepository;
 
     UnitMapper unitMapper;
 
@@ -72,7 +67,7 @@ public class UnitService {
     public void deleteUnit(String id){
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.UNIT_NOT_FOUND));
-        productUnitRepository.deleteAllByUnitId(id);
+        priceRepository.deleteAllByUnitId(id);
         unitRepository.deleteById(unit.getId());
     }
 }

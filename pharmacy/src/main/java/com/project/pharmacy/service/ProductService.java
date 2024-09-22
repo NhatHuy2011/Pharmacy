@@ -34,12 +34,12 @@ public class ProductService {
 
     ImageRepository imageRepository;
 
-    ProductUnitRepository productUnitRepository;
+    PriceRepository priceRepository;
 
     ProductMapper productMapper;
     //Thêm sản phẩm
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ProductResponse createProduct(ProductCreateRequest request, List<MultipartFile> multipartFiles) throws IOException {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(()-> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -78,7 +78,7 @@ public class ProductService {
     }
 
     //Xem danh sách sản phẩm
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public List<ProductResponse> getAllProduct() {
         return productRepository.findAll().stream()
                 .map(product -> {
@@ -87,17 +87,17 @@ public class ProductService {
                     String url = firstImage != null ? firstImage.getSource() : null;
 
                     //Lấy danh sách đơn vị và giá sản phẩm
-                    List<ProductUnit> productUnits = productUnitRepository.findByProductId(product.getId());
-                    List<Integer> price = productUnits.stream()
-                            .map(ProductUnit::getPrice)
-                            .collect(Collectors.toList());
-                    List<String> unit = productUnits.stream()
+                    Set<Price> prices = priceRepository.findByProductId(product.getId());
+                    Set<Integer> price = prices.stream()
+                            .map(Price::getPrice)
+                            .collect(Collectors.toSet());
+                    Set<String> unit = prices.stream()
                             .map(productUnit -> productUnit.getUnit().getName())
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
 
                     ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setPrice1(price);
-                    productResponse.setUnit1(unit);
+                    productResponse.setPrice_all(price);
+                    productResponse.setUnit_all(unit);
                     productResponse.setImage(url);
 
                     return productResponse;
@@ -105,10 +105,9 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-
     //Cập nhật sản phẩm
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> files) throws IOException{
         Product product = productRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -168,12 +167,12 @@ public class ProductService {
                 .map(Image::getSource)
                 .collect(Collectors.toList());
 
-        return productUnitRepository.findByProductId(product.getId())
+        return priceRepository.findByProductId(product.getId())
                 .stream()
                 .map(productUnit -> {
                     ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setPrice(productUnit.getPrice());
-                    productResponse.setUnit(productUnit.getUnit().getName());
+                    productResponse.setPrice_one(productUnit.getPrice());
+                    productResponse.setUnit_one(productUnit.getUnit().getName());
                     productResponse.setImages(imageUrls);
                     return productResponse;
                 })
@@ -182,12 +181,12 @@ public class ProductService {
 
     //Xoá sản phẩm
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void deleteProduct(String id){
         Product product = productRepository.findById(id)
                         .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         imageRepository.deleteAllByProductId(product.getId());
-        productUnitRepository.deleteAllByProductId(id);
+        priceRepository.deleteAllByProductId(id);
         productRepository.deleteById(product.getId());
     }
 }

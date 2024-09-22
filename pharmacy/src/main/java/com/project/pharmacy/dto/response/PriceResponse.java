@@ -10,10 +10,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductUnitResponse {
+public class PriceResponse {
     String id;
-    String productName;
-    String unitName;
+    String product;
+    String unit;
     int price;
     String description;
 }

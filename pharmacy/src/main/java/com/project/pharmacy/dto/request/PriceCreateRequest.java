@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductUnitCreateRequest {
+public class PriceCreateRequest {
     @NotNull(message = "INVALID_PRODUCT_ID")
     String productId;
     @NotNull(message = "INVALID_UNIT_ID")

@@ -20,13 +20,11 @@ public interface ProductMapper {
     @Mapping(target = "company", ignore = true)
     Product toProduct(ProductCreateRequest request);
 
-    @Mapping(source = "category.name", target = "category")
-    @Mapping(source = "company.name", target = "company")
     @Mapping(target = "images", ignore = true)
-    @Mapping(target = "price1", ignore = true)
-    @Mapping(target = "price", ignore = true)
-    @Mapping(target = "unit1", ignore = true)
-    @Mapping(target = "unit", ignore = true)
+    @Mapping(target = "price_all", ignore = true)
+    @Mapping(target = "price_one", ignore = true)
+    @Mapping(target = "unit_all", ignore = true)
+    @Mapping(target = "unit_one", ignore = true)
     @Mapping(target = "image", ignore = true)
     ProductResponse toProductResponse(Product product);
 

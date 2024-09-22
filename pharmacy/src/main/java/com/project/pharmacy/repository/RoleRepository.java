@@ -1,7 +1,6 @@
 package com.project.pharmacy.repository;
 
 import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,13 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
-    boolean existsByUsername(String username);
+public interface RoleRepository extends JpaRepository<Role, String> {
+    boolean existsByName(String name);
 
-    Optional<User> findByUsername(String username);
+    Optional<Role> findByName(String name);
 
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM user_roles WHERE role_id = :roleId", nativeQuery = true)
-    void removeRoleFromUsers(@Param("roleId") String roleId);
+    @Query(value = "DELETE FROM role_permissions WHERE permission_id = :permissionId", nativeQuery = true)
+    void removePermissionFromRoles(@Param("permissionId") String permissionId);
 }

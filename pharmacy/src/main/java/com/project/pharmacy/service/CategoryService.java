@@ -14,14 +14,12 @@ import com.project.pharmacy.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ public class CategoryService {
 
     CategoryMapper categoryMapper;
     //Xem danh muc goc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public List<CategoryResponse> getRootCategories(){
         return categoryRepository.findByParent(null).stream()
                 .map(categoryMapper::toCategoryResponse)
@@ -47,7 +45,7 @@ public class CategoryService {
     }
 
     //Xem danh muc con cua mot danh muc
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public List<CategoryResponse> getSubCategories(String parentId){
         Category parent = categoryRepository.findById(parentId)
                 .orElseThrow();

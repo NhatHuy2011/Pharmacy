@@ -1,7 +1,6 @@
 package com.project.pharmacy.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.pharmacy.entity.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,5 +15,5 @@ public class CategoryResponse {
     String name;
     String description;
     String image;
-    String parent;
+    CategoryResponse parent;
 }

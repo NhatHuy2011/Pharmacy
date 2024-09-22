@@ -10,7 +10,8 @@ import java.sql.Date;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
+public class UserUpdateBio {
+    String id;
     String username;
     String password;
     String fullname;
@@ -18,5 +19,4 @@ public class UserUpdateRequest {
     String sex;
     int phone_number;
     String email;
-    String image;
 }

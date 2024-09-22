@@ -14,14 +14,12 @@ import com.project.pharmacy.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ public class CompanyService {
 
     CompanyMapper companyMapper;
     //Them cong ty
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
         if(companyRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.COMPANY_EXISTED);
@@ -53,7 +51,7 @@ public class CompanyService {
     }
 
     //Xem danh sach cong ty
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public List<CompanyResponse> getCompany(){
         return companyRepository.findAll().stream()
                 .map(companyMapper::toCompanyResponse)
@@ -61,7 +59,7 @@ public class CompanyService {
     }
 
     //Sua cong ty
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse updateCompany(CompanyUpdateRequest request, MultipartFile files) throws IOException{
         Company company = companyRepository.findById(request.getId())
                 .orElseThrow(()->new AppException(ErrorCode.COMPANY_NOT_FOUND));

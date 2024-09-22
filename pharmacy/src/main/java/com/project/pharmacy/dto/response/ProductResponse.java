@@ -1,7 +1,6 @@
 package com.project.pharmacy.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.annotation.Nullable;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,12 +16,7 @@ import java.util.Set;
 public class ProductResponse {
     String id;
     String name;
-    List<Integer> price1;
-    Integer price;
     int quantity;
-    String category;
-    List<String> unit1;
-    String unit;
     String benefits;
     String ingredients;
     String constraindication;
@@ -32,7 +26,17 @@ public class ProductResponse {
     String description;
     String note;
     boolean doctor_advice;
-    String company;
+
+    CompanyResponse company;
+
+    CategoryResponse category;
+
+    Set<Integer> price_all;//for getAllProduct
+    Integer price_one;//for getOneProduct
+
+    Set<String> unit_all;//for getAllProduct
+    String unit_one;//for getOneProduct
+
     List<String> images;
     String image;
 }
