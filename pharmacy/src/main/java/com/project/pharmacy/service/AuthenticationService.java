@@ -47,6 +47,7 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")//key secret nen dat o file yml de team devops co the thay doi
     protected String SIGNER_KEY;
 
+    //Log-in
     public AuthenticationResponse authenticate(AuthenticateRequest request){//login
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));//Check username
@@ -107,6 +108,7 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
+    //Introspect Token
     public IntrospectTokenResponse introspectToken(InstrospectTokenRequest request)
             throws JOSEException, ParseException {//kiem tra token co con hieu luc
         var token = request.getToken();
@@ -114,13 +116,14 @@ public class AuthenticationService {
         try {
             verifyToken(token);
         }catch (AppException e){
-            isValid = false;
+            isValid = false;//token het han / user log-out
         }
         return IntrospectTokenResponse.builder()
-                .valid(isValid)//(true) time het han sau thoi diem hien tai, (false) time het han truoc thoi diem hien tai
+                .valid(isValid)
                 .build();
     }
 
+    //Log-out
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
@@ -146,6 +149,7 @@ public class AuthenticationService {
         if(!(verified && expiryTime.after(new Date())))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
+        //token in invalidatetoken
         if(invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 

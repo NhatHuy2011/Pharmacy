@@ -36,6 +36,7 @@ public class CompanyService {
     ImageRepository imageRepository;
 
     CompanyMapper companyMapper;
+    //ADMIN and EMPLOYEE
     //Them cong ty
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
@@ -48,14 +49,6 @@ public class CompanyService {
         companyRepository.save(company);
 
         return companyMapper.toCompanyResponse(company);
-    }
-
-    //Xem danh sach cong ty
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public List<CompanyResponse> getCompany(){
-        return companyRepository.findAll().stream()
-                .map(companyMapper::toCompanyResponse)
-                .collect(Collectors.toList());
     }
 
     //Sua cong ty
@@ -77,6 +70,7 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(company);
     }
 
+    //Role ADMIN
     //Xoa cong ty
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
@@ -89,5 +83,13 @@ public class CompanyService {
         }
         productRepository.deleteAllByCompanyId(id);
         companyRepository.deleteById(company.getId());
+    }
+
+    //Role USER
+    //Xem danh sach cong ty
+    public List<CompanyResponse> getCompany(){
+        return companyRepository.findAll().stream()
+                .map(companyMapper::toCompanyResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -30,6 +30,7 @@ public class PriceService {
 
     PriceRepository priceRepository;
 
+    //ADMIN and EMPLOYEE
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public PriceResponse createPrice(PriceCreateRequest request) {
         Product product = productRepository.findById(request.getProductId())

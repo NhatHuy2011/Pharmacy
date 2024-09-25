@@ -36,24 +36,7 @@ public class CategoryService {
     ImageRepository imageRepository;
 
     CategoryMapper categoryMapper;
-    //Xem danh muc goc
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public List<CategoryResponse> getRootCategories(){
-        return categoryRepository.findByParent(null).stream()
-                .map(categoryMapper::toCategoryResponse)
-                .collect(Collectors.toList());
-    }
-
-    //Xem danh muc con cua mot danh muc
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public List<CategoryResponse> getSubCategories(String parentId){
-        Category parent = categoryRepository.findById(parentId)
-                .orElseThrow();
-        return categoryRepository.findByParent(parent).stream()
-                .map(categoryMapper::toCategoryResponse)
-                .collect(Collectors.toList());
-    }
-
+    //Role ADMIN
     //Them danh muc
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request, MultipartFile multipartFile) throws IOException {
@@ -131,5 +114,22 @@ public class CategoryService {
             deleteCategoryRecursive(subCategory);
         }
         categoryRepository.delete(category);
+    }
+
+    //Role USER
+    //Xem danh muc goc
+    public List<CategoryResponse> getRootCategories(){
+        return categoryRepository.findByParent(null).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
+    }
+
+    //Xem danh muc con cua mot danh muc
+    public List<CategoryResponse> getSubCategories(String parentId){
+        Category parent = categoryRepository.findById(parentId)
+                .orElseThrow();
+        return categoryRepository.findByParent(parent).stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
     }
 }

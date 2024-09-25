@@ -27,6 +27,7 @@ public class PermissionService {
 
     PermissionMapper permissionMapper;
 
+    //Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public PermissionResponse createPermission(PermissionCreateRequest request){
         if(permissionRepository.existsByName(request.getName()))

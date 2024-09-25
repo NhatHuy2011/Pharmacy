@@ -37,6 +37,8 @@ public class ProductService {
     PriceRepository priceRepository;
 
     ProductMapper productMapper;
+
+    //ADMIN and EMPLOYEE
     //Thêm sản phẩm
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
@@ -75,34 +77,6 @@ public class ProductService {
         ProductResponse productResponse = productMapper.toProductResponse(product);
         productResponse.setImages(imageUrls);
         return productResponse;
-    }
-
-    //Xem danh sách sản phẩm
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public List<ProductResponse> getAllProduct() {
-        return productRepository.findAll().stream()
-                .map(product -> {
-                    //Lấy hình ảnh đầu tiên
-                    Image firstImage = imageRepository.findFirstByProductId(product.getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
-
-                    //Lấy danh sách đơn vị và giá sản phẩm
-                    Set<Price> prices = priceRepository.findByProductId(product.getId());
-                    Set<Integer> price = prices.stream()
-                            .map(Price::getPrice)
-                            .collect(Collectors.toSet());
-                    Set<String> unit = prices.stream()
-                            .map(productUnit -> productUnit.getUnit().getName())
-                            .collect(Collectors.toSet());
-
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setPrice_all(price);
-                    productResponse.setUnit_all(unit);
-                    productResponse.setImage(url);
-
-                    return productResponse;
-                })
-                .collect(Collectors.toList());
     }
 
     //Cập nhật sản phẩm
@@ -157,6 +131,46 @@ public class ProductService {
         return productResponse;
     }
 
+    //Xoá sản phẩm
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public void deleteProduct(String id){
+        Product product = productRepository.findById(id)
+                        .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        imageRepository.deleteAllByProductId(product.getId());
+        priceRepository.deleteAllByProductId(id);
+        productRepository.deleteById(product.getId());
+    }
+
+    //Role USER
+    //Xem danh sách sản phẩm
+    public List<ProductResponse> getAllProduct() {
+        return productRepository.findAll().stream()
+                .map(product -> {
+                    //Lấy hình ảnh đầu tiên
+                    Image firstImage = imageRepository.findFirstByProductId(product.getId());
+                    String url = firstImage != null ? firstImage.getSource() : null;
+
+                    //Lấy danh sách đơn vị và giá sản phẩm
+                    Set<Price> prices = priceRepository.findByProductId(product.getId());
+                    Set<Integer> price = prices.stream()
+                            .map(Price::getPrice)
+                            .collect(Collectors.toSet());
+                    Set<String> unit = prices.stream()
+                            .map(productUnit -> productUnit.getUnit().getName())
+                            .collect(Collectors.toSet());
+
+                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    productResponse.setPrice_all(price);
+                    productResponse.setUnit_all(unit);
+                    productResponse.setImage(url);
+
+                    return productResponse;
+                })
+                .collect(Collectors.toList());
+    }
+
+
     //Lấy 1 sản phẩm
     public List<ProductResponse> getOne(String id) {
         Product product = productRepository.findById(id)
@@ -177,16 +191,5 @@ public class ProductService {
                     return productResponse;
                 })
                 .collect(Collectors.toList());
-    }
-
-    //Xoá sản phẩm
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public void deleteProduct(String id){
-        Product product = productRepository.findById(id)
-                        .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        imageRepository.deleteAllByProductId(product.getId());
-        priceRepository.deleteAllByProductId(id);
-        productRepository.deleteById(product.getId());
     }
 }

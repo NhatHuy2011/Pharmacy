@@ -41,6 +41,7 @@ public class UserService {
 
     RoleRepository roleRepository;
 
+    //Role USER
     public UserResponse createUser(UserCreateRequest request, MultipartFile file) throws IOException {
         if(userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -59,14 +60,6 @@ public class UserService {
         userRepository.save(user);
 
         return userMapper.toUserResponse(user);
-    }
-
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getAll(){
-        return userRepository.findAll().stream()
-                .map(userMapper::toUserResponse)
-                .collect(Collectors.toList());
     }
 
     @PreAuthorize("returnObject.username == authentication.name")
@@ -97,6 +90,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateRole(UserUpdateRole request){
         User user = userRepository.findById(request.getId())
@@ -105,10 +99,16 @@ public class UserService {
         Role role = roleRepository.findByName(request.getRole())
                 .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        Set<Role> roles = new HashSet<>();
         user.getRoles().add(role);
         userRepository.save(user);
 
         return userMapper.toUserResponse(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getAll(){
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
     }
 }

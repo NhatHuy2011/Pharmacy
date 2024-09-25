@@ -33,6 +33,7 @@ public class RoleService {
 
     RoleMapper roleMapper;
 
+    //Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse updateRole(RoleUpdateRequest request){
         Role role = roleRepository.findById(request.getId())
