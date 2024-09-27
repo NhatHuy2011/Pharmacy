@@ -14,7 +14,8 @@ public class UserUpdateBio {
     String id;
     String username;
     String password;
-    String fullname;
+    String fisrtname;
+    String lastname;
     Date dob;
     String sex;
     int phone_number;

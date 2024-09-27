@@ -2,6 +2,7 @@ package com.project.pharmacy.mapper;
 
 import com.project.pharmacy.dto.request.UserCreateRequest;
 import com.project.pharmacy.dto.request.UserUpdateBio;
+import com.project.pharmacy.dto.response.OutboundUserResponse;
 import com.project.pharmacy.dto.response.UserResponse;
 import com.project.pharmacy.entity.User;
 import org.mapstruct.Mapper;

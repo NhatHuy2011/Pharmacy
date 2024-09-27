@@ -19,7 +19,8 @@ public class UserCreateRequest {
 
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
-    String fullname;
+    String firstname;
+    String lastname;
     LocalDate dob;
     String sex;
     Integer phone_number;

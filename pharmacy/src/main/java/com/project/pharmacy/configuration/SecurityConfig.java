@@ -17,6 +17,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -26,7 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINTS = {
             "/user",
-            "/auth/log-in", "/auth/introspect", "/auth/logout"};
+            "/auth/log-in", "/auth/introspect", "/auth/logout", "/auth/outbound/authentication"};
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/product/**",
@@ -66,6 +69,17 @@ public class SecurityConfig {
 
         return jwtAuthenticationConverter;
     }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }//Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon localhost:3000
 
     @Bean//Khi danh dau Bean thi Bien nay se duoc dua vao Application Context de su dung o nhung noi khac
     PasswordEncoder passwordEncoder(){

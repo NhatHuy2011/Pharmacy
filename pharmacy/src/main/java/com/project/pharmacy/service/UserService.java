@@ -1,5 +1,6 @@
 package com.project.pharmacy.service;
 
+import com.project.pharmacy.dto.request.PasswordCreateRequest;
 import com.project.pharmacy.dto.request.UserCreateRequest;
 import com.project.pharmacy.dto.request.UserUpdateBio;
 import com.project.pharmacy.dto.request.UserUpdateRole;
@@ -14,11 +15,11 @@ import com.project.pharmacy.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class UserService {
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(true);
         user.setImage(urlImage);
         user.setRoles(roles);
         userRepository.save(user);
@@ -62,7 +64,20 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("returnObject.username == authentication.name")
+    public void creatPassword(PasswordCreateRequest request){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(StringUtils.hasText(user.getPassword()))
+            throw new AppException(ErrorCode.PASSWORD_EXISTED);
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+    }
+
     public UserResponse getMyInfo(){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -70,7 +85,10 @@ public class UserService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return userMapper.toUserResponse(user);
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        userResponse.setNoPassword(!StringUtils.hasText(user.getPassword()));
+
+        return userResponse;
     }
 
     @PreAuthorize("returnObject.username == authentication.name")
@@ -110,5 +128,13 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void banUser(String id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setStatus(false);
+        userRepository.save(user);
     }
 }

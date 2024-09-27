@@ -30,6 +30,8 @@ public enum ErrorCode {
 
     //User exception
     USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
+    PASSWORD_EXISTED("Password existed", 400, HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND("User not found", 400, HttpStatus.BAD_REQUEST),
 
     //Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
@@ -42,6 +44,7 @@ public enum ErrorCode {
     //Login exception
     USER_NOT_EXISTED("Username not existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_INCORRECT("Password is incorrect", 400, HttpStatus.BAD_REQUEST),
+    USER_HAS_BEEN_BAN("User has been ban", 403, HttpStatus.UNAUTHORIZED),
 
     //Logout exception
     UNAUTHENTICATED("Unauthenticated", 400, HttpStatus.BAD_REQUEST),

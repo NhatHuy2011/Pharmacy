@@ -21,11 +21,13 @@ public class User {
     @Column(nullable = false)
     String username;
 
-    @Column(nullable = false)
     String password;
 
     @Column
-    String fullname;
+    String firstname;
+
+    @Column
+    String lastname;
 
     @Column
     LocalDate dob;
@@ -44,6 +46,9 @@ public class User {
 
     @Column
     int point;
+
+    @Column
+    Boolean status;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

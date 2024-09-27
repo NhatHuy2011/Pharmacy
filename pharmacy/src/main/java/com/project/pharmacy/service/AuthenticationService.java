@@ -6,16 +6,23 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.project.pharmacy.dto.request.AuthenticateRequest;
+import com.project.pharmacy.dto.request.ExchangeTokenRequest;
 import com.project.pharmacy.dto.request.InstrospectTokenRequest;
 import com.project.pharmacy.dto.request.LogoutRequest;
 import com.project.pharmacy.dto.response.AuthenticationResponse;
+import com.project.pharmacy.dto.response.ExchangeTokenResponse;
 import com.project.pharmacy.dto.response.IntrospectTokenResponse;
+import com.project.pharmacy.dto.response.OutboundUserResponse;
 import com.project.pharmacy.entity.InvalidatedToken;
+import com.project.pharmacy.entity.Role;
 import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.InvalidatedTokenRepository;
+import com.project.pharmacy.repository.RoleRepository;
+import com.project.pharmacy.repository.httpclient.OutboundIdentityClient;
 import com.project.pharmacy.repository.UserRepository;
+import com.project.pharmacy.repository.httpclient.OutboundUserClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,9 +38,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +48,69 @@ public class AuthenticationService {
     UserRepository userRepository;
 
     InvalidatedTokenRepository invalidatedTokenRepository;
+
+    OutboundIdentityClient outboundIdentityClient;
+
+    OutboundUserClient outboundUserClient;
+
+    RoleRepository roleRepository;
     @NonFinal
     @Value("${jwt.signerKey}")//key secret nen dat o file yml de team devops co the thay doi
     protected String SIGNER_KEY;
+
+    @NonFinal
+    @Value("${outbound.identity.client-id}")
+    protected String CLIENT_ID;
+
+    @NonFinal
+    @Value("${outbound.identity.client-secret}")
+    protected String CLIENT_SECRET;
+
+    @NonFinal
+    @Value("${outbound.identity.redirect-uri}")
+    protected String REDIRECT_URI;
+
+    @NonFinal
+    protected String GRANT_TYPE = "authorization_code";
+
+    public AuthenticationResponse outboundAuthenticate(String code){
+        //ExchangeToken from code
+        ExchangeTokenResponse response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+                        .code(code)
+                        .clientId(CLIENT_ID)
+                        .clientSecret(CLIENT_SECRET)
+                        .redirectUri(REDIRECT_URI)
+                        .grantType(GRANT_TYPE)
+                        .build());
+
+        //Get User Info
+        OutboundUserResponse userInfo = outboundUserClient.getUserInfo("json", response.getAccessToken());
+
+        /*`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`*/
+
+        //On board User
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = userRepository.findByUsername(userInfo.getEmail()).orElseGet(
+                ()->userRepository.save(User.builder()
+                        .username(userInfo.getEmail())
+                        .firstname(userInfo.getGivenName())
+                        .lastname(userInfo.getFamilyName())
+                        .status(true)
+                        .roles(roles)
+                        .build())
+        );
+        log.info("User Info: {}" , userInfo);
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .build();
+    }
 
     //Log-in
     public AuthenticationResponse authenticate(AuthenticateRequest request){//login
@@ -57,10 +122,14 @@ public class AuthenticationService {
         if(!authenticated)
             throw new AppException(ErrorCode.PASSWORD_INCORRECT);
 
+        if(!user.getStatus())
+            throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
+
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
+                .authenticated(true)
                 .build();
     }
 

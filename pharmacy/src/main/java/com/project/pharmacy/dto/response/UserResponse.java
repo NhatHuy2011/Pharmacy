@@ -16,12 +16,15 @@ import java.util.Set;
 public class UserResponse {
     String id;
     String username;
-    String fullname;
+    String firstname;
+    String lastname;
     LocalDate dob;
     String sex;
     Integer phone_number;
     String email;
     String image;
     int point;
+    Boolean status;
+    Boolean noPassword;
     Set<RoleResponse> roles;
 }
