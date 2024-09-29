@@ -8,6 +8,10 @@ import com.project.pharmacy.service.ProductService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,11 +35,19 @@ public class ProductController {
     }
 
     @GetMapping
-    public ApiResponse<List<ProductResponse>> getAll(){
-        return ApiResponse.<List<ProductResponse>>builder()
-                .result(productService.getAllProduct())
+    public ApiResponse<Page<ProductResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sortOrder) {
+        Sort sort = sortOrder.equals("desc") ? Sort.by("prices.price").descending() : Sort.by("prices.price").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<ProductResponse> productResponses = productService.getAllProduct(pageable);
+
+        return ApiResponse.<Page<ProductResponse>>builder()
+                .result(productResponses)
                 .build();
     }
+
 
     @GetMapping("{id}")
     public ApiResponse<List<ProductResponse>> getOne(@PathVariable String id){

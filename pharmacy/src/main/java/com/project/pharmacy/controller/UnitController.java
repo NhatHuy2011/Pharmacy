@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +25,14 @@ public class UnitController {
     UnitService unitService;
 
     @GetMapping
-    public ApiResponse<List<UnitResponse>> getUnit(){
-        return ApiResponse.<List<UnitResponse>>builder()
-                .result(unitService.getUnit())
+    public ApiResponse<Page<UnitResponse>> getUnit(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UnitResponse> unitResponses = unitService.getUnit(pageable);
+
+        return ApiResponse.<Page<UnitResponse>>builder()
+                .result(unitResponses)
                 .build();
     }
 

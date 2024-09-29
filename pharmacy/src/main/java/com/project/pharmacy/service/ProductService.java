@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -144,8 +148,8 @@ public class ProductService {
 
     //Role USER
     //Xem danh sách sản phẩm
-    public List<ProductResponse> getAllProduct() {
-        return productRepository.findAll().stream()
+    public Page<ProductResponse> getAllProduct(Pageable pageable) {
+        return productRepository.findAll(pageable)
                 .map(product -> {
                     //Lấy hình ảnh đầu tiên
                     Image firstImage = imageRepository.findFirstByProductId(product.getId());
@@ -155,7 +159,8 @@ public class ProductService {
                     Set<Price> prices = priceRepository.findByProductId(product.getId());
                     Set<Integer> price = prices.stream()
                             .map(Price::getPrice)
-                            .collect(Collectors.toSet());
+                            .sorted(Comparator.reverseOrder())
+                            .collect(Collectors.toCollection(LinkedHashSet::new));
                     Set<String> unit = prices.stream()
                             .map(productUnit -> productUnit.getUnit().getName())
                             .collect(Collectors.toSet());
@@ -166,8 +171,7 @@ public class ProductService {
                     productResponse.setImage(url);
 
                     return productResponse;
-                })
-                .collect(Collectors.toList());
+                });
     }
 
 

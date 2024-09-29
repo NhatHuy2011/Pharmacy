@@ -13,8 +13,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -136,6 +139,7 @@ public class UserService {
         return String.format("%06d", random.nextInt(1000000));// Mã OTP gồm 6 chữ số
     }
 
+    //User chua co mat khau truoc do (Login with google)
     public void creatPassword(PasswordCreateRequest request){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -180,6 +184,26 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //User da co tai khoan truoc do
+    public void updatePassword(UserUpdatePassword request){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(!(passwordEncoder.matches(request.getOldPassword(), user.getPassword())))//request truoc user ** lỏ vl
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+
+        if(!(request.getNewPassword().equals(request.getCheckNewPassword()))){
+            throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getCheckNewPassword()));
+
+        userRepository.save(user);
+    }
+
     //Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateRole(UserUpdateRole request){
@@ -196,10 +220,9 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getAll(){
-        return userRepository.findAll().stream()
-                .map(userMapper::toUserResponse)
-                .collect(Collectors.toList());
+    public Page<UserResponse> getAll(Pageable pageable){
+        return userRepository.findAll(pageable)
+                .map(userMapper::toUserResponse);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

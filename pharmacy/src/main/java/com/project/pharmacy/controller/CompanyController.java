@@ -10,6 +10,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +29,14 @@ public class CompanyController {
     CompanyService companyService;
 
     @GetMapping
-    public ApiResponse<List<CompanyResponse>> getCompany(){
-        return ApiResponse.<List<CompanyResponse>>builder()
-                .result(companyService.getCompany())
+    public ApiResponse<Page<CompanyResponse>> getCompany(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CompanyResponse> companyResponses = companyService.getCompany(pageable);
+        return ApiResponse.<Page<CompanyResponse>>builder()
+                .result(companyResponses)
                 .build();
     }
 

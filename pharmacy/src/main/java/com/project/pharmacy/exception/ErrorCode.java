@@ -31,6 +31,8 @@ public enum ErrorCode {
     //User exception
     USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_EXISTED("Password existed", 400, HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_MATCH("Password does not match", 400, HttpStatus.BAD_REQUEST),
+    PASSWORD_RE_ENTERING_INCORRECT("Password re-entering is incorrect", 400, HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("User not found", 400, HttpStatus.BAD_REQUEST),
     EMAIL_NOT_EXISTED("Email is not existed", 400, HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED("Email existed", 400, HttpStatus.BAD_REQUEST),

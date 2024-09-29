@@ -12,6 +12,8 @@ import com.project.pharmacy.repository.UnitRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +46,9 @@ public class UnitService {
 
     //Xem danh sach don vi
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UnitResponse> getUnit(){
-        return unitRepository.findAll().stream()
-                .map(unitMapper::toUnitResponse)
-                .collect(Collectors.toList());
+    public Page<UnitResponse> getUnit(Pageable pageable){
+        return unitRepository.findAll(pageable)
+                .map(unitMapper::toUnitResponse);
     }
 
     //Sua don vi
