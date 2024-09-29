@@ -16,10 +16,14 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByUsername(String username);
 
+    boolean existsByEmail(String email);
+
     Optional<User> findByUsername(String username);
 
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM user_roles WHERE role_id = :roleId", nativeQuery = true)
     void removeRoleFromUsers(@Param("roleId") String roleId);
+
+    Optional<User> findByEmail(String email);
 }

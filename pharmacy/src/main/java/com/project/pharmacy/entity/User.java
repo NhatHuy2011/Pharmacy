@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -57,4 +58,13 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     Set<Role> roles;
+
+    @Column
+    String otpCode;
+
+    @Column
+    LocalDateTime otpExpiryTime;
+
+    @Column
+    Boolean isVerified;
 }

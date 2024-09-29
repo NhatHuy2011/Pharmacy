@@ -32,6 +32,8 @@ public enum ErrorCode {
     USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_EXISTED("Password existed", 400, HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("User not found", 400, HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_EXISTED("Email is not existed", 400, HttpStatus.BAD_REQUEST),
+    EMAIL_EXISTED("Email existed", 400, HttpStatus.BAD_REQUEST),
 
     //Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
@@ -51,6 +53,10 @@ public enum ErrorCode {
 
     //Exception relate to validation key
     INVALID_VALIDATION_KEY("Invalid validation key", 400, HttpStatus.BAD_REQUEST),
+
+    //OTP Exception
+    OTP_EXPIRED("OTP is expired", 400, HttpStatus.BAD_REQUEST),
+    OTP_INCORRECT("OTP is incorrect", 400, HttpStatus.BAD_REQUEST),
 
     //Valid Product
     INVALID_COMPANY_NAME("Please fill out Company Name", 400, HttpStatus.BAD_REQUEST),

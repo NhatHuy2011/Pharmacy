@@ -1,7 +1,6 @@
 package com.project.pharmacy.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,9 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,15 +17,19 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.crypto.spec.SecretKeySpec;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINTS = {
             "/user",
-            "/auth/log-in", "/auth/introspect", "/auth/logout", "/auth/outbound/authentication"};
+            "/auth/log-in",
+            "/auth/introspect",
+            "/auth/logout",
+            "/auth/outbound/authentication",
+            "/user/verify-otp",
+            "/user/forgot-password",
+            "/user/reset-password"};
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/product/**",
@@ -79,7 +79,7 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-    }//Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon localhost:3000
+    }//Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon. Vi du: http://localhost:3000
 
     @Bean//Khi danh dau Bean thi Bien nay se duoc dua vao Application Context de su dung o nhung noi khac
     PasswordEncoder passwordEncoder(){

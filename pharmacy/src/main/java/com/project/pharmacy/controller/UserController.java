@@ -1,9 +1,6 @@
 package com.project.pharmacy.controller;
 
-import com.project.pharmacy.dto.request.PasswordCreateRequest;
-import com.project.pharmacy.dto.request.UserCreateRequest;
-import com.project.pharmacy.dto.request.UserUpdateBio;
-import com.project.pharmacy.dto.request.UserUpdateRole;
+import com.project.pharmacy.dto.request.*;
 import com.project.pharmacy.dto.response.ApiResponse;
 import com.project.pharmacy.dto.response.UserResponse;
 import com.project.pharmacy.service.UserService;
@@ -29,6 +26,34 @@ public class UserController {
                                                 @RequestPart(value = "file") MultipartFile file) throws IOException{
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request, file))
+                .message("Please enter the OTP code sent via email to register an account")
+                .build();
+    }
+
+    @PostMapping("/verify-otp")
+    public ApiResponse<Void> verifyOTP(@RequestParam("email") String email,
+                                          @RequestParam("otp") String otp){
+        userService.verifyOtp(email, otp);
+        return ApiResponse.<Void>builder()
+                .message("User sign up successful. Please sign in!")
+                .build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@RequestParam("email") String email){
+        userService.forgotPassword(email);
+        return ApiResponse.<Void>builder()
+                .message("OTP has been sent to your email. Please check.")
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestParam("email") String email,
+                                           @RequestParam("otp") String otp,
+                                           @RequestParam("newPassword") String newPassword){
+        userService.resetPassword(email, otp, newPassword);
+        return ApiResponse.<Void>builder()
+                .message("Password has been reset successfully. Please log in with your new password.")
                 .build();
     }
 
