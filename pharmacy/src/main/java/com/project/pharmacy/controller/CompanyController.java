@@ -1,24 +1,26 @@
 package com.project.pharmacy.controller;
 
-import com.project.pharmacy.dto.request.CompanyCreateRequest;
-import com.project.pharmacy.dto.request.CompanyUpdateRequest;
-import com.project.pharmacy.dto.response.ApiResponse;
-import com.project.pharmacy.dto.response.CompanyResponse;
-import com.project.pharmacy.service.CompanyService;
+import java.io.IOException;
+import java.util.Objects;
+
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import com.project.pharmacy.dto.request.CompanyCreateRequest;
+import com.project.pharmacy.dto.request.CompanyUpdateRequest;
+import com.project.pharmacy.dto.response.ApiResponse;
+import com.project.pharmacy.dto.response.CompanyResponse;
+import com.project.pharmacy.service.CompanyService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/company")
@@ -30,9 +32,7 @@ public class CompanyController {
 
     @GetMapping
     public ApiResponse<Page<CompanyResponse>> getCompany(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ){
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<CompanyResponse> companyResponses = companyService.getCompany(pageable);
         return ApiResponse.<Page<CompanyResponse>>builder()
@@ -41,30 +41,32 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ApiResponse<CompanyResponse> createCompany(@Valid @RequestPart("createCompany") CompanyCreateRequest request,
-                                                      @RequestPart("files") MultipartFile files) throws IOException {
+    public ApiResponse<CompanyResponse> createCompany(
+            @Valid @RequestPart("createCompany") CompanyCreateRequest request,
+            @RequestPart("files") MultipartFile files)
+            throws IOException {
         return ApiResponse.<CompanyResponse>builder()
                 .result(companyService.createCompany(request, files))
                 .build();
     }
 
     @PutMapping
-    public ApiResponse<CompanyResponse> updateCompany(@RequestPart("updateCompany") CompanyUpdateRequest request,
-                                                      @RequestPart("files") MultipartFile files) throws IOException{
-        if(files!=null && !files.isEmpty()) {
+    public ApiResponse<CompanyResponse> updateCompany(
+            @RequestPart("updateCompany") CompanyUpdateRequest request, @RequestPart("files") MultipartFile files)
+            throws IOException {
+        if (files != null && !files.isEmpty()) {
             return ApiResponse.<CompanyResponse>builder()
                     .result(companyService.updateCompany(request, files))
                     .build();
-        }
-        else {
+        } else {
             return ApiResponse.<CompanyResponse>builder()
-                    .result(companyService.updateCompany(request,null))
+                    .result(companyService.updateCompany(request, null))
                     .build();
         }
     }
 
     @DeleteMapping("{id}")
-    public ApiResponse<Objects> deleteCompany(@PathVariable("id") String id){
+    public ApiResponse<Objects> deleteCompany(@PathVariable("id") String id) {
         companyService.deleteCompany(id);
         return ApiResponse.<Objects>builder()
                 .message("Delete Company Successful")

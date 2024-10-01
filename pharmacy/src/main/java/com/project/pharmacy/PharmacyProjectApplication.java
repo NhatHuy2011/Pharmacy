@@ -9,8 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients
 public class PharmacyProjectApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(PharmacyProjectApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(PharmacyProjectApplication.class, args);
+    }
 }

@@ -1,24 +1,26 @@
 package com.project.pharmacy.service;
 
-import com.project.pharmacy.dto.request.PriceCreateRequest;
-import com.project.pharmacy.dto.request.PriceUpdateRequest;
-import com.project.pharmacy.dto.response.PriceResponse;
-import com.project.pharmacy.entity.Product;
-import com.project.pharmacy.entity.Price;
-import com.project.pharmacy.entity.Unit;
-import com.project.pharmacy.exception.AppException;
-import com.project.pharmacy.exception.ErrorCode;
-import com.project.pharmacy.repository.ProductRepository;
-import com.project.pharmacy.repository.PriceRepository;
-import com.project.pharmacy.repository.UnitRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.Set;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import com.project.pharmacy.dto.request.PriceCreateRequest;
+import com.project.pharmacy.dto.request.PriceUpdateRequest;
+import com.project.pharmacy.dto.response.PriceResponse;
+import com.project.pharmacy.entity.Price;
+import com.project.pharmacy.entity.Product;
+import com.project.pharmacy.entity.Unit;
+import com.project.pharmacy.exception.AppException;
+import com.project.pharmacy.exception.ErrorCode;
+import com.project.pharmacy.repository.PriceRepository;
+import com.project.pharmacy.repository.ProductRepository;
+import com.project.pharmacy.repository.UnitRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +32,14 @@ public class PriceService {
 
     PriceRepository priceRepository;
 
-    //ADMIN and EMPLOYEE
+    // ADMIN and EMPLOYEE
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public PriceResponse createPrice(PriceCreateRequest request) {
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository
+                .findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        Unit unit = unitRepository.findById(request.getUnitId())
+        Unit unit = unitRepository
+                .findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
         if (priceRepository.existsByProductAndUnit(product, unit)) {
@@ -71,14 +75,16 @@ public class PriceService {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void updatePrice(PriceUpdateRequest request) {
-        Product product = productRepository.findById(request.getProductId())
+        Product product = productRepository
+                .findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        Unit unit = unitRepository.findById(request.getUnitId())
+        Unit unit = unitRepository
+                .findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
         Price price = priceRepository.findByProductAndUnit(product, unit);
         if (price == null) {
-            throw new AppException(ErrorCode.PRICE_NOT_FOUND);  // Nếu giá không tồn tại
+            throw new AppException(ErrorCode.PRICE_NOT_FOUND); // Nếu giá không tồn tại
         }
 
         int oldPrice = price.getPrice();
@@ -106,7 +112,7 @@ public class PriceService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public void deletePrice(String id){
+    public void deletePrice(String id) {
         priceRepository.deleteAllByUnitId(id);
     }
 }

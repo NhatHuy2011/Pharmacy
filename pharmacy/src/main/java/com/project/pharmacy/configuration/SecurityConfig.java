@@ -22,47 +22,47 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/user",
-            "/auth/log-in",
-            "/auth/introspect",
-            "/auth/logout",
-            "/auth/outbound/authentication",
-            "/user/verify-otp",
-            "/user/forgot-password",
-            "/user/reset-password"};
-
-    private final String[] PUBLIC_GET_ENDPOINTS = {
-            "/product/**",
-            "/category/**",
-            "/company"
+        "/user",
+        "/auth/log-in",
+        "/auth/introspect",
+        "/auth/logout",
+        "/auth/outbound/authentication",
+        "/auth/refresh",
+        "/user/verify-otp",
+        "/user/forgot-password",
+        "/user/reset-password"
     };
+
+    private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**", "/category/**", "/company"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/product").hasRole(Role.ADMIN.name())
-                        .anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS)
+                .permitAll()
+                // .requestMatchers(HttpMethod.GET, "/product").hasRole(Role.ADMIN.name())
+                .anyRequest()
+                .authenticated());
 
-        httpSecurity.oauth2ResourceServer(oauth2->
-            oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
-                                                    .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                    .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-        );//Tao ra provider manager
+        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+                        .decoder(customJwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())); // Tao ra provider manager
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);//Mac dinh bat csrf //(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+        httpSecurity.csrf(AbstractHttpConfigurer::disable); // Mac dinh bat csrf //(httpSecurityCsrfConfigurer ->
+        // httpSecurityCsrfConfigurer.disable())
 
         return httpSecurity.build();
     }
 
     @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");//Da set trong build scope
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Da set trong build scope
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -79,10 +79,10 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-    }//Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon. Vi du: http://localhost:3000
+    } // Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon. Vi du: http://localhost:3000
 
-    @Bean//Khi danh dau Bean thi Bien nay se duoc dua vao Application Context de su dung o nhung noi khac
-    PasswordEncoder passwordEncoder(){
+    @Bean // Khi danh dau Bean thi Bien nay se duoc dua vao Application Context de su dung o nhung noi khac
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

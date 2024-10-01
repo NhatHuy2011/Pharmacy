@@ -1,18 +1,13 @@
 package com.project.pharmacy.dto.request;
 
-import java.util.Set;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoleUpdateRequest {
-    String id;
-    String name;
-    String description;
-    Set<String> permissions;
+public class RefreshRequest {
+    String token;
 }

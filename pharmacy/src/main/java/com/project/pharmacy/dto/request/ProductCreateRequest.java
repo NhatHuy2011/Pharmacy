@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,37 +11,37 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductCreateRequest {
-    @NotNull(message = "INVALID_PRODUCT_NAME")
+    @NotNull(message = "Please fill out Product Name")
     String name;
 
-    @NotNull(message = "INVALID_PRODUCT_QUANTITY")
+    @NotNull(message = "Please fill out Product Quantity")
     int quantity;
 
     String categoryId;
 
-    @NotNull(message = "INVALID_PRODUCT_BENEFITS")
+    @NotNull(message = "Please fill out Product Benefits")
     String benefits;
 
-    @NotNull(message = "INVALID_PRODUCT_INGREDIENTS")
+    @NotNull(message = "Please fill out Product Ingredients")
     String ingredients;
 
-    @NotNull(message = "INVALID_PRODUCT_CONSTRAINDICATION")
+    @NotNull(message = "Please fill out Product Constraindication")
     String constraindication;
 
-    @NotNull(message = "INVALID_PRODUCT_OBJECT_USE")
+    @NotNull(message = "Please fill out Product Object Use")
     String object_use;
 
-    @NotNull(message = "INVALID_PRODUCT_INSTRUCTION")
+    @NotNull(message = "Please fill out Product Instruction")
     String instruction;
 
-    @NotNull(message = "INVALID_PRODUCT_PRESERVE")
+    @NotNull(message = "Please fill out Product Preserve")
     String preserve;
 
     String description;
 
     String note;
 
-    @NotNull(message = "INVALID_PRODUCT_ADVICE")
+    @NotNull(message = "Please fill out Product Doctor Advice")
     boolean doctor_advice;
 
     String companyId;

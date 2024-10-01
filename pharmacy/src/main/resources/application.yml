@@ -39,3 +39,5 @@ outbound:
 
 jwt:
   signerKey: "0HOHKN7jKVL8N7isueYCYmNqqytQj/rrjnQOzD4R971R1u6357OvxgJ5u/MFF8/u"
+  valid-duration: 3600 #in seconds
+  refreshable-duration: 36000 #in seconds

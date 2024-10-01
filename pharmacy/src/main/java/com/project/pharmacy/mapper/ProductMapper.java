@@ -1,18 +1,13 @@
 package com.project.pharmacy.mapper;
 
-import com.project.pharmacy.dto.request.ProductCreateRequest;
-import com.project.pharmacy.dto.request.ProductUpdateRequest;
-import com.project.pharmacy.dto.response.ProductResponse;
-import com.project.pharmacy.entity.Image;
-import com.project.pharmacy.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.project.pharmacy.dto.request.ProductCreateRequest;
+import com.project.pharmacy.dto.request.ProductUpdateRequest;
+import com.project.pharmacy.dto.response.ProductResponse;
+import com.project.pharmacy.entity.Product;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {

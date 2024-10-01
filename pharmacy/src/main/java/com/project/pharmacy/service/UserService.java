@@ -1,5 +1,20 @@
 package com.project.pharmacy.service;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.pharmacy.dto.request.*;
 import com.project.pharmacy.dto.response.UserResponse;
 import com.project.pharmacy.entity.Role;
@@ -9,27 +24,11 @@ import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.UserMapper;
 import com.project.pharmacy.repository.RoleRepository;
 import com.project.pharmacy.repository.UserRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,18 +46,18 @@ public class UserService {
     RoleRepository roleRepository;
 
     EmailService emailService;
-    //Role USER
+    // Role USER
     public UserResponse createUser(UserCreateRequest request, MultipartFile file) throws IOException {
-        if(userRepository.existsByUsername(request.getUsername()))
+        if (userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
-        if(userRepository.existsByEmail(request.getEmail()))
+        if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
 
         String urlImage = imageService.uploadImage(file);
 
         Role role = roleRepository.findByName("USER")
-                .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         Set<Role> roles = new HashSet<>();
         roles.add(role);
 
@@ -75,7 +74,8 @@ public class UserService {
         userRepository.save(user);
 
         // Gửi OTP qua email
-        emailService.sendSimpleEmail(user.getEmail(), "OTP Verification", "OTP will expire in 5 minutes. OTP is: " + otpCode);
+        emailService.sendSimpleEmail(
+                user.getEmail(), "OTP Verification", "OTP will expire in 5 minutes. OTP is: " + otpCode);
 
         return userMapper.toUserResponse(user);
     }
@@ -100,27 +100,28 @@ public class UserService {
         }
     }
 
-    public void forgotPassword(String email){
+    public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new AppException(ErrorCode.EMAIL_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_EXISTED));
 
         String otpCode = generateOTP();
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(user.getEmail(), "Password Reset OTP", "OTP will expire in 5 minutes. Your OTP is: " + otpCode);
+        emailService.sendSimpleEmail(
+                user.getEmail(), "Password Reset OTP", "OTP will expire in 5 minutes. Your OTP is: " + otpCode);
     }
 
-    public void resetPassword(String email, String otp, String newPassword){
+    public void resetPassword(String email, String otp, String newPassword) {
         if (newPassword.length() < 8) {
             throw new RuntimeException("Password must be at least 8 characters");
         }
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new AppException(ErrorCode.EMAIL_NOT_EXISTED));
-        if(user.getOtpCode().equalsIgnoreCase(otp)){
-            if (LocalDateTime.now().isBefore(user.getOtpExpiryTime())){
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_EXISTED));
+        if (user.getOtpCode().equalsIgnoreCase(otp)) {
+            if (LocalDateTime.now().isBefore(user.getOtpExpiryTime())) {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setOtpCode(null);
                 user.setOtpExpiryTime(null);
@@ -129,32 +130,32 @@ public class UserService {
             else {
                 throw new AppException(ErrorCode.OTP_EXPIRED);
             }
-        }else {
+        } else {
             throw new AppException(ErrorCode.OTP_INCORRECT);
         }
     }
 
     public String generateOTP() {
         Random random = new Random();
-        return String.format("%06d", random.nextInt(1000000));// Mã OTP gồm 6 chữ số
+        return String.format("%06d", random.nextInt(1000000)); // Mã OTP gồm 6 chữ số
     }
 
-    //User chua co mat khau truoc do (Login with google)
-    public void creatPassword(PasswordCreateRequest request){
+    // User chua co mat khau truoc do (Login with google)
+    public void creatPassword(PasswordCreateRequest request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(StringUtils.hasText(user.getPassword()))
+        if (StringUtils.hasText(user.getPassword()))
             throw new AppException(ErrorCode.PASSWORD_EXISTED);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
     }
 
-    public UserResponse getMyInfo(){
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
@@ -168,7 +169,7 @@ public class UserService {
     }
 
     @PreAuthorize("returnObject.username == authentication.name")
-    public UserResponse updateBio(UserUpdateBio request, MultipartFile file) throws IOException{
+    public UserResponse updateBio(UserUpdateBio request, MultipartFile file) throws IOException {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
@@ -184,18 +185,18 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    //User da co tai khoan truoc do
-    public void updatePassword(UserUpdatePassword request){
+    // User da co tai khoan truoc do
+    public void updatePassword(UserUpdatePassword request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(!(passwordEncoder.matches(request.getOldPassword(), user.getPassword())))//request truoc user ** lỏ vl
-            throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
+        if (!(passwordEncoder.matches(request.getOldPassword(), user.getPassword()))) // request truoc user ** lỏ vl
+        throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
 
-        if(!(request.getNewPassword().equals(request.getCheckNewPassword()))){
+        if (!(request.getNewPassword().equals(request.getCheckNewPassword()))) {
             throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
         }
 
@@ -204,14 +205,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //Role ADMIN
+    // Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse updateRole(UserUpdateRole request){
+    public UserResponse updateRole(UserUpdateRole request) {
         User user = userRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         Role role = roleRepository.findByName(request.getRole())
-                .orElseThrow(()->new AppException(ErrorCode.ROLE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         user.getRoles().add(role);
         userRepository.save(user);
@@ -220,15 +221,15 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<UserResponse> getAll(Pageable pageable){
+    public Page<UserResponse> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(userMapper::toUserResponse);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public void banUser(String id){
+    public void banUser(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(false);
         userRepository.save(user);
     }

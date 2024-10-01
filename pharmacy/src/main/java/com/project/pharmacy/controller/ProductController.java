@@ -1,13 +1,9 @@
 package com.project.pharmacy.controller;
 
-import com.project.pharmacy.dto.request.ProductCreateRequest;
-import com.project.pharmacy.dto.request.ProductUpdateRequest;
-import com.project.pharmacy.dto.response.ApiResponse;
-import com.project.pharmacy.dto.response.ProductResponse;
-import com.project.pharmacy.service.ProductService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +11,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import com.project.pharmacy.dto.request.ProductCreateRequest;
+import com.project.pharmacy.dto.request.ProductUpdateRequest;
+import com.project.pharmacy.dto.response.ApiResponse;
+import com.project.pharmacy.dto.response.ProductResponse;
+import com.project.pharmacy.service.ProductService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/product")
@@ -27,8 +29,10 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping
-    public ApiResponse<ProductResponse> createProduct(@RequestPart("createProduct") ProductCreateRequest request,
-                                                      @RequestPart("listImages") List<MultipartFile> multipartFiles) throws IOException {
+    public ApiResponse<ProductResponse> createProduct(
+            @RequestPart("createProduct") ProductCreateRequest request,
+            @RequestPart("listImages") List<MultipartFile> multipartFiles)
+            throws IOException {
         return ApiResponse.<ProductResponse>builder()
                 .result(productService.createProduct(request, multipartFiles))
                 .build();
@@ -39,7 +43,9 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sortOrder) {
-        Sort sort = sortOrder.equals("desc") ? Sort.by("prices.price").descending() : Sort.by("prices.price").ascending();
+        Sort sort = sortOrder.equals("desc")
+                ? Sort.by("prices.price").descending()
+                : Sort.by("prices.price").ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<ProductResponse> productResponses = productService.getAllProduct(pageable);
 
@@ -48,17 +54,18 @@ public class ProductController {
                 .build();
     }
 
-
     @GetMapping("{id}")
-    public ApiResponse<List<ProductResponse>> getOne(@PathVariable String id){
+    public ApiResponse<List<ProductResponse>> getOne(@PathVariable String id) {
         return ApiResponse.<List<ProductResponse>>builder()
                 .result(productService.getOne(id))
                 .build();
     }
 
     @PutMapping
-    public ApiResponse<ProductResponse> updateProduct(@RequestPart("updateProduct") ProductUpdateRequest request,
-                                                      @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException{
+    public ApiResponse<ProductResponse> updateProduct(
+            @RequestPart("updateProduct") ProductUpdateRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files)
+            throws IOException {
         if (files != null && !files.isEmpty()) {
             // Xử lý hình ảnh nếu có
             return ApiResponse.<ProductResponse>builder()
@@ -73,7 +80,7 @@ public class ProductController {
     }
 
     @DeleteMapping("{id}")
-    public ApiResponse<Objects> deleteProduct(@PathVariable String id){
+    public ApiResponse<Objects> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
         return ApiResponse.<Objects>builder()
                 .message("Delete Product Successful")

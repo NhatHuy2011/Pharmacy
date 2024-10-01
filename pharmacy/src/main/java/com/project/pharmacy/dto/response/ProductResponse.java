@@ -1,11 +1,12 @@
 package com.project.pharmacy.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -31,11 +32,11 @@ public class ProductResponse {
 
     CategoryResponse category;
 
-    Set<Integer> price_all;//for getAllProduct
-    Integer price_one;//for getOneProduct
+    Set<Integer> price_all; // for getAllProduct
+    Integer price_one; // for getOneProduct
 
-    Set<String> unit_all;//for getAllProduct
-    String unit_one;//for getOneProduct
+    Set<String> unit_all; // for getAllProduct
+    String unit_one; // for getOneProduct
 
     List<String> images;
     String image;

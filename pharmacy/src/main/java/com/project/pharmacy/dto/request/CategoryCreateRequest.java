@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +11,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryCreateRequest {
-    @NotNull(message = "INVALID_CATEGORY")
+    @NotNull(message = "Please fill out Category Name")
     String name;
+
     String description;
     String parent;
 }

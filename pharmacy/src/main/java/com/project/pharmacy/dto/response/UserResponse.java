@@ -1,12 +1,13 @@
 package com.project.pharmacy.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +29,6 @@ public class UserResponse {
     Boolean status;
     Boolean noPassword;
     Set<RoleResponse> roles;
-    String otpCode;
     LocalDateTime otpExpiryTime;
     Boolean isVerified;
 }

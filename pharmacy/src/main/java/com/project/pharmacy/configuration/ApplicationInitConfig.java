@@ -1,19 +1,21 @@
 package com.project.pharmacy.configuration;
 
-import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
-import com.project.pharmacy.repository.RoleRepository;
-import com.project.pharmacy.repository.UserRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.project.pharmacy.entity.Role;
+import com.project.pharmacy.entity.User;
+import com.project.pharmacy.repository.RoleRepository;
+import com.project.pharmacy.repository.UserRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,15 +27,15 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository){
+    ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
-            //Tao Role
-            createRoleIfNotExists("ADMIN","Role for Admin", roleRepository);
-            createRoleIfNotExists("EMPLOYEE","Role for Employee", roleRepository);
-            createRoleIfNotExists("DOCTOR","Role for Doctor", roleRepository);
-            createRoleIfNotExists("USER","Role for User", roleRepository);
+            // Tao Role
+            createRoleIfNotExists("ADMIN", "Role for Admin", roleRepository);
+            createRoleIfNotExists("EMPLOYEE", "Role for Employee", roleRepository);
+            createRoleIfNotExists("DOCTOR", "Role for Doctor", roleRepository);
+            createRoleIfNotExists("USER", "Role for User", roleRepository);
 
-            if (userRepository.findByUsername("admin").isEmpty()){
+            if (userRepository.findByUsername("admin").isEmpty()) {
                 Set<Role> roles = new HashSet<>();
                 roles.add(roleRepository.findByName("ADMIN").orElseThrow());
                 User user = User.builder()
@@ -46,12 +48,10 @@ public class ApplicationInitConfig {
             }
         };
     }
-    private void createRoleIfNotExists(String roleName, String description,  RoleRepository roleRepository) {
+
+    private void createRoleIfNotExists(String roleName, String description, RoleRepository roleRepository) {
         if (roleRepository.findByName(roleName).isEmpty()) {
-            Role role = Role.builder()
-                    .name(roleName)
-                    .description(description)
-                    .build();
+            Role role = Role.builder().name(roleName).description(description).build();
             roleRepository.save(role);
         }
     }

@@ -1,9 +1,11 @@
 package com.project.pharmacy.dto.request;
 
+import java.time.LocalDate;
+
+import com.project.pharmacy.validator.DobConstraint;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.sql.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +18,10 @@ public class UserUpdateBio {
     String password;
     String fisrtname;
     String lastname;
-    Date dob;
+
+    @DobConstraint(min = 18, message = "Your age must be at least 18")
+    LocalDate dob;
+
     String sex;
     int phone_number;
     String email;

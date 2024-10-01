@@ -1,5 +1,16 @@
 package com.project.pharmacy.service;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.pharmacy.dto.request.ProductCreateRequest;
 import com.project.pharmacy.dto.request.ProductUpdateRequest;
 import com.project.pharmacy.dto.response.ProductResponse;
@@ -8,21 +19,10 @@ import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.ProductMapper;
 import com.project.pharmacy.repository.*;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,36 +42,36 @@ public class ProductService {
 
     ProductMapper productMapper;
 
-    //ADMIN and EMPLOYEE
-    //Thêm sản phẩm
+    // ADMIN and EMPLOYEE
+    // Thêm sản phẩm
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public ProductResponse createProduct(ProductCreateRequest request, List<MultipartFile> multipartFiles) throws IOException {
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(()-> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+    public ProductResponse createProduct(ProductCreateRequest request, List<MultipartFile> multipartFiles)
+            throws IOException {
+        Category category = categoryRepository
+                .findById(request.getCategoryId())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(()->new AppException(ErrorCode.COMPANY_NOT_FOUND));
+        Company company = companyRepository
+                .findById(request.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
-        if(productRepository.existsByName(request.getName())){
+        if (productRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.PRODUCT_EXISTED);
         }
 
-        //Mapper
+        // Mapper
         Product product = productMapper.toProduct(request);
         product.setCategory(category);
         product.setCompany(company);
         productRepository.save(product);
 
         List<String> imageUrls = new ArrayList<>();
-        if(multipartFiles != null && !multipartFiles.isEmpty()){
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
             for (MultipartFile multipartFile : multipartFiles) {
                 String urlImage = imageService.uploadImage(multipartFile);
                 imageUrls.add(urlImage);
-                Image image = Image.builder()
-                        .product(product)
-                        .source(urlImage)
-                        .build();
+                Image image = Image.builder().product(product).source(urlImage).build();
                 imageRepository.save(image);
             }
         } else {
@@ -83,24 +83,27 @@ public class ProductService {
         return productResponse;
     }
 
-    //Cập nhật sản phẩm
+    // Cập nhật sản phẩm
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> files) throws IOException{
-        Product product = productRepository.findById(request.getId())
-                .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+    public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> files) throws IOException {
+        Product product = productRepository
+                .findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        //Cập nhật thông tin
+        // Cập nhật thông tin
         productMapper.updateProduct(product, request);
 
         if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
+            Category category = categoryRepository
+                    .findById(request.getCategoryId())
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
             product.setCategory(category);
         }
 
         if (request.getCompanyId() != null) {
-            Company company = companyRepository.findById(request.getCompanyId())
+            Company company = companyRepository
+                    .findById(request.getCompanyId())
                     .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
             product.setCompany(company);
         }
@@ -124,8 +127,7 @@ public class ProductService {
                     .collect(Collectors.toList());
         } else {
             // Truy vấn danh sách hình ảnh từ ImageRepository
-            imageUrls = imageRepository.findByProductId(product.getId())
-                    .stream()
+            imageUrls = imageRepository.findByProductId(product.getId()).stream()
                     .map(Image::getSource)
                     .collect(Collectors.toList());
         }
@@ -135,58 +137,54 @@ public class ProductService {
         return productResponse;
     }
 
-    //Xoá sản phẩm
+    // Xoá sản phẩm
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public void deleteProduct(String id){
-        Product product = productRepository.findById(id)
-                        .orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+    public void deleteProduct(String id) {
+        Product product =
+                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         imageRepository.deleteAllByProductId(product.getId());
         priceRepository.deleteAllByProductId(id);
         productRepository.deleteById(product.getId());
     }
 
-    //Role USER
-    //Xem danh sách sản phẩm
+    // Role USER
+    // Xem danh sách sản phẩm
     public Page<ProductResponse> getAllProduct(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(product -> {
-                    //Lấy hình ảnh đầu tiên
-                    Image firstImage = imageRepository.findFirstByProductId(product.getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
+        return productRepository.findAll(pageable).map(product -> {
+            // Lấy hình ảnh đầu tiên
+            Image firstImage = imageRepository.findFirstByProductId(product.getId());
+            String url = firstImage != null ? firstImage.getSource() : null;
 
-                    //Lấy danh sách đơn vị và giá sản phẩm
-                    Set<Price> prices = priceRepository.findByProductId(product.getId());
-                    Set<Integer> price = prices.stream()
-                            .map(Price::getPrice)
-                            .sorted(Comparator.reverseOrder())
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
-                    Set<String> unit = prices.stream()
-                            .map(productUnit -> productUnit.getUnit().getName())
-                            .collect(Collectors.toSet());
+            // Lấy danh sách đơn vị và giá sản phẩm
+            Set<Price> prices = priceRepository.findByProductId(product.getId());
+            Set<Integer> price = prices.stream()
+                    .map(Price::getPrice)
+                    .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            Set<String> unit = prices.stream()
+                    .map(productUnit -> productUnit.getUnit().getName())
+                    .collect(Collectors.toSet());
 
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setPrice_all(price);
-                    productResponse.setUnit_all(unit);
-                    productResponse.setImage(url);
+            ProductResponse productResponse = productMapper.toProductResponse(product);
+            productResponse.setPrice_all(price);
+            productResponse.setUnit_all(unit);
+            productResponse.setImage(url);
 
-                    return productResponse;
-                });
+            return productResponse;
+        });
     }
 
-
-    //Lấy 1 sản phẩm
+    // Lấy 1 sản phẩm
     public List<ProductResponse> getOne(String id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product =
+                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        List<String> imageUrls = imageRepository.findByProductId(product.getId())
-                .stream()
+        List<String> imageUrls = imageRepository.findByProductId(product.getId()).stream()
                 .map(Image::getSource)
                 .collect(Collectors.toList());
 
-        return priceRepository.findByProductId(product.getId())
-                .stream()
+        return priceRepository.findByProductId(product.getId()).stream()
                 .map(productUnit -> {
                     ProductResponse productResponse = productMapper.toProductResponse(product);
                     productResponse.setPrice_one(productUnit.getPrice());

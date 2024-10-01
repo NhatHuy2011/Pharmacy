@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,9 +11,9 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyCreateRequest {
-    @NotNull(message = "INVALID_COMPANY_NAME")
+    @NotNull(message = "Please fill out Company name")
     String name;
 
-    @NotNull(message = "INVALID_COMPANY_ORIGIN")
+    @NotNull(message = "Please fill out Company Origin")
     String origin;
 }

@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,10 +11,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PriceCreateRequest {
-    @NotNull(message = "INVALID_PRODUCT_ID")
+    @NotNull(message = "Please fill out Product Info")
     String productId;
-    @NotNull(message = "INVALID_UNIT_ID")
+
+    @NotNull(message = "Please fill out Unit Info")
     String unitId;
+
     int price;
     String description;
 }
