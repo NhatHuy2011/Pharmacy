@@ -31,7 +31,8 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -42,7 +43,8 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(HttpStatus.BAD_REQUEST.value());
         apiResponse.setMessage(defaultMessage);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = MissingServletRequestPartException.class)
@@ -53,7 +55,8 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage("Required part '" + exception.getRequestPartName() + "' is not present");
 
-        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
@@ -62,9 +65,10 @@ public class GlobalExceptionHandler {
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage("File size exceeds the maximum limit of 5MB");
+        apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -78,6 +82,7 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorMessage);
 
-        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 }

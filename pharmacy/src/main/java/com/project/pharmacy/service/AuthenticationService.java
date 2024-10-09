@@ -119,19 +119,32 @@ public class AuthenticationService {
 
     // Log-in
     public AuthenticationResponse authenticate(AuthenticateRequest request) { // login
-        var user = userRepository
+        User user = userRepository
                 .findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)); // Check username
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword()); // Check password
-        if (!authenticated) throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        if (!authenticated)
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
 
-        if (!user.getStatus()) throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
+        if (!user.getStatus())
+            throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        String message = "Đăng nhập thành công";
+
+        // Kiểm tra xem email đã được xác thực hay chưa
+        if (!user.getIsVerified()) {
+            message = "Email của bạn chưa được xác thực. Vui lòng xác thực email";
+        }
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .message(message)
+                .build();
     }
 
     private String generateToken(User user) { // 1 TOKEN Gom: Header, Payload, Signature
@@ -148,8 +161,7 @@ public class AuthenticationService {
                 .claim("scope", buildScope(user))
                 .build();
 
-        Payload payload =
-                new Payload(jwtClaimsSet.toJSONObject()); // Payload(Chua thong tin Token goi di nhu username, role)
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject()); // Payload(Chua thong tin Token goi di nhu username, role)
 
         JWSObject jwsObject = new JWSObject(header, payload); // Tao moi 1 JWT
 
@@ -157,7 +169,7 @@ public class AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject
                     .serialize(); // Thuat toan ki nay co key ma hoa va key giai ma giong nhau, can 1 Secret la 1 chuoi
-            // 32 bytes
+                                  // 32 bytes
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);
@@ -190,7 +202,9 @@ public class AuthenticationService {
         } catch (AppException e) {
             isValid = false; // token het han / user log-out
         }
-        return IntrospectTokenResponse.builder().valid(isValid).build();
+        return IntrospectTokenResponse.builder()
+                .valid(isValid)
+                .build();
     }
 
     // Log-out
@@ -217,19 +231,22 @@ public class AuthenticationService {
         var jti = signJWT.getJWTClaimsSet().getJWTID();
         var expityTime = signJWT.getJWTClaimsSet().getExpirationTime();
 
-        InvalidatedToken invalidatedToken =
-                InvalidatedToken.builder().id(jti).expiryTime(expityTime).build();
-
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                                            .id(jti)
+                                            .expiryTime(expityTime)
+                                            .build();
         invalidatedTokenRepository.save(invalidatedToken);
 
         var username = signJWT.getJWTClaimsSet().getSubject();
 
-        var user =
-                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
@@ -248,7 +265,8 @@ public class AuthenticationService {
 
         var verified = signedJWT.verify(verifier);
 
-        if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (!(verified && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         // token in invalidatetoken
         if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))

@@ -25,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
+    //Role USER
     @PostMapping("/outbound/authentication")
     public ApiResponse<AuthenticationResponse> outbound(@RequestParam("code") String code) {
 
@@ -51,7 +52,9 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
-        return ApiResponse.<Void>builder().message("Log-out successfull").build();
+        return ApiResponse.<Void>builder()
+                .message("Log-out successfull")
+                .build();
     }
 
     @PostMapping("/refresh")

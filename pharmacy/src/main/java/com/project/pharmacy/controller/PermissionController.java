@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 public class PermissionController {
     PermissionService permissionService;
 
+    //Role ADMIN
     @PostMapping
     public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionCreateRequest request) {
         return ApiResponse.<PermissionResponse>builder()

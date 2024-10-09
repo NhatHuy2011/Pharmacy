@@ -26,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 public class UnitController {
     UnitService unitService;
 
+    //Role ADMIN and EMPLOYEE
     @GetMapping
     public ApiResponse<Page<UnitResponse>> getUnit(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {

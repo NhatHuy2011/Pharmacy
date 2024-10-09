@@ -126,7 +126,6 @@ public class ProductService {
                     })
                     .collect(Collectors.toList());
         } else {
-            // Truy vấn danh sách hình ảnh từ ImageRepository
             imageUrls = imageRepository.findByProductId(product.getId()).stream()
                     .map(Image::getSource)
                     .collect(Collectors.toList());
@@ -141,8 +140,7 @@ public class ProductService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void deleteProduct(String id) {
-        Product product =
-                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         imageRepository.deleteAllByProductId(product.getId());
         priceRepository.deleteAllByProductId(id);
         productRepository.deleteById(product.getId());
@@ -175,7 +173,7 @@ public class ProductService {
         });
     }
 
-    // Lấy 1 sản phẩm
+    // Xem chi tiết sản phẩm
     public List<ProductResponse> getOne(String id) {
         Product product =
                 productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -193,5 +191,32 @@ public class ProductService {
                     return productResponse;
                 })
                 .collect(Collectors.toList());
+    }
+
+    //Xem theo danh muc
+    public Page<ProductResponse> getProductByCategory(Pageable pageable, String categoryId) {
+        return productRepository.findByCategoryId(pageable, categoryId)
+            .map(product -> {
+            // Lấy hình ảnh đầu tiên
+            Image firstImage = imageRepository.findFirstByProductId(product.getId());
+            String url = firstImage != null ? firstImage.getSource() : null;
+
+            // Lấy danh sách đơn vị và giá sản phẩm
+            Set<Price> prices = priceRepository.findByProductId(product.getId());
+            Set<Integer> price = prices.stream()
+                    .map(Price::getPrice)
+                    .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            Set<String> unit = prices.stream()
+                    .map(productUnit -> productUnit.getUnit().getName())
+                    .collect(Collectors.toSet());
+
+            ProductResponse productResponse = productMapper.toProductResponse(product);
+            productResponse.setPrice_all(price);
+            productResponse.setUnit_all(unit);
+            productResponse.setImage(url);
+
+            return productResponse;
+        });
     }
 }

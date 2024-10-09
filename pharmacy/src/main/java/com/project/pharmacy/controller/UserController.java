@@ -26,82 +26,125 @@ import lombok.experimental.FieldDefaults;
 public class UserController {
     UserService userService;
 
+    //Role USER
     @PostMapping
     public ApiResponse<UserResponse> createUser(
-            @RequestPart("createUser") @Valid UserCreateRequest request,
-            @RequestPart(value = "file") MultipartFile file)
-            throws IOException {
+            @RequestBody @Valid UserCreateRequest request){
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createUser(request, file))
-                .message("Please enter the OTP code sent via email to register an account")
+                .result(userService.createUser(request))
+                .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
                 .build();
     }
 
-    @PostMapping("/verify-otp")
-    public ApiResponse<Void> verifyOTP(@RequestParam("email") String email, @RequestParam("otp") String otp) {
-        userService.verifyOtp(email, otp);
+    @PutMapping("/verify-email-signup")
+    public ApiResponse<Void> verifyEmail(@RequestBody UserVerifiedEmailSignUp request) {
+        userService.verifyEmailSignUp(request);
         return ApiResponse.<Void>builder()
-                .message("User sign up successful. Please sign in!")
+                .message("Đăng ký tài khoản thành công. Vui lòng đăng nhập bằng tài khoản mới!")
                 .build();
     }
 
-    @PostMapping("/forgot-password")
-    public ApiResponse<Void> forgotPassword(@RequestParam("email") String email) {
-        userService.forgotPassword(email);
+    @PutMapping("/refresh-otp")
+    public ApiResponse<Void> refreshOtp(@RequestBody UserRefreshOtp request){
+        userService.refreshOtp(request);
         return ApiResponse.<Void>builder()
-                .message("OTP has been sent to your email. Please check.")
+                .message("OTP đã được gửi lại qua email của bạn. Vui lòng kiểm tra!")
                 .build();
     }
 
-    @PostMapping("/reset-password")
+    @PutMapping("/forgot-password")
+    public ApiResponse<UserResponse> forgotPassword(@RequestBody @Valid UserForgotPassword request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.forgotPassword(request))
+                .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
+                .build();
+    }
+
+    @PutMapping("/reset-password")
     public ApiResponse<Void> resetPassword(
-            @RequestParam("email") String email,
-            @RequestParam("otp") String otp,
-            @RequestParam("newPassword") String newPassword) {
-        userService.resetPassword(email, otp, newPassword);
+            @RequestBody @Valid UserResetPassword request) {
+        userService.resetPassword(request);
         return ApiResponse.<Void>builder()
-                .message("Password has been reset successfully. Please log in with your new password.")
+                .message("Mật khẩu đã được tạo mới thành công. Vui lòng đăng nhập với mật khẩu mới")
                 .build();
     }
 
-    @PostMapping("/create-password")
+    //Login with Google
+    @PutMapping("/create-password")
     public ApiResponse<Void> createPassword(@RequestBody @Valid PasswordCreateRequest request) {
         userService.creatPassword(request);
         return ApiResponse.<Void>builder()
-                .message("Password has been created, you could use it to log-in")
+                .message("Mật khẩu đã được tạo. Bạn có thể dùng nó để đăng nhập!")
                 .build();
-    }
-
-    @PostMapping("/update-password")
-    public ApiResponse<Void> updatePassword(@Valid @RequestBody UserUpdatePassword request) {
-        userService.updatePassword(request);
-        return ApiResponse.<Void>builder().message("Password renew successful").build();
     }
 
     @GetMapping
     public ApiResponse<Page<UserResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserResponse> userResponses = userService.getAll(pageable);
         return ApiResponse.<Page<UserResponse>>builder().result(userResponses).build();
     }
 
-    @GetMapping("/myInfo")
+    @GetMapping("/bio")
     public ApiResponse<UserResponse> getMyInFo() {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyInfo())
                 .build();
     }
 
-    @PutMapping("/updateBio")
+    @PutMapping("/update-bio")
     public ApiResponse<UserResponse> updateBio(
-            @RequestPart("updateUser") @Valid UserUpdateBio request, @RequestPart("file") MultipartFile file)
-            throws IOException {
+            @RequestPart("updateUser") @Valid UserUpdateBio request,
+            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+            return ApiResponse.<UserResponse>builder()
+                    .result(userService.updateBio(request, file))
+                    .message("Cập nhật thông tin thành công")
+                    .build();
+    }
+
+    @PutMapping("/update-email")
+    public ApiResponse<UserResponse> updateEmail(@RequestBody @Valid UserUpdateEmail request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.updateBio(request, file))
+                .result(userService.updateEmail(request))
+                .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
                 .build();
     }
 
+    @PutMapping("/verify-email-update")
+    public ApiResponse<Void> verifyEmailUpdate(@RequestBody UserVerifiedEmailUpdate request) {
+        userService.verifyEmailUpdate(request);
+        return ApiResponse.<Void>builder()
+                .message("Email được cập nhật thành công!")
+                .build();
+    }
+
+    @PutMapping("/forgot-verify-email")
+    public ApiResponse<UserResponse> forgotVerifyEmail() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.forgotVerifyEmail())
+                .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
+                .build();
+    }
+
+    @PutMapping("/verify-email")
+    public ApiResponse<Void> verifyEmailUpdate(@RequestBody UserForgotVerifiedEmail request) {
+        userService.verifyEmail(request);
+        return ApiResponse.<Void>builder()
+                .message("Email được xác thực thành công!")
+                .build();
+    }
+
+    @PutMapping("/update-password")
+    public ApiResponse<Void> updatePassword(@RequestBody @Valid UserUpdatePassword request) {
+        userService.updatePassword(request);
+        return ApiResponse.<Void>builder()
+                .message("Mật khẩu được tạo mới thành công")
+                .build();
+    }
+
+    //Role ADMIN
     @PutMapping("/updateRole")
     public ApiResponse<UserResponse> updateRole(@RequestBody UserUpdateRole request) {
         return ApiResponse.<UserResponse>builder()
@@ -109,9 +152,17 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/ban/{id}")
     public ApiResponse<Void> banUser(@PathVariable String id) {
         userService.banUser(id);
         return ApiResponse.<Void>builder().message("User has been banned").build();
+    }
+
+    @PutMapping("/unban/{id}")
+    public ApiResponse<Void> unbanUser(@PathVariable String id) {
+        userService.unbanUser(id);
+        return ApiResponse.<Void>builder()
+                .message("User has been unbanned")
+                .build();
     }
 }

@@ -30,7 +30,6 @@ public class Product {
     @Column(nullable = false)
     String ingredients;
 
-    @Column(nullable = false)
     String constraindication;
 
     @Column(nullable = false)

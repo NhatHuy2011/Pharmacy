@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CompanyController {
     CompanyService companyService;
 
+    //Role USER
     @GetMapping
     public ApiResponse<Page<CompanyResponse>> getCompany(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -40,6 +41,7 @@ public class CompanyController {
                 .build();
     }
 
+    //Role ADMIN and USER
     @PostMapping
     public ApiResponse<CompanyResponse> createCompany(
             @Valid @RequestPart("createCompany") CompanyCreateRequest request,
@@ -52,17 +54,11 @@ public class CompanyController {
 
     @PutMapping
     public ApiResponse<CompanyResponse> updateCompany(
-            @RequestPart("updateCompany") CompanyUpdateRequest request, @RequestPart("files") MultipartFile files)
-            throws IOException {
-        if (files != null && !files.isEmpty()) {
-            return ApiResponse.<CompanyResponse>builder()
-                    .result(companyService.updateCompany(request, files))
-                    .build();
-        } else {
-            return ApiResponse.<CompanyResponse>builder()
-                    .result(companyService.updateCompany(request, null))
-                    .build();
-        }
+            @RequestPart("updateCompany") CompanyUpdateRequest request,
+            @RequestPart(value = "files", required = false) MultipartFile files) throws IOException {
+        return ApiResponse.<CompanyResponse>builder()
+                .result(companyService.updateCompany(request, files))
+                .build();
     }
 
     @DeleteMapping("{id}")

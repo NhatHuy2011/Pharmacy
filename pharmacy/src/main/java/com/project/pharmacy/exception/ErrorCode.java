@@ -33,10 +33,11 @@ public enum ErrorCode {
     USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_EXISTED("Password existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCH("Password does not match", 400, HttpStatus.BAD_REQUEST),
-    PASSWORD_RE_ENTERING_INCORRECT("Password re-entering is incorrect", 400, HttpStatus.BAD_REQUEST),
+    PASSWORD_RE_ENTERING_INCORRECT("Mật khẩu không trùng hợp", 400, HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("User not found", 400, HttpStatus.BAD_REQUEST),
-    EMAIL_NOT_EXISTED("Email is not existed", 400, HttpStatus.BAD_REQUEST),
-    EMAIL_EXISTED("Email existed", 400, HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_MATCH("Email không trùng khớp", 400, HttpStatus.BAD_REQUEST),
+    EMAIL_EXISTED("Địa chỉ email đã được sử dụng", 400, HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_VERIFIED("Email chưa được xác thực. Vui lòng xác thực email!", 400, HttpStatus.BAD_REQUEST),
 
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
@@ -47,16 +48,16 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND("Permission not found", 400, HttpStatus.BAD_REQUEST),
 
     // Login exception
-    USER_NOT_EXISTED("Username not existed", 400, HttpStatus.BAD_REQUEST),
-    PASSWORD_INCORRECT("Password is incorrect", 400, HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED("Tên đăng nhập không tồn tại", 400, HttpStatus.BAD_REQUEST),
+    PASSWORD_INCORRECT("Mật khẩu không chính xác", 400, HttpStatus.BAD_REQUEST),
     USER_HAS_BEEN_BAN("User has been ban", 403, HttpStatus.UNAUTHORIZED),
 
     // Logout exception
     UNAUTHENTICATED("Unauthenticated", 400, HttpStatus.BAD_REQUEST),
 
     // OTP Exception
-    OTP_EXPIRED("OTP is expired", 400, HttpStatus.BAD_REQUEST),
-    OTP_INCORRECT("OTP is incorrect", 400, HttpStatus.BAD_REQUEST),
+    OTP_EXPIRED("Mã OTP đã hết hạn", 400, HttpStatus.BAD_REQUEST),
+    OTP_INCORRECT("Mã OTP không chính xác", 400, HttpStatus.BAD_REQUEST),
 
     // Price exception
     PRICE_NOT_ZERO("Price can not be less than zero", 400, HttpStatus.BAD_REQUEST),
@@ -65,8 +66,8 @@ public enum ErrorCode {
     MISSING_PART("Missing required part", 400, HttpStatus.BAD_REQUEST),
 
     // File
-    FILE_SIZE_EXCEEDED("File size exceeds the maximum limit", 400, HttpStatus.BAD_REQUEST),
-    EMPTY_FILE("Empty file", 500, HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_SIZE_EXCEEDED("File phải nhỏ hơn 5MB", 400, HttpStatus.BAD_REQUEST),
+    EMPTY_FILE("Vui lòng đính kèm hình ảnh", 500, HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Data
     COLUMN_CANNOT_BE_NULL("Colume can not be null", 500, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -28,6 +28,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductController {
     ProductService productService;
 
+    //Role ADMIN and EMPLOYEE
     @PostMapping
     public ApiResponse<ProductResponse> createProduct(
             @RequestPart("createProduct") ProductCreateRequest request,
@@ -38,6 +39,25 @@ public class ProductController {
                 .build();
     }
 
+    @PutMapping
+    public ApiResponse<ProductResponse> updateProduct(
+            @RequestPart("updateProduct") ProductUpdateRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files)
+            throws IOException {
+        return ApiResponse.<ProductResponse>builder()
+                .result(productService.updateProduct(request, files))
+                .build();
+    }
+
+    @DeleteMapping("{id}")
+    public ApiResponse<Objects> deleteProduct(@PathVariable String id) {
+        productService.deleteProduct(id);
+        return ApiResponse.<Objects>builder()
+                .message("Delete Product Successful")
+                .build();
+    }
+
+    //Role USER
     @GetMapping
     public ApiResponse<Page<ProductResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -54,6 +74,23 @@ public class ProductController {
                 .build();
     }
 
+    @GetMapping("/category/{categoryId}")
+    public ApiResponse<Page<ProductResponse>> getProductByCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sortOrder,
+            @PathVariable String categoryId) {
+        Sort sort = sortOrder.equals("desc")
+                ? Sort.by("prices.price").descending()
+                : Sort.by("prices.price").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<ProductResponse> productResponses = productService.getProductByCategory(pageable, categoryId);
+
+        return ApiResponse.<Page<ProductResponse>>builder()
+                .result(productResponses)
+                .build();
+    }
+
     @GetMapping("{id}")
     public ApiResponse<List<ProductResponse>> getOne(@PathVariable String id) {
         return ApiResponse.<List<ProductResponse>>builder()
@@ -61,29 +98,4 @@ public class ProductController {
                 .build();
     }
 
-    @PutMapping
-    public ApiResponse<ProductResponse> updateProduct(
-            @RequestPart("updateProduct") ProductUpdateRequest request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files)
-            throws IOException {
-        if (files != null && !files.isEmpty()) {
-            // Xử lý hình ảnh nếu có
-            return ApiResponse.<ProductResponse>builder()
-                    .result(productService.updateProduct(request, files))
-                    .build();
-        } else {
-            // Xử lý trường hợp không có hình ảnh
-            return ApiResponse.<ProductResponse>builder()
-                    .result(productService.updateProduct(request, null))
-                    .build();
-        }
-    }
-
-    @DeleteMapping("{id}")
-    public ApiResponse<Objects> deleteProduct(@PathVariable String id) {
-        productService.deleteProduct(id);
-        return ApiResponse.<Objects>builder()
-                .message("Delete Product Successful")
-                .build();
-    }
 }

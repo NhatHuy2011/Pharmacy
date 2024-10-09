@@ -14,8 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateBio {
     String id;
-    String username;
-    String password;
     String fisrtname;
     String lastname;
 
@@ -24,5 +22,4 @@ public class UserUpdateBio {
 
     String sex;
     int phone_number;
-    String email;
 }

@@ -53,13 +53,18 @@ public class CategoryService {
                     .orElseThrow(() -> new AppException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
         }
 
-        // Image
-        String urlImage = imageService.uploadImage(multipartFile);
-
         // Mapper
         Category category = categoryMapper.toCategory(request);
         category.setParent(parent);
-        category.setImage(urlImage);
+
+        // Image
+        if(!multipartFile.isEmpty() && multipartFile != null){
+            String urlImage = imageService.uploadImage(multipartFile);
+            category.setImage(urlImage);
+        }else {
+            throw new AppException(ErrorCode.EMPTY_FILE);
+        }
+        
         categoryRepository.save(category);
 
         return categoryMapper.toCategoryResponse(category);
@@ -83,16 +88,11 @@ public class CategoryService {
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String urlImage = imageService.uploadImage(multipartFile);
-
-            // Mapper
-            categoryMapper.updateCategory(category, request);
-            category.setParent(parent);
             category.setImage(urlImage);
-        } else {
-            categoryMapper.updateCategory(category, request);
-            category.setParent(parent);
         }
 
+        categoryMapper.updateCategory(category, request);
+        category.setParent(parent);
         categoryRepository.save(category);
 
         return categoryMapper.toCategoryResponse(category);

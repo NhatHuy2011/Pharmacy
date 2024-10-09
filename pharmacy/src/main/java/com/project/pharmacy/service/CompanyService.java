@@ -59,15 +59,13 @@ public class CompanyService {
         Company company = companyRepository
                 .findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+
         if (files != null && !files.isEmpty()) {
             String url = imageService.uploadImage(files);
-
-            // Mapper
-            companyMapper.updateCompany(company, request);
             company.setImage(url);
-        } else {
-            companyMapper.updateCompany(company, request);
         }
+
+        companyMapper.updateCompany(company, request);
         companyRepository.save(company);
 
         return companyMapper.toCompanyResponse(company);
@@ -91,6 +89,7 @@ public class CompanyService {
     // Role USER
     // Xem danh sach cong ty
     public Page<CompanyResponse> getCompany(Pageable pageable) {
-        return companyRepository.findAll(pageable).map(companyMapper::toCompanyResponse);
+        return companyRepository.findAll(pageable)
+                .map(companyMapper::toCompanyResponse);
     }
 }

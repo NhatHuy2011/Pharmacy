@@ -28,9 +28,10 @@ public class SecurityConfig {
         "/auth/logout",
         "/auth/outbound/authentication",
         "/auth/refresh",
-        "/user/verify-otp",
+        "/user/verify-email-signup",
         "/user/forgot-password",
-        "/user/reset-password"
+        "/user/reset-password",
+        "/user/refresh-otp"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**", "/category/**", "/company"};

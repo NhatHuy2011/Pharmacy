@@ -42,6 +42,7 @@ public class ApplicationInitConfig {
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
                         .status(true)
+                        .isVerified(true)
                         .roles(roles)
                         .build();
                 userRepository.save(user);

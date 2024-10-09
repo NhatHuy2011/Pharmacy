@@ -17,24 +17,24 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateRequest {
-    @Size(min = 3, message = "Username must has at least 3 characters")
+    @Size(min = 3, message = "Tên đăng nhập phải có ít nhất 3 kí tự")
     String username;
 
-    @Size(min = 8, message = "Password must has at least 8 characters")
+    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 kí tự")
     String password;
+
+    String confirmPassword;
 
     String firstname;
     String lastname;
 
-    @DobConstraint(min = 18, message = "Your age must be at least 18")
+    @DobConstraint(min = 18, message = "Bạn phải trên 18 tuổi")
     LocalDate dob;
 
     String sex;
     Integer phone_number;
 
-    @NotNull(message = "Please fill out email")
-    @EmailConstraint(message = "Invalid Email")
+    @NotNull(message = "Vui lòng điền email")
+    @EmailConstraint(message = "Email không đúng định dạng")
     String email;
-
-    String image;
 }
