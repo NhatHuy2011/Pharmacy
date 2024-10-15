@@ -8,8 +8,9 @@ import com.project.pharmacy.dto.request.ProductCreateRequest;
 import com.project.pharmacy.dto.request.ProductUpdateRequest;
 import com.project.pharmacy.dto.response.ProductResponse;
 import com.project.pharmacy.entity.Product;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "company", ignore = true)

@@ -7,8 +7,9 @@ import com.project.pharmacy.dto.request.UnitCreateRequest;
 import com.project.pharmacy.dto.request.UnitUpdateRequest;
 import com.project.pharmacy.dto.response.UnitResponse;
 import com.project.pharmacy.entity.Unit;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UnitMapper {
     Unit toUnit(UnitCreateRequest request);
 

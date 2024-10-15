@@ -2,6 +2,7 @@ package com.project.pharmacy.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -28,7 +29,8 @@ public class UserCreateRequest {
     String firstname;
     String lastname;
 
-    @DobConstraint(min = 18, message = "Bạn phải trên 18 tuổi")
+    @DobConstraint(min = 18, message = "Bạn phải đủ 18 tuổi để sử dụng trang web")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
 
     String sex;

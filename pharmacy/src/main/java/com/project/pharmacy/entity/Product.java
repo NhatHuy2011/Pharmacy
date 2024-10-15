@@ -1,5 +1,7 @@
 package com.project.pharmacy.entity;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -44,6 +46,10 @@ public class Product {
     String description;
 
     String note;
+
+    LocalDate dateCreation;
+
+    LocalDate dateExpiration;
 
     @Column(nullable = false)
     boolean doctor_advice;

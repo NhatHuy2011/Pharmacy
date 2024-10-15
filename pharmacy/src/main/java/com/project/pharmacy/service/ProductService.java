@@ -1,6 +1,7 @@
 package com.project.pharmacy.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ public class ProductService {
         Product product = productMapper.toProduct(request);
         product.setCategory(category);
         product.setCompany(company);
+        product.setDateCreation(LocalDate.now());
         productRepository.save(product);
 
         List<String> imageUrls = new ArrayList<>();
@@ -93,6 +95,11 @@ public class ProductService {
 
         // Cập nhật thông tin
         productMapper.updateProduct(product, request);
+
+        if(request.getDateExpiration().isAfter(product.getDateCreation()))
+            product.setDateExpiration(request.getDateExpiration());
+        else
+            throw new AppException(ErrorCode.PRODUCT_EXPIRATION_INVALID);
 
         if (request.getCategoryId() != null) {
             Category category = categoryRepository

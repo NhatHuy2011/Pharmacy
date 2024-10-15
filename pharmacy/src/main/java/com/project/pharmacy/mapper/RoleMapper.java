@@ -8,8 +8,9 @@ import com.project.pharmacy.dto.request.RoleCreateRequest;
 import com.project.pharmacy.dto.request.RoleUpdateRequest;
 import com.project.pharmacy.dto.response.RoleResponse;
 import com.project.pharmacy.entity.Role;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RoleMapper {
     @Mapping(target = "permissions", ignore = true)
     Role toRole(RoleCreateRequest request);

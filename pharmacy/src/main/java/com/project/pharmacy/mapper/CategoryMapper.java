@@ -8,8 +8,9 @@ import com.project.pharmacy.dto.request.CategoryCreateRequest;
 import com.project.pharmacy.dto.request.CategoryUpdateRequest;
 import com.project.pharmacy.dto.response.CategoryResponse;
 import com.project.pharmacy.entity.Category;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CategoryMapper {
     @Mapping(target = "parent", ignore = true)
     Category toCategory(CategoryCreateRequest request);

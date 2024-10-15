@@ -1,9 +1,13 @@
 package com.project.pharmacy.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.pharmacy.validator.DateExpirationConstraint;
 import jakarta.validation.constraints.NotNull;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -40,6 +44,10 @@ public class ProductCreateRequest {
     String description;
 
     String note;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @DateExpirationConstraint
+    LocalDate dateExpiration;
 
     @NotNull(message = "Vui lòng chọn sản phẩm có cần lời khuyên của bác sĩ không")
     boolean doctor_advice;

@@ -23,6 +23,7 @@ public enum ErrorCode {
     // Product exception
     PRODUCT_EXISTED("Product existed", 400, HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_FOUND("Product not found", 400, HttpStatus.BAD_REQUEST),
+    PRODUCT_EXPIRATION_INVALID("Ngày hết hạn phải lớn hơn ngày tạo", 400, HttpStatus.BAD_REQUEST),
 
     // Product and Unit exception
     PRICE_EXISTED("Price existed", 400, HttpStatus.BAD_REQUEST),

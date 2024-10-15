@@ -1,7 +1,11 @@
 package com.project.pharmacy.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -24,5 +28,7 @@ public class ProductUpdateRequest {
     String description;
     String note;
     boolean doctor_advice;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    LocalDate dateExpiration;
     String companyId;
 }

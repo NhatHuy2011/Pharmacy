@@ -2,6 +2,7 @@ package com.project.pharmacy.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.pharmacy.validator.DobConstraint;
 
 import lombok.*;
@@ -17,7 +18,8 @@ public class UserUpdateBio {
     String fisrtname;
     String lastname;
 
-    @DobConstraint(min = 18, message = "Your age must be at least 18")
+    @DobConstraint(min = 18, message = "Bạn phải đủ 18 tuổi để sử dụng trang web")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
 
     String sex;

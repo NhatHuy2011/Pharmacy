@@ -1,8 +1,10 @@
 package com.project.pharmacy.dto.response;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;
@@ -27,6 +29,12 @@ public class ProductResponse {
     String description;
     String note;
     boolean doctor_advice;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    LocalDate dateCreation;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    LocalDate dateExpiration;
 
     CompanyResponse company;
 

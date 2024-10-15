@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ public class ProductController {
     //Role ADMIN and EMPLOYEE
     @PostMapping
     public ApiResponse<ProductResponse> createProduct(
-            @RequestPart("createProduct") ProductCreateRequest request,
+            @RequestPart("createProduct") @Valid ProductCreateRequest request,
             @RequestPart("listImages") List<MultipartFile> multipartFiles)
             throws IOException {
         return ApiResponse.<ProductResponse>builder()
