@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
                 .body(apiResponse);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    /*@ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse> handleDataIntegrityViolationException(
             DataIntegrityViolationException exception) {
         String errorMessage = exception.getMostSpecificCause().getMessage();
@@ -84,5 +84,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(errorCode.getStatusCode())
                 .body(apiResponse);
-    }
+    }*/
 }

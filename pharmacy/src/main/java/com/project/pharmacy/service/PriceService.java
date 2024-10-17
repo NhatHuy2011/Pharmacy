@@ -38,6 +38,7 @@ public class PriceService {
         Product product = productRepository
                 .findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
         Unit unit = unitRepository
                 .findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
@@ -84,7 +85,7 @@ public class PriceService {
 
         Price price = priceRepository.findByProductAndUnit(product, unit);
         if (price == null) {
-            throw new AppException(ErrorCode.PRICE_NOT_FOUND); // Nếu giá không tồn tại
+            throw new AppException(ErrorCode.PRICE_NOT_FOUND);
         }
 
         int oldPrice = price.getPrice();

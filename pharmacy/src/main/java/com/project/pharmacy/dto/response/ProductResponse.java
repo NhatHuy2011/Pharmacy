@@ -40,11 +40,14 @@ public class ProductResponse {
 
     CategoryResponse category;
 
-    Set<Integer> price_all; // for getAllProduct
-    Integer price_one; // for getOneProduct
+    Set<String> unit_all;
+    String unit_one;
 
-    Set<String> unit_all; // for getAllProduct
-    String unit_one; // for getOneProduct
+    Set<String> unit_all_id;
+    String unit_one_id;
+
+    Set<Integer> price_all;
+    Integer price_one;
 
     List<String> images;
     String image;

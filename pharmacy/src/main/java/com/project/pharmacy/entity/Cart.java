@@ -1,12 +1,10 @@
 package com.project.pharmacy.entity;
 
-import java.util.List;
-import java.util.Set;
-
 import jakarta.persistence.*;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -14,17 +12,18 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Unit {
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(nullable = false)
-    String name;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "unit")
-    Set<Price> prices;
-
-    @OneToMany(mappedBy = "unit")
+    @OneToMany(mappedBy = "cart")
     List<CartItem> cartItems;
+
+    @Column
+    int totalPrice;
 }

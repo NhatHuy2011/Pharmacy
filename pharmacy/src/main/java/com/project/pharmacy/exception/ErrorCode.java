@@ -25,7 +25,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND("Product not found", 400, HttpStatus.BAD_REQUEST),
     PRODUCT_EXPIRATION_INVALID("Ngày hết hạn phải lớn hơn ngày tạo", 400, HttpStatus.BAD_REQUEST),
 
-    // Product and Unit exception
+    // Price exception
     PRICE_EXISTED("Price existed", 400, HttpStatus.BAD_REQUEST),
     PRICE_NOT_FOUND("Price not found", 400, HttpStatus.BAD_REQUEST),
     PRICE_NOT_BE_EQUAL("Price not be equal", 400, HttpStatus.BAD_REQUEST),
@@ -39,6 +39,10 @@ public enum ErrorCode {
     EMAIL_NOT_MATCH("Email không trùng khớp", 400, HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED("Địa chỉ email đã được sử dụng", 400, HttpStatus.BAD_REQUEST),
     EMAIL_NOT_VERIFIED("Email chưa được xác thực. Vui lòng xác thực email!", 400, HttpStatus.BAD_REQUEST),
+
+    //Cart and cart item Exception
+    CART_EMPTY("Giỏ hàng trống!", 400, HttpStatus.BAD_REQUEST),
+    CART_ITEM_NOT_FOUND("Cart item not found!", 400, HttpStatus.BAD_REQUEST),
 
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
@@ -68,10 +72,7 @@ public enum ErrorCode {
 
     // File
     FILE_SIZE_EXCEEDED("File phải nhỏ hơn 5MB", 400, HttpStatus.BAD_REQUEST),
-    EMPTY_FILE("Vui lòng đính kèm hình ảnh", 500, HttpStatus.INTERNAL_SERVER_ERROR),
-
-    // Data
-    COLUMN_CANNOT_BE_NULL("Colume can not be null", 500, HttpStatus.INTERNAL_SERVER_ERROR);
+    EMPTY_FILE("Vui lòng đính kèm hình ảnh", 500, HttpStatus.INTERNAL_SERVER_ERROR);
 
     private int code;
     private String message;

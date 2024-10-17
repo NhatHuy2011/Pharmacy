@@ -167,37 +167,20 @@ public class ProductService {
                     .map(Price::getPrice)
                     .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
                     .collect(Collectors.toCollection(LinkedHashSet::new));
-            Set<String> unit = prices.stream()
+            Set<String> unit_name = prices.stream()
                     .map(productUnit -> productUnit.getUnit().getName())
                     .collect(Collectors.toSet());
-
+            Set<String> unit_id = prices.stream()
+                    .map(productUnit -> productUnit.getUnit().getId())
+                    .collect(Collectors.toSet());
             ProductResponse productResponse = productMapper.toProductResponse(product);
+            productResponse.setUnit_all_id(unit_id);
+            productResponse.setUnit_all(unit_name);
             productResponse.setPrice_all(price);
-            productResponse.setUnit_all(unit);
             productResponse.setImage(url);
 
             return productResponse;
         });
-    }
-
-    // Xem chi tiết sản phẩm
-    public List<ProductResponse> getOne(String id) {
-        Product product =
-                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        List<String> imageUrls = imageRepository.findByProductId(product.getId()).stream()
-                .map(Image::getSource)
-                .collect(Collectors.toList());
-
-        return priceRepository.findByProductId(product.getId()).stream()
-                .map(productUnit -> {
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setPrice_one(productUnit.getPrice());
-                    productResponse.setUnit_one(productUnit.getUnit().getName());
-                    productResponse.setImages(imageUrls);
-                    return productResponse;
-                })
-                .collect(Collectors.toList());
     }
 
     //Xem theo danh muc
@@ -214,16 +197,41 @@ public class ProductService {
                     .map(Price::getPrice)
                     .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
                     .collect(Collectors.toCollection(LinkedHashSet::new));
-            Set<String> unit = prices.stream()
+            Set<String> unit_name = prices.stream()
                     .map(productUnit -> productUnit.getUnit().getName())
                     .collect(Collectors.toSet());
-
+            Set<String> unit_id = prices.stream()
+                    .map(productUnit -> productUnit.getUnit().getId())
+                    .collect(Collectors.toSet());
             ProductResponse productResponse = productMapper.toProductResponse(product);
+            productResponse.setUnit_all_id(unit_id);
+            productResponse.setUnit_all(unit_name);
             productResponse.setPrice_all(price);
-            productResponse.setUnit_all(unit);
             productResponse.setImage(url);
 
             return productResponse;
         });
     }
+
+    // Xem chi tiết sản phẩm
+    public List<ProductResponse> getOne(String id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        List<String> imageUrls = imageRepository.findByProductId(product.getId()).stream()
+                .map(Image::getSource)
+                .collect(Collectors.toList());
+
+        return priceRepository.findByProductId(product.getId()).stream()
+                .map(price -> {
+                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    productResponse.setUnit_one_id(price.getUnit().getId());
+                    productResponse.setUnit_one(price.getUnit().getName());
+                    productResponse.setPrice_one(price.getPrice());
+                    productResponse.setImages(imageUrls);
+                    return productResponse;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

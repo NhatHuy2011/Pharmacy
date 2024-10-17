@@ -68,6 +68,7 @@ public class UserService {
         user.setStatus(false);
         user.setIsVerified(false);
         user.setRoles(roles);
+        //user.setRank("Thành viên");
 
         String otpCode = generateOTP();
         user.setOtpCode(otpCode);

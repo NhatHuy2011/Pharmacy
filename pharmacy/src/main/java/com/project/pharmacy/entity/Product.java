@@ -2,6 +2,7 @@ package com.project.pharmacy.entity;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -67,4 +68,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     Set<Price> prices;
+
+    @OneToMany(mappedBy = "product")
+    List<CartItem> cartItems;
 }
