@@ -31,19 +31,34 @@ public class SecurityConfig {
         "/user/verify-email-signup",
         "/user/forgot-password",
         "/user/reset-password",
-        "/user/refresh-otp"
+        "/user/refresh-otp",
+        "/cart/guest"
     };
 
-    private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**", "/category/**", "/company"};
+    private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
+            "/category/**",
+            "/company",
+            "/cart/guest"};
+
+    private final String[] PUBLIC_PUT_ENDPOINTS = {
+            "/cart/guest"};
+
+    private final String[] PUBLIC_DELETE_ENDPOINTS = {
+            "/cart/guest"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS)
                 .permitAll()
                 // .requestMatchers(HttpMethod.GET, "/product").hasRole(Role.ADMIN.name())
                 .anyRequest()

@@ -3,6 +3,8 @@ server:
   port: 8080
   servlet:
     context-path: /api/v1/pharmacy
+    session:
+      timeout: 2h
 
 spring:
   datasource:

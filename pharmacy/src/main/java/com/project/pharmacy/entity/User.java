@@ -68,9 +68,6 @@ public class User {
     @Column
     Boolean isVerified;
 
-    /*@Column
-    String rank;*/
-
     @OneToOne(mappedBy = "user")
     Cart cart;
 }

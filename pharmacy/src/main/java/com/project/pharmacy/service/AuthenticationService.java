@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,8 @@ public class AuthenticationService {
     OutboundUserClient outboundUserClient;
 
     RoleRepository roleRepository;
+
+    CartService cartService;
 
     @NonFinal
     @Value("${jwt.signerKey}")

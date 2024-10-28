@@ -2,6 +2,8 @@ package com.project.pharmacy.controller;
 
 import java.text.ParseException;
 
+import com.project.pharmacy.service.CartService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 
 import com.nimbusds.jose.JOSEException;
@@ -24,6 +26,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+
+    CartService cartService;
 
     //Role USER
     @PostMapping("/outbound/authentication")
