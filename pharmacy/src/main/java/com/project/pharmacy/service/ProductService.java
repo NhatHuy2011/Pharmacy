@@ -35,7 +35,7 @@ public class ProductService {
 
     CompanyRepository companyRepository;
 
-    ImageService imageService;
+    CloudinaryService cloudinaryService;
 
     ImageRepository imageRepository;
 
@@ -71,7 +71,7 @@ public class ProductService {
         List<String> imageUrls = new ArrayList<>();
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             for (MultipartFile multipartFile : multipartFiles) {
-                String urlImage = imageService.uploadImage(multipartFile);
+                String urlImage = cloudinaryService.uploadImage(multipartFile);
                 imageUrls.add(urlImage);
                 Image image = Image.builder().product(product).source(urlImage).build();
                 imageRepository.save(image);
@@ -96,7 +96,7 @@ public class ProductService {
         // Cập nhật thông tin
         productMapper.updateProduct(product, request);
 
-        if(request.getDateExpiration().isAfter(product.getDateCreation()))
+        if (request.getDateExpiration().isAfter(product.getDateCreation()))
             product.setDateExpiration(request.getDateExpiration());
         else
             throw new AppException(ErrorCode.PRODUCT_EXPIRATION_INVALID);
@@ -121,7 +121,7 @@ public class ProductService {
             imageUrls = files.stream()
                     .map(multipartFile -> {
                         try {
-                            String urlImage = imageService.uploadImage(multipartFile);
+                            String urlImage = cloudinaryService.uploadImage(multipartFile);
                             imageRepository.save(Image.builder()
                                     .product(product)
                                     .source(urlImage)
@@ -147,7 +147,8 @@ public class ProductService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void deleteProduct(String id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         imageRepository.deleteAllByProductId(product.getId());
         priceRepository.deleteAllByProductId(id);
         productRepository.deleteById(product.getId());
@@ -183,10 +184,10 @@ public class ProductService {
         });
     }
 
-    //Xem theo danh muc
+    // Xem theo danh muc
     public Page<ProductResponse> getProductByCategory(Pageable pageable, String categoryId) {
         return productRepository.findByCategoryId(pageable, categoryId)
-            .map(product -> {
+                .map(product -> {
             // Lấy hình ảnh đầu tiên
             Image firstImage = imageRepository.findFirstByProductId(product.getId());
             String url = firstImage != null ? firstImage.getSource() : null;
@@ -233,5 +234,4 @@ public class ProductService {
                 })
                 .collect(Collectors.toList());
     }
-
 }

@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ImageService {
+public class CloudinaryService {
     Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile multipartFile) throws IOException {

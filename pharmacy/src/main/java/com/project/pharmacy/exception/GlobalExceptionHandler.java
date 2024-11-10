@@ -1,6 +1,5 @@
 package com.project.pharmacy.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,8 +30,7 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -43,8 +41,7 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(HttpStatus.BAD_REQUEST.value());
         apiResponse.setMessage(defaultMessage);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(apiResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
     @ExceptionHandler(value = MissingServletRequestPartException.class)
@@ -55,8 +52,7 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage("Required part '" + exception.getRequestPartName() + "' is not present");
 
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
@@ -67,22 +63,6 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
-
-    /*@ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiResponse> handleDataIntegrityViolationException(
-            DataIntegrityViolationException exception) {
-        String errorMessage = exception.getMostSpecificCause().getMessage();
-
-        ErrorCode errorCode = ErrorCode.COLUMN_CANNOT_BE_NULL;
-
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorMessage);
-
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(apiResponse);
-    }*/
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductController {
     ProductService productService;
 
-    //Role ADMIN and EMPLOYEE
+    // Role ADMIN and EMPLOYEE
     @PostMapping
     public ApiResponse<ProductResponse> createProduct(
             @RequestPart("createProduct") @Valid ProductCreateRequest request,
@@ -58,7 +59,7 @@ public class ProductController {
                 .build();
     }
 
-    //Role USER
+    // Role USER
     @GetMapping
     public ApiResponse<Page<ProductResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -98,5 +99,4 @@ public class ProductController {
                 .result(productService.getOne(id))
                 .build();
     }
-
 }

@@ -1,13 +1,21 @@
 package com.project.pharmacy.utils;
 
-import lombok.Data;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class CartItemTemporary {
-    private String productId;
-    private String productName;
-    private String unitId;
-    private String unitName;
-    private int price;
-    private int quantity;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
+    String priceId;
+    String productName;
+    String unitName;
+    int price;
+    int quantity;
 }

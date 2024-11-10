@@ -1,6 +1,7 @@
 package com.project.pharmacy.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,20 +17,13 @@ public class CartItem {
     String id;
 
     @ManyToOne
-    @JoinColumn(name="cart_id")
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
+    @JoinColumn(name = "price_id")
+    private Price price;
 
     @Column
     private int quantity;
-
-    @Column
-    private int price;
 }

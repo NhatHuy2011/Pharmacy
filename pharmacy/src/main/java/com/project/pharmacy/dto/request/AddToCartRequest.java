@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddToCartRequest {
+    String cartId;
     String productId;
     String unitId;
     int quantity;

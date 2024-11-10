@@ -26,10 +26,9 @@ import lombok.experimental.FieldDefaults;
 public class UserController {
     UserService userService;
 
-    //Role USER
+    // Role USER
     @PostMapping
-    public ApiResponse<UserResponse> createUser(
-            @RequestBody @Valid UserCreateRequest request){
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
@@ -45,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/refresh-otp")
-    public ApiResponse<Void> refreshOtp(@RequestBody UserRefreshOtp request){
+    public ApiResponse<Void> refreshOtp(@RequestBody UserRefreshOtp request) {
         userService.refreshOtp(request);
         return ApiResponse.<Void>builder()
                 .message("OTP đã được gửi lại qua email của bạn. Vui lòng kiểm tra!")
@@ -61,15 +60,14 @@ public class UserController {
     }
 
     @PutMapping("/reset-password")
-    public ApiResponse<Void> resetPassword(
-            @RequestBody @Valid UserResetPassword request) {
+    public ApiResponse<Void> resetPassword(@RequestBody @Valid UserResetPassword request) {
         userService.resetPassword(request);
         return ApiResponse.<Void>builder()
                 .message("Mật khẩu đã được tạo mới thành công. Vui lòng đăng nhập với mật khẩu mới")
                 .build();
     }
 
-    //Login with Google
+    // Login with Google
     @PutMapping("/create-password")
     public ApiResponse<Void> createPassword(@RequestBody @Valid PasswordCreateRequest request) {
         userService.creatPassword(request);
@@ -80,8 +78,7 @@ public class UserController {
 
     @GetMapping
     public ApiResponse<Page<UserResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserResponse> userResponses = userService.getAll(pageable);
         return ApiResponse.<Page<UserResponse>>builder().result(userResponses).build();
@@ -97,11 +94,12 @@ public class UserController {
     @PutMapping("/update-bio")
     public ApiResponse<UserResponse> updateBio(
             @RequestPart("updateUser") @Valid UserUpdateBio request,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-            return ApiResponse.<UserResponse>builder()
-                    .result(userService.updateBio(request, file))
-                    .message("Cập nhật thông tin thành công")
-                    .build();
+            @RequestPart(value = "file", required = false) MultipartFile file)
+            throws IOException {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateBio(request, file))
+                .message("Cập nhật thông tin thành công")
+                .build();
     }
 
     @PutMapping("/update-email")
@@ -128,9 +126,9 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/verify-email")
-    public ApiResponse<Void> verifyEmailUpdate(@RequestBody UserForgotVerifiedEmail request) {
-        userService.verifyEmail(request);
+    @PutMapping("/verify-email-forgot")
+    public ApiResponse<Void> verifyEmailForgot(@RequestBody UserForgotVerifiedEmail request) {
+        userService.verifyEmailForgot(request);
         return ApiResponse.<Void>builder()
                 .message("Email được xác thực thành công!")
                 .build();
@@ -144,7 +142,7 @@ public class UserController {
                 .build();
     }
 
-    //Role ADMIN
+    // Role ADMIN
     @PutMapping("/updateRole")
     public ApiResponse<UserResponse> updateRole(@RequestBody UserUpdateRole request) {
         return ApiResponse.<UserResponse>builder()
@@ -161,8 +159,6 @@ public class UserController {
     @PutMapping("/unban/{id}")
     public ApiResponse<Void> unbanUser(@PathVariable String id) {
         userService.unbanUser(id);
-        return ApiResponse.<Void>builder()
-                .message("User has been unbanned")
-                .build();
+        return ApiResponse.<Void>builder().message("User has been unbanned").build();
     }
 }

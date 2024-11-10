@@ -1,13 +1,14 @@
 package com.project.pharmacy.dto.request;
 
+import java.time.LocalDate;
+
+import jakarta.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.pharmacy.validator.DateExpirationConstraint;
-import jakarta.validation.constraints.NotNull;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +19,7 @@ public class ProductCreateRequest {
     @NotNull(message = "Vui lòng nhập tên sản phẩm")
     String name;
 
-    @NotNull(message = "Vui lòng nhập số lượng sản phẩm")   
+    @NotNull(message = "Vui lòng nhập số lượng sản phẩm")
     int quantity;
 
     @NotNull(message = "Vui lòng chọn danh mục cho sản phẩm")

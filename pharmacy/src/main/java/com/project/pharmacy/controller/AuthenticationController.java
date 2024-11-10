@@ -2,8 +2,6 @@ package com.project.pharmacy.controller;
 
 import java.text.ParseException;
 
-import com.project.pharmacy.service.CartService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 
 import com.nimbusds.jose.JOSEException;
@@ -27,9 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    CartService cartService;
-
-    //Role USER
+    // Role USER
     @PostMapping("/outbound/authentication")
     public ApiResponse<AuthenticationResponse> outbound(@RequestParam("code") String code) {
 
@@ -56,9 +52,7 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
-        return ApiResponse.<Void>builder()
-                .message("Log-out successfull")
-                .build();
+        return ApiResponse.<Void>builder().message("Log-out successfull").build();
     }
 
     @PostMapping("/refresh")

@@ -34,7 +34,7 @@ public class CompanyService {
 
     ProductRepository productRepository;
 
-    ImageService imageService;
+    CloudinaryService cloudinaryService;
 
     ImageRepository imageRepository;
 
@@ -44,7 +44,7 @@ public class CompanyService {
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
         if (companyRepository.existsByName(request.getName())) throw new AppException(ErrorCode.COMPANY_EXISTED);
-        String url = imageService.uploadImage(files);
+        String url = cloudinaryService.uploadImage(files);
 
         Company company = companyMapper.toCompany(request);
         company.setImage(url);
@@ -61,7 +61,7 @@ public class CompanyService {
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
         if (files != null && !files.isEmpty()) {
-            String url = imageService.uploadImage(files);
+            String url = cloudinaryService.uploadImage(files);
             company.setImage(url);
         }
 
@@ -89,7 +89,6 @@ public class CompanyService {
     // Role USER
     // Xem danh sach cong ty
     public Page<CompanyResponse> getCompany(Pageable pageable) {
-        return companyRepository.findAll(pageable)
-                .map(companyMapper::toCompanyResponse);
+        return companyRepository.findAll(pageable).map(companyMapper::toCompanyResponse);
     }
 }

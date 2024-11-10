@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateCartRequest {
-    String productId;
-    String unitId;
+    String cartItemId;
     int quantity;
 }

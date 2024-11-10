@@ -3,12 +3,12 @@ package com.project.pharmacy.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.project.pharmacy.dto.request.CategoryCreateRequest;
 import com.project.pharmacy.dto.request.CategoryUpdateRequest;
 import com.project.pharmacy.dto.response.CategoryResponse;
 import com.project.pharmacy.entity.Category;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CategoryMapper {

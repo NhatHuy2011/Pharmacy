@@ -2,6 +2,7 @@ package com.project.pharmacy.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -46,6 +47,9 @@ public class User {
     @Column
     String image;
 
+    @OneToMany(mappedBy = "user")
+    List<Address> addresses;
+
     @Column
     int point;
 
@@ -69,5 +73,9 @@ public class User {
     Boolean isVerified;
 
     @OneToOne(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
     Cart cart;
+
+    @OneToMany(mappedBy = "user")
+    List<Orders> orders;
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Builder
@@ -28,4 +30,10 @@ public class Price {
     int price;
 
     String description;
+
+    @OneToMany(mappedBy = "price")
+    Set<CartItem> cartItems;
+
+    @OneToMany(mappedBy = "price")
+    Set<OrderItem> orderItems;
 }

@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     UserRepository userRepository;
 
-    ImageService imageService;
+    CloudinaryService cloudinaryService;
 
     PasswordEncoder passwordEncoder;
 
@@ -46,8 +46,9 @@ public class UserService {
     RoleRepository roleRepository;
 
     EmailService emailService;
-    // Role USER
-    public UserResponse createUser(UserCreateRequest request){
+
+    // For GUEST
+    public UserResponse createUser(UserCreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -61,14 +62,14 @@ public class UserService {
 
         User user = userMapper.toUser(request);
 
-        if(!request.getPassword().equals(request.getConfirmPassword()))
+        if (!request.getPassword().equals(request.getConfirmPassword()))
             throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
 
         user.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setStatus(false);
         user.setIsVerified(false);
         user.setRoles(roles);
-        //user.setRank("Thành viên");
+        // user.setRank("Thành viên");
 
         String otpCode = generateOTP();
         user.setOtpCode(otpCode);
@@ -77,8 +78,11 @@ public class UserService {
 
         // Gửi OTP qua email
         emailService.sendSimpleEmail(
-                user.getEmail(), "OTP Verification", "OTP sẽ hết hạn trong vòng 5p. " +
-                        "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là " + otpCode);
+                user.getEmail(),
+                "OTP Verification",
+                "OTP sẽ hết hạn trong vòng 5p. "
+                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
+                        + otpCode);
 
         return userMapper.toUserResponse(user);
     }
@@ -89,7 +93,8 @@ public class UserService {
     }
 
     public void verifyEmailSignUp(UserVerifiedEmailSignUp request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
@@ -108,24 +113,29 @@ public class UserService {
         }
     }
 
-    //OTP het han
-    public void refreshOtp(UserRefreshOtp request){
-        User user = userRepository.findByEmail(request.getEmail())
+    // OTP het han
+    public void refreshOtp(UserRefreshOtp request) {
+        User user = userRepository
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         String otpCode = generateOTP();
         emailService.sendSimpleEmail(
-                request.getEmail(), "OTP Verification", "OTP sẽ hết hạn trong vòng 5p. " +
-                        "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là " + otpCode);
+                request.getEmail(),
+                "OTP Verification",
+                "OTP sẽ hết hạn trong vòng 5p. "
+                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
+                        + otpCode);
 
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
         userRepository.save(user);
     }
 
-    //User quen mat khau
+    // User quen mat khau
     public UserResponse forgotPassword(UserForgotPassword request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         String otpCode = generateOTP();
@@ -133,14 +143,19 @@ public class UserService {
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(user.getEmail(), "Password Reset OTP", "OTP sẽ hết hạn trong vòng 5p. " +
-                        "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là " + otpCode);
+        emailService.sendSimpleEmail(
+                user.getEmail(),
+                "Password Reset OTP",
+                "OTP sẽ hết hạn trong vòng 5p. "
+                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
+                        + otpCode);
 
         return userMapper.toUserResponse(user);
     }
 
     public void resetPassword(UserResetPassword request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository
+                .findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
             if (LocalDateTime.now().isBefore(user.getOtpExpiryTime())) {
@@ -148,8 +163,7 @@ public class UserService {
                 user.setOtpCode(null);
                 user.setOtpExpiryTime(null);
                 userRepository.save(user);
-            }
-            else {
+            } else {
                 throw new AppException(ErrorCode.OTP_EXPIRED);
             }
         } else {
@@ -172,6 +186,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // FOR USER
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -192,8 +207,8 @@ public class UserService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(file != null && !file.isEmpty()){
-            String urlImage = imageService.uploadImage(file);
+        if (file != null && !file.isEmpty()) {
+            String urlImage = cloudinaryService.uploadImage(file);
             user.setImage(urlImage);
         }
 
@@ -203,12 +218,12 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    public UserResponse updateEmail(UserUpdateEmail request){
+    public UserResponse updateEmail(UserUpdateEmail request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
-                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         user.setEmail(request.getEmail());
         user.setIsVerified(false);
@@ -219,8 +234,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(user.getEmail(), "Email Update OTP", "OTP sẽ hết hạn trong vòng 5p. " +
-                        "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là " + otp);
+        emailService.sendSimpleEmail(
+                user.getEmail(),
+                "Email Update OTP",
+                "OTP sẽ hết hạn trong vòng 5p. "
+                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
+                        + otp);
 
         return userMapper.toUserResponse(user);
     }
@@ -230,7 +249,7 @@ public class UserService {
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
-                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
             // Kiểm tra thời gian hết hạn OTP
@@ -247,12 +266,12 @@ public class UserService {
         }
     }
 
-    public UserResponse forgotVerifyEmail(){
+    public UserResponse forgotVerifyEmail() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
-                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         String otp = generateOTP();
         user.setOtpCode(otp);
@@ -260,18 +279,22 @@ public class UserService {
 
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(user.getEmail(), "Email Update OTP", "OTP sẽ hết hạn trong vòng 5p. " +
-                "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là " + otp);
+        emailService.sendSimpleEmail(
+                user.getEmail(),
+                "Email Update OTP",
+                "OTP sẽ hết hạn trong vòng 5p. "
+                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
+                        + otp);
 
         return userMapper.toUserResponse(user);
     }
 
-    public void verifyEmail(UserForgotVerifiedEmail request) {
+    public void verifyEmailForgot(UserForgotVerifiedEmail request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(name)
-                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
             // Kiểm tra thời gian hết hạn OTP
@@ -293,8 +316,7 @@ public class UserService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!(passwordEncoder.matches(request.getOldPassword(), user.getPassword())))
             throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);
@@ -311,10 +333,12 @@ public class UserService {
     // Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateRole(UserUpdateRole request) {
-        User user = userRepository.findById(request.getId())
+        User user = userRepository
+                .findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Role role = roleRepository.findByName(request.getRole())
+        Role role = roleRepository
+                .findByName(request.getRole())
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
         user.getRoles().add(role);
@@ -325,8 +349,7 @@ public class UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> getAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::toUserResponse);
+        return userRepository.findAll(pageable).map(userMapper::toUserResponse);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -3,12 +3,12 @@ package com.project.pharmacy.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.project.pharmacy.dto.request.ProductCreateRequest;
 import com.project.pharmacy.dto.request.ProductUpdateRequest;
 import com.project.pharmacy.dto.response.ProductResponse;
 import com.project.pharmacy.entity.Product;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {

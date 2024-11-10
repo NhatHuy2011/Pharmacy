@@ -28,23 +28,25 @@ public class SecurityConfig {
         "/auth/logout",
         "/auth/outbound/authentication",
         "/auth/refresh",
-        "/user/verify-email-signup",
-        "/user/forgot-password",
-        "/user/reset-password",
-        "/user/refresh-otp",
-        "/cart/guest"
+        "/cart/guest",
+        "/chatbot"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
             "/category/**",
             "/company",
-            "/cart/guest"};
+            "/cart/guest"
+    };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {
-            "/cart/guest"};
+        "/user/verify-email-signup",
+            "/user/forgot-password",
+            "/user/reset-password",
+            "/user/refresh-otp",
+            "/cart/guest"
+    };
 
-    private final String[] PUBLIC_DELETE_ENDPOINTS = {
-            "/cart/guest"};
+    private final String[] PUBLIC_DELETE_ENDPOINTS = {"/cart/guest"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
@@ -60,7 +62,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS)
                 .permitAll()
-                // .requestMatchers(HttpMethod.GET, "/product").hasRole(Role.ADMIN.name())
+                //.requestMatchers(HttpMethod.GET, "/product")//.hasRole(Role.ADMIN.name())
                 .anyRequest()
                 .authenticated());
 

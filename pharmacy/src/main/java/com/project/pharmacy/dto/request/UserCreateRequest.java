@@ -2,10 +2,10 @@ package com.project.pharmacy.dto.request;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.pharmacy.validator.DobConstraint;
 import com.project.pharmacy.validator.EmailConstraint;
 

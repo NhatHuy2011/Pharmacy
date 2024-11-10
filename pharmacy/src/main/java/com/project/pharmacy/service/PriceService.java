@@ -58,11 +58,12 @@ public class PriceService {
             }
         }
 
-        Price price = new Price();
-        price.setProduct(product);
-        price.setUnit(unit);
-        price.setPrice(request.getPrice());
-        price.setDescription(request.getDescription());
+        Price price = Price.builder()
+                .product(product)
+                .unit(unit)
+                .price(request.getPrice())
+                .description(request.getDescription())
+                .build();
         priceRepository.save(price);
 
         return PriceResponse.builder()

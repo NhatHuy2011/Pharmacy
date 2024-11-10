@@ -24,7 +24,4 @@ public class Unit {
 
     @OneToMany(mappedBy = "unit")
     Set<Price> prices;
-
-    @OneToMany(mappedBy = "unit")
-    List<CartItem> cartItems;
 }

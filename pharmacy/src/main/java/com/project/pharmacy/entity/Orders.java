@@ -1,0 +1,50 @@
+package com.project.pharmacy.entity;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.*;
+
+import com.project.pharmacy.enums.OrderStatus;
+import com.project.pharmacy.enums.PaymentMethod;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+public class Orders {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
+    @Column
+    int totalPrice;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    Address address;
+
+    @OneToMany(mappedBy = "orders")
+    List<OrderItem> orderItems = new ArrayList<>();
+
+    @Column
+    LocalDateTime orderDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "ENUM('PENDING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING'")
+    OrderStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "paymentMethod", columnDefinition = "ENUM('CASH', 'VNPAY') DEFAULT 'CASH'")
+    PaymentMethod paymentMethod;
+}

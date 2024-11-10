@@ -12,8 +12,7 @@ public class EmailValidator implements ConstraintValidator<EmailConstraint, Stri
 
     @Override
     public boolean isValid(String string, ConstraintValidatorContext constraintValidatorContext) {
-        if (string == null)
-            return false;
+        if (string == null) return false;
         return string.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
     }
 }

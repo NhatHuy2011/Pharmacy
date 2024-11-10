@@ -26,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 public class CategoryController {
     CategoryService categoryService;
 
-    //Role USER
+    // Role USER
     // Lay danh muc goc
     @GetMapping("/null")
     public ApiResponse<List<CategoryResponse>> getRootCategory() {
@@ -43,7 +43,7 @@ public class CategoryController {
                 .build();
     }
 
-    //Role ADMIN
+    // Role ADMIN
     // Them danh muc
     @PostMapping
     public ApiResponse<CategoryResponse> createCategory(
@@ -60,7 +60,8 @@ public class CategoryController {
     @PutMapping
     public ApiResponse<CategoryResponse> updateCategory(
             @RequestPart("updateCategory") CategoryUpdateRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile multipartFile) throws IOException {
+            @RequestPart(value = "file", required = false) MultipartFile multipartFile)
+            throws IOException {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.updateCategory(request, multipartFile))
                 .build();

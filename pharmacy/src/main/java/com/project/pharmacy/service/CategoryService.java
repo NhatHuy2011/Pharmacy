@@ -31,7 +31,7 @@ import lombok.experimental.FieldDefaults;
 public class CategoryService {
     CategoryRepository categoryRepository;
 
-    ImageService imageService;
+    CloudinaryService cloudinaryService;
 
     ProductRepository productRepository;
 
@@ -58,13 +58,13 @@ public class CategoryService {
         category.setParent(parent);
 
         // Image
-        if(!multipartFile.isEmpty() && multipartFile != null){
-            String urlImage = imageService.uploadImage(multipartFile);
+        if (!multipartFile.isEmpty()) {
+            String urlImage = cloudinaryService.uploadImage(multipartFile);
             category.setImage(urlImage);
-        }else {
+        } else {
             throw new AppException(ErrorCode.EMPTY_FILE);
         }
-        
+
         categoryRepository.save(category);
 
         return categoryMapper.toCategoryResponse(category);
@@ -87,7 +87,7 @@ public class CategoryService {
         }
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            String urlImage = imageService.uploadImage(multipartFile);
+            String urlImage = cloudinaryService.uploadImage(multipartFile);
             category.setImage(urlImage);
         }
 

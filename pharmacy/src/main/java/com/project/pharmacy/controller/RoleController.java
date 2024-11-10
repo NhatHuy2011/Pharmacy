@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
 public class RoleController {
     RoleService roleService;
 
-    //Role ADMIN
+    // Role ADMIN
     @GetMapping
     public ApiResponse<List<RoleResponse>> getAll() {
         return ApiResponse.<List<RoleResponse>>builder()

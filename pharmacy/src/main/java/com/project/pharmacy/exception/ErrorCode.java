@@ -40,9 +40,13 @@ public enum ErrorCode {
     EMAIL_EXISTED("Địa chỉ email đã được sử dụng", 400, HttpStatus.BAD_REQUEST),
     EMAIL_NOT_VERIFIED("Email chưa được xác thực. Vui lòng xác thực email!", 400, HttpStatus.BAD_REQUEST),
 
-    //Cart and cart item Exception
+    // Cart and cart item Exception
     CART_EMPTY("Giỏ hàng trống!", 400, HttpStatus.BAD_REQUEST),
     CART_ITEM_NOT_FOUND("Cart item not found!", 400, HttpStatus.BAD_REQUEST),
+
+    // Order exception
+    UPDATE_ADDRESS("Vui lòng cập nhật địa chỉ mới!", 400, HttpStatus.BAD_REQUEST),
+    ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
 
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),

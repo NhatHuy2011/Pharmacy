@@ -21,8 +21,10 @@ public class UserResponse {
     String username;
     String firstname;
     String lastname;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
+
     String sex;
     Integer phone_number;
     String email;
@@ -31,7 +33,9 @@ public class UserResponse {
     Boolean status;
     Boolean noPassword;
     Set<RoleResponse> roles;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     LocalDateTime otpExpiryTime;
+
     Boolean isVerified;
 }

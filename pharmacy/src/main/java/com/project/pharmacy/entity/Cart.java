@@ -1,11 +1,12 @@
 package com.project.pharmacy.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.*;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Data
@@ -20,6 +21,7 @@ public class Cart {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @OneToMany(mappedBy = "cart")
