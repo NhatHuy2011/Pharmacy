@@ -28,22 +28,22 @@ public class SecurityConfig {
         "/auth/logout",
         "/auth/outbound/authentication",
         "/auth/refresh",
-        "/cart/guest",
-        "/chatbot"
+        "/cart/guest"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
             "/category/**",
             "/company",
-            "/cart/guest"
+            "/cart/guest",
+            "/vnpay/callback"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {
         "/user/verify-email-signup",
-            "/user/forgot-password",
-            "/user/reset-password",
-            "/user/refresh-otp",
-            "/cart/guest"
+        "/user/forgot-password",
+        "/user/reset-password",
+        "/user/refresh-otp",
+        "/cart/guest"
     };
 
     private final String[] PUBLIC_DELETE_ENDPOINTS = {"/cart/guest"};

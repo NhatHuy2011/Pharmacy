@@ -1,4 +1,5 @@
 package com.project.pharmacy.service;
+import com.project.pharmacy.configuration.VNPayConfig;
 import com.project.pharmacy.dto.request.OrderRequest;
 import com.project.pharmacy.dto.response.OrderItemResponse;
 import com.project.pharmacy.dto.response.OrderResponse;
@@ -7,17 +8,22 @@ import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.OrdersMapper;
 import com.project.pharmacy.repository.*;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.project.pharmacy.entity.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import java.time.LocalDateTime;
-import java.util.List;
 
-@Slf4j
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -32,7 +38,7 @@ public class OrderService {
 
 	AddressRepository addressRepository;
 
-    public OrderResponse createOrderAtCartUser(OrderRequest request){
+	public OrderResponse createOrderAtCartUser(OrderRequest request){
     	var context = SecurityContextHolder.getContext();
     	String name = context.getAuthentication().getName();
 
@@ -91,5 +97,7 @@ public class OrderService {
 
 		return orderResponse;
     }
+
+
 }
 

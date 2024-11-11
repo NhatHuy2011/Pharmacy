@@ -47,6 +47,7 @@ public enum ErrorCode {
     // Order exception
     UPDATE_ADDRESS("Vui lòng cập nhật địa chỉ mới!", 400, HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
+    ORDER_NOT_FOUND("Đơn hàng không tồn tại", 400, HttpStatus.BAD_REQUEST),
 
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),

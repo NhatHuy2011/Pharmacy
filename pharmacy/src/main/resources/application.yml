@@ -43,3 +43,11 @@ jwt:
   signerKey: "0HOHKN7jKVL8N7isueYCYmNqqytQj/rrjnQOzD4R971R1u6357OvxgJ5u/MFF8/u"
   valid-duration: 3600 #in seconds
   refreshable-duration: 36000 #in seconds
+
+vnpay:
+  vnp_TmnCode: "FZYZOQ65"
+  secretKey: "LDRUI8OT0ADR4NS7CA7SCNOT3TME7O2P"
+  vnp_Version: "2.1.0"
+  vnp_Command: "pay"
+  vnp_PayUrl: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+  vnp_ReturnUrl: "http://localhost:8080/api/v1/pharmacy/vnpay/callback"

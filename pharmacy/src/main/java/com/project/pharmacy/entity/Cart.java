@@ -22,7 +22,7 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
-    private User user;
+    User user;
 
     @OneToMany(mappedBy = "cart")
     List<CartItem> cartItems = new ArrayList<>();

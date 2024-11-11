@@ -77,5 +77,6 @@ public class User {
     Cart cart;
 
     @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
     List<Orders> orders;
 }
