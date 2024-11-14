@@ -49,6 +49,9 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND("Đơn hàng không tồn tại", 400, HttpStatus.BAD_REQUEST),
 
+    //Address exception
+    ADDRESS_EXISTED("Địa chỉ đã tồn tại!", 400, HttpStatus.BAD_REQUEST),
+
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND("Role not found", 400, HttpStatus.BAD_REQUEST),

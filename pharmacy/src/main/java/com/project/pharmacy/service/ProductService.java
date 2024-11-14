@@ -223,7 +223,8 @@ public class ProductService {
                 .map(Image::getSource)
                 .collect(Collectors.toList());
 
-        return priceRepository.findByProductId(product.getId()).stream()
+        return priceRepository.findByProductId(product.getId())
+                .stream()
                 .map(price -> {
                     ProductResponse productResponse = productMapper.toProductResponse(product);
                     productResponse.setUnit_one_id(price.getUnit().getId());

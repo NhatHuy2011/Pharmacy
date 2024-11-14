@@ -29,7 +29,8 @@ public class UnitController {
     // Role ADMIN and EMPLOYEE
     @GetMapping
     public ApiResponse<Page<UnitResponse>> getUnit(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UnitResponse> unitResponses = unitService.getUnit(pageable);
 

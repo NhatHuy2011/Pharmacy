@@ -34,7 +34,8 @@ public class UnitService {
     // Them Don Vi
     @PreAuthorize("hasRole('ADMIN')")
     public UnitResponse createUnit(UnitCreateRequest request) {
-        if (unitRepository.existsByName(request.getName())) throw new AppException(ErrorCode.UNIT_EXISTED);
+        if (unitRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.UNIT_EXISTED);
 
         Unit unit = unitMapper.toUnit(request);
         unitRepository.save(unit);
@@ -45,14 +46,15 @@ public class UnitService {
     // Xem danh sach don vi
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UnitResponse> getUnit(Pageable pageable) {
-        return unitRepository.findAll(pageable).map(unitMapper::toUnitResponse);
+        return unitRepository.findAll(pageable)
+                .map(unitMapper::toUnitResponse);
     }
 
     // Sua don vi
     @PreAuthorize("hasRole('ADMIN')")
     public UnitResponse updateUnit(UnitUpdateRequest request) {
-        Unit unit =
-                unitRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
+        Unit unit = unitRepository.findById(request.getId())
+                        .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
         unitMapper.updateUnit(unit, request);
         unitRepository.save(unit);
@@ -64,7 +66,8 @@ public class UnitService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUnit(String id) {
-        Unit unit = unitRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
+        Unit unit = unitRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
         priceRepository.deleteAllByUnitId(id);
         unitRepository.deleteById(unit.getId());
     }

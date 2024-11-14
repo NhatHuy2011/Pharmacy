@@ -26,23 +26,31 @@ public class CartController {
     @PostMapping
     public ApiResponse<Void> addToCartForUser(@RequestBody AddToCartRequest request) {
         cartService.addToCartForUser(request);
-        return ApiResponse.<Void>builder().message("Add to cart success").build();
+        return ApiResponse.<Void>builder()
+                .message("Add to cart success")
+                .build();
     }
 
     @GetMapping
     public ApiResponse<CartResponse> getCartForUser() {
         CartResponse cartResponse = cartService.getCartForUser();
         if (cartResponse != null) {
-            return ApiResponse.<CartResponse>builder().result(cartResponse).build();
+            return ApiResponse.<CartResponse>builder()
+                    .result(cartResponse)
+                    .build();
         } else {
-            return ApiResponse.<CartResponse>builder().message("Giỏ hàng trống").build();
+            return ApiResponse.<CartResponse>builder()
+                    .message("Giỏ hàng trống")
+                    .build();
         }
     }
 
     @PutMapping
     public ApiResponse<Void> updateCartForUser(@RequestBody UpdateCartRequest request) {
         cartService.updateCartForUser(request);
-        return ApiResponse.<Void>builder().message("Update cart successful").build();
+        return ApiResponse.<Void>builder()
+                .message("Update cart successful")
+                .build();
     }
 
     @DeleteMapping
@@ -56,14 +64,18 @@ public class CartController {
     @PostMapping("/guest")
     public ApiResponse<Void> addToCartForGuest(@RequestBody AddToCartRequest request, HttpSession session) {
         cartService.addToCartForGuest(request, session);
-        return ApiResponse.<Void>builder().message("Add to cart successful").build();
+        return ApiResponse.<Void>builder()
+                .message("Add to cart successful")
+                .build();
     }
 
     @GetMapping("/guest")
     public ApiResponse<CartTemporary> getCartForGuest(HttpSession session) {
         CartTemporary cartTemporary = cartService.getCartForGuest(session);
         if (cartTemporary != null) {
-            return ApiResponse.<CartTemporary>builder().result(cartTemporary).build();
+            return ApiResponse.<CartTemporary>builder()
+                    .result(cartTemporary)
+                    .build();
         } else {
             return ApiResponse.<CartTemporary>builder()
                     .message("Giỏ hàng trống")
@@ -74,7 +86,9 @@ public class CartController {
     @PutMapping("/guest")
     public ApiResponse<Void> updateCartForGuest(@RequestBody UpdateCartRequest request, HttpSession session) {
         cartService.updateCartForGuest(request, session);
-        return ApiResponse.<Void>builder().message("Update cart successful").build();
+        return ApiResponse.<Void>builder()
+                .message("Update cart successful")
+                .build();
     }
 
     @DeleteMapping("/guest")
@@ -88,6 +102,8 @@ public class CartController {
     @PostMapping("/transfer")
     public ApiResponse<Void> transferCart(HttpSession session) {
         cartService.transferGuestCartToUserCart(session);
-        return ApiResponse.<Void>builder().message("Transfer successful").build();
+        return ApiResponse.<Void>builder()
+                .message("Transfer successful")
+                .build();
     }
 }

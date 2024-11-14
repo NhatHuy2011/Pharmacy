@@ -41,6 +41,14 @@ public class AddressService {
 
         Address address = addressMapper.toAddress(request);
         address.setUser(user);
+
+        boolean isDuplicate = user.getAddresses().stream()
+                        .anyMatch(existingAddress -> existingAddress.equals(address));
+
+        if(isDuplicate){
+            throw new AppException(ErrorCode.ADDRESS_EXISTED);
+        }
+
         addressRepository.save(address);
 
         user.getAddresses().add(address);

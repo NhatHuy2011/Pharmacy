@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Data
@@ -53,4 +52,18 @@ public class Address {
 
     @OneToMany(mappedBy = "address")
     List<Orders> orders;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return  phone == address.phone &&
+                Objects.equals(fullname, address.fullname) &&
+                Objects.equals(province, address.province) &&
+                Objects.equals(district, address.district) &&
+                Objects.equals(village, address.village) &&
+                Objects.equals(this.address, address.address) &&
+                addressCategory == address.addressCategory;
+    }
 }

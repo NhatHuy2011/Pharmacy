@@ -43,7 +43,8 @@ public class CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request, MultipartFile multipartFile)
             throws IOException {
-        if (categoryRepository.existsByName(request.getName())) throw new AppException(ErrorCode.CATEGORY_EXISTED);
+        if (categoryRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.CATEGORY_EXISTED);
 
         // Check parent
         Category parent = null;

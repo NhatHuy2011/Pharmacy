@@ -36,7 +36,7 @@ public class Orders {
     Address address;
 
     @OneToMany(mappedBy = "orders")
-    List<OrderItem> orderItems = new ArrayList<>();
+    List<OrderItem> orderItems;
 
     @Column
     LocalDateTime orderDate;

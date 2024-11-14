@@ -17,4 +17,5 @@ public class PriceResponse {
     String unit;
     int price;
     String description;
+    String image;
 }

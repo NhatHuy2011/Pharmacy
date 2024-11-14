@@ -8,11 +8,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CartItemTemporary {
+public class OrderItemTemporary {
     String id;
     String priceId;
     String productName;
     String unitName;
-    int price;
     int quantity;
+    int price;
 }

@@ -4,6 +4,9 @@ import java.util.Objects;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import com.project.pharmacy.dto.request.PriceCreateRequest;
@@ -31,6 +34,17 @@ public class PriceController {
                 .build();
     }
 
+    @GetMapping
+    public ApiResponse<Page<PriceResponse>> getPrice(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PriceResponse> priceResponses = priceService.getPrice(pageable);
+
+        return ApiResponse.<Page<PriceResponse>>builder()
+                .result(priceResponses)
+                .build();
+    }
+
     @PutMapping
     public ApiResponse<Objects> updatePrice(@RequestBody PriceUpdateRequest request) {
         priceService.updatePrice(request);
@@ -40,6 +54,7 @@ public class PriceController {
     @DeleteMapping("{id}")
     public ApiResponse<Objects> deletePrice(@PathVariable String id) {
         priceService.deletePrice(id);
-        return ApiResponse.<Objects>builder().message("Delete Successful").build();
+        return ApiResponse.<Objects>builder()
+        .message("Delete Successful").build();
     }
 }

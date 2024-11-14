@@ -28,7 +28,8 @@ public class SecurityConfig {
         "/auth/logout",
         "/auth/outbound/authentication",
         "/auth/refresh",
-        "/cart/guest"
+        "/cart/guest",
+        "/order/guest/**"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
