@@ -29,14 +29,17 @@ public class SecurityConfig {
         "/auth/outbound/authentication",
         "/auth/refresh",
         "/cart/guest",
-        "/order/guest/**"
+        "/order/guest/**",
+        "/zalopay/create-payment"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
             "/category/**",
             "/company",
             "/cart/guest",
-            "/vnpay/callback"
+            "/vnpay/callback",
+            "/momo/callback",
+            "/zalopay/callback"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {

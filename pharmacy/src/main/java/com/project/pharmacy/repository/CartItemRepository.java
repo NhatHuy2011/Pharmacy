@@ -8,4 +8,5 @@ import com.project.pharmacy.entity.Cart;
 import com.project.pharmacy.entity.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, String> {
+    void deleteAllByCartId(String id);
 }

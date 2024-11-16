@@ -1,5 +1,6 @@
 package com.project.pharmacy.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,6 +64,7 @@ public class CartService {
             cart = Cart.builder()
                     .user(user)
                     .totalPrice(0)
+                    .cartItems(new ArrayList<>())
                     .build();
             cartRepository.save(cart);
         }
@@ -80,6 +82,7 @@ public class CartService {
         cartItemRepository.save(cartItem);
 
         cart.setTotalPrice(cart.getTotalPrice() + price.getPrice() * request.getQuantity());
+        cart.getCartItems().add(cartItem);
         cartRepository.save(cart);
     }
 

@@ -21,6 +21,8 @@ import com.project.pharmacy.entity.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +45,11 @@ public class OrderService {
 
 	PriceRepository priceRepository;
 
+	CartRepository cartRepository;
+
+	CartItemRepository cartItemRepository;
+
+	@Transactional
 	public OrderResponse createOrderAtCartUser(CreateOrderRequestAtCartUser request){
     	var context = SecurityContextHolder.getContext();
     	String name = context.getAuthentication().getName();
@@ -69,6 +76,7 @@ public class OrderService {
 				.address(address)
     			.orderDate(LocalDateTime.now())
 				.status(OrderStatus.PENDING)
+				.orderItems(new ArrayList<>())
 				.paymentMethod(request.getPaymentMethod())
 				.totalPrice(cart.getTotalPrice())
     			.build();
@@ -87,7 +95,15 @@ public class OrderService {
 						})
 						.toList();
 
-		List<OrderItemResponse> orderItemResponses = orderItems.stream()
+		order.setOrderItems(orderItems);
+
+		cartItemRepository.deleteAll(cart.getCartItems());
+
+		//cartItemRepository.deleteAllByCartId(cart.getId());
+		cart.setTotalPrice(0);
+		cartRepository.save(cart);
+
+		List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream()
 				.map(orderItem -> OrderItemResponse.builder()
                         .id(orderItem.getId())
                         .priceId(orderItem.getPrice().getId())
@@ -194,6 +210,9 @@ public class OrderService {
 		orderTemporary.setTotalPrice(cartTemporary.getTotalPrice());
 
 		session.setAttribute("Order", orderTemporary);
+
+		cartTemporary.getCartItems().clear();
+		cartTemporary.setTotalPrice(0);
 
 		return orderTemporary;
 	}

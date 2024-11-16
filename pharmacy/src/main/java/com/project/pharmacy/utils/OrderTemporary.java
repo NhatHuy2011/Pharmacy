@@ -26,7 +26,7 @@ public class OrderTemporary {
     String village;
     String address;
     AddressCategory addressCategory;
-    List<OrderItemTemporary> orderItemTemporaries = new ArrayList<>();
+    List<OrderItemTemporary> orderItemTemporaries;
     LocalDateTime orderDate;
     PaymentMethod paymentMethod;
     OrderStatus orderStatus;

@@ -42,10 +42,10 @@ public class Orders {
     LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "ENUM('PENDING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING'")
+    @Column(name = "status", columnDefinition = "ENUM('PENDING', 'SUCCESS', 'FAILED', 'CANCELLED') DEFAULT 'PENDING'")
     OrderStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "paymentMethod", columnDefinition = "ENUM('CASH', 'VNPAY') DEFAULT 'CASH'")
+    @Column(name = "paymentMethod", columnDefinition = "ENUM('CASH', 'VNPAY', 'MOMO', 'ZALOPAY') DEFAULT 'CASH'")
     PaymentMethod paymentMethod;
 }

@@ -18,6 +18,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @EqualsAndHashCode.Exclude
     Orders orders;
 
     @ManyToOne

@@ -87,7 +87,7 @@ public class VNPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 1);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -135,8 +135,7 @@ public class VNPayService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        int amount = orders.getTotalPrice();
-        return amount;
+        return orders.getTotalPrice();
     }
 
     public void callBack(String responseCode, String orderId){
@@ -146,7 +145,7 @@ public class VNPayService {
         if(responseCode.equals("00")){
             orders.setStatus(OrderStatus.SUCCESS);
         } else {
-            orders.setStatus(OrderStatus.FAIL);
+            orders.setStatus(OrderStatus.FAILED);
         }
 
         orderRepository.save(orders);
