@@ -14,8 +14,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -77,7 +80,7 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable); // Mac dinh bat csrf //(httpSecurityCsrfConfigurer ->
         // httpSecurityCsrfConfigurer.disable())
-
+        httpSecurity.cors(cors -> cors.configurationSource(corsFilter()));
         return httpSecurity.build();
     }
 
@@ -93,14 +96,29 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsConfigurationSource corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
+
+        // Chỉ định rõ các origin được phép (ví dụ: localhost:3000)
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+
+        // Hoặc sử dụng với nhiều origin
+        // config.setAllowedOrigins(List.of("http://localhost:3000", "http://example.com"));
+
+        // Chỉ định các header được phép
         config.addAllowedHeader("*");
+
+        // Chỉ định các phương thức được phép
         config.addAllowedMethod("*");
+
+        // Cho phép gửi cookie và các thông tin xác thực
+        config.setAllowCredentials(true);
+
+        // Tạo nguồn cấu hình
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+
+        return source;
     } // Cau hinh Cors để cho phép may chu Spring Boot goi cac yeu cau tu nguon. Vi du: http://localhost:3000
 
     @Bean // Khi danh dau Bean thi Bien nay se duoc dua vao Application Context de su dung o nhung noi khac

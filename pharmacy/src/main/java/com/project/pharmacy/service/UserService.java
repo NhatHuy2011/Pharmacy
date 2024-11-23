@@ -60,18 +60,17 @@ public class UserService {
         Set<Role> roles = new HashSet<>();
         roles.add(role);
 
-        User user = userMapper.toUser(request);
-
         if (!request.getPassword().equals(request.getConfirmPassword()))
             throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
 
+        String otpCode = generateOTP();
+
+        User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setStatus(false);
         user.setIsVerified(false);
         user.setRoles(roles);
         // user.setRank("Thành viên");
-
-        String otpCode = generateOTP();
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);
@@ -93,8 +92,7 @@ public class UserService {
     }
 
     public void verifyEmailSignUp(UserVerifiedEmailSignUp request) {
-        User user = userRepository
-                .findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
@@ -115,8 +113,7 @@ public class UserService {
 
     // OTP het han
     public void refreshOtp(UserRefreshOtp request) {
-        User user = userRepository
-                .findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         String otpCode = generateOTP();
@@ -134,8 +131,7 @@ public class UserService {
 
     // User quen mat khau
     public UserResponse forgotPassword(UserForgotPassword request) {
-        User user = userRepository
-                .findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         String otpCode = generateOTP();
@@ -316,7 +312,8 @@ public class UserService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!(passwordEncoder.matches(request.getOldPassword(), user.getPassword())))
             throw new AppException(ErrorCode.PASSWORD_NOT_MATCH);

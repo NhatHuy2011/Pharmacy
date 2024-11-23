@@ -31,7 +31,7 @@ public enum ErrorCode {
     PRICE_NOT_BE_EQUAL("Price not be equal", 400, HttpStatus.BAD_REQUEST),
 
     // User exception
-    USER_EXISTED("User existed", 400, HttpStatus.BAD_REQUEST),
+    USER_EXISTED("Username existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_EXISTED("Password existed", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCH("Password does not match", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_RE_ENTERING_INCORRECT("Mật khẩu không trùng hợp", 400, HttpStatus.BAD_REQUEST),

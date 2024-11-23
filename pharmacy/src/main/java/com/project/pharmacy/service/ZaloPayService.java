@@ -3,10 +3,13 @@ package com.project.pharmacy.service;
 import com.project.pharmacy.configuration.ZaloPayConfig;
 import com.project.pharmacy.entity.Orders;
 import com.project.pharmacy.entity.User;
+import com.project.pharmacy.enums.OrderStatus;
+import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.OrderRepository;
 import com.project.pharmacy.repository.UserRepository;
+import jakarta.xml.bind.DatatypeConverter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,11 +27,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -56,8 +64,6 @@ public class ZaloPayService {
 
     UserRepository userRepository;
 
-    OrderRepository orderRepository;
-
     private String getCurrentTimeString(String format) {
 
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
@@ -80,7 +86,7 @@ public class ZaloPayService {
             put("bankcode", "");
             put("item", "[]");
             put("embeddata", "{}");
-            put("callback_url", "http://localhost:8080/api/v1/pharmacy/zalopay/callback");
+            put("callback_url", "https://e1e1-171-248-172-160.ngrok-free.app/api/v1/pharmacy/zalopay/callback");
         }};
 
         String data = order.get("appid") +"|"+ order.get("apptransid") +"|"+ order.get("appuser") +"|"+ order.get("amount")
@@ -92,7 +98,6 @@ public class ZaloPayService {
 
         List<NameValuePair> params = new ArrayList<>();
         for (Map.Entry<String, Object> e : order.entrySet()) {
-
             params.add(new BasicNameValuePair(e.getKey(), e.getValue().toString()));
         }
 
@@ -126,9 +131,50 @@ public class ZaloPayService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Orders orders = orderRepository.findById(orderId)
+        Orders orders = user.getOrders().stream()
+                .filter(orders1 -> orders1.getId().equals(orderId)
+                        && orders1.getPaymentMethod().equals(PaymentMethod.ZALOPAY)
+                        && orders1.getStatus().equals(OrderStatus.PENDING))
+                .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         return orders.getTotalPrice();
+    }
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public Object doCallBack(JSONObject result, String jsonStr) throws JSONException, NoSuchAlgorithmException, InvalidKeyException {
+
+        Mac HmacSHA256 = Mac.getInstance("HmacSHA256");
+        HmacSHA256.init(new SecretKeySpec(key2.getBytes(), "HmacSHA256"));
+
+        try {
+            JSONObject cbdata = new JSONObject(jsonStr);
+            String dataStr = cbdata.getString("data");
+            String reqMac = cbdata.getString("mac");
+
+            byte[] hashBytes = HmacSHA256.doFinal(dataStr.getBytes());
+            String mac = DatatypeConverter.printHexBinary(hashBytes).toLowerCase();
+
+            // check if the callback is valid (from ZaloPay server)
+            if (!reqMac.equals(mac)) {
+                // callback is invalid
+                result.put("returncode", -1);
+                result.put("returnmessage", "mac not equal");
+            } else {
+                // payment success
+                // merchant update status for order's status
+                JSONObject data = new JSONObject(dataStr);
+                logger.info("update order's status = success where app_trans_id = " + data.getString("app_trans_id"));
+
+                result.put("return_code", 1);
+                result.put("return_message", "success");
+            }
+        } catch (Exception ex) {
+            result.put("return_code", 0); // callback again (up to 3 times)
+            result.put("return_message", ex.getMessage());
+        }
+
+        return result;
     }
 }

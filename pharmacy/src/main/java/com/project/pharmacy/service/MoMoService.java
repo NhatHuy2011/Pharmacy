@@ -4,6 +4,7 @@ import com.project.pharmacy.configuration.MoMoConfig;
 import com.project.pharmacy.entity.Orders;
 import com.project.pharmacy.entity.User;
 import com.project.pharmacy.enums.OrderStatus;
+import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.OrderRepository;
@@ -124,7 +125,11 @@ public class MoMoService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Orders orders = orderRepository.findById(orderId)
+        Orders orders = user.getOrders().stream()
+                .filter(orders1 -> orders1.getId().equals(orderId)
+                        && orders1.getPaymentMethod().equals(PaymentMethod.MOMO)
+                        && orders1.getStatus().equals(OrderStatus.PENDING))
+                .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         return orders.getTotalPrice();

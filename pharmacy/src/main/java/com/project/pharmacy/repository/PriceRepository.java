@@ -1,5 +1,6 @@
 package com.project.pharmacy.repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,9 +14,9 @@ import com.project.pharmacy.entity.Unit;
 public interface PriceRepository extends JpaRepository<Price, String> {
     boolean existsByProductAndUnit(Product product, Unit unit);
 
-    Set<Price> findByProductId(String productId);
+    Optional<Set<Price>> findByProductId(String productId);
 
-    Price findByProductAndUnit(Product product, Unit unit);
+    Optional<Price> findByProductAndUnit(Product product, Unit unit);
 
     void deleteAllByProductId(String id);
 

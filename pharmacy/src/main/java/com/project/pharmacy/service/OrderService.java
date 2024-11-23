@@ -142,7 +142,8 @@ public class OrderService {
 		Unit unit = unitRepository.findById(request.getUnitId())
 				.orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
-		Price price = priceRepository.findByProductAndUnit(product, unit);
+		Price price = priceRepository.findByProductAndUnit(product, unit)
+				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		Orders orders = Orders.builder()
 				.user(user)
@@ -224,7 +225,8 @@ public class OrderService {
 		Unit unit = unitRepository.findById(request.getUnitId())
 				.orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
-		Price price = priceRepository.findByProductAndUnit(product, unit);
+		Price price = priceRepository.findByProductAndUnit(product, unit)
+				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		OrderItemTemporary orderItemTemporary = OrderItemTemporary.builder()
 				.id(UUID.randomUUID().toString())

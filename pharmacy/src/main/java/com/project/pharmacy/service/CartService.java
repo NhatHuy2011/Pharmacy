@@ -56,7 +56,8 @@ public class CartService {
         Unit unit = unitRepository.findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
-        Price price = priceRepository.findByProductAndUnit(product, unit);
+        Price price = priceRepository.findByProductAndUnit(product, unit)
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
         Cart cart = user.getCart();
 
@@ -202,10 +203,14 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        Image firstImage = imageRepository.findFirstByProductId(product.getId());
+        String url = firstImage != null ? firstImage.getSource() : null;
+
         Unit unit = unitRepository.findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
-        Price price = priceRepository.findByProductAndUnit(product, unit);
+        Price price = priceRepository.findByProductAndUnit(product, unit)
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
         List<CartItemTemporary> cartItems = temporaryCart.getCartItems();
 
@@ -222,6 +227,7 @@ public class CartService {
                     .unitName(unit.getName())
                     .price(price.getPrice())
                     .quantity(request.getQuantity())
+                    .url(url)
                     .build();
             cartItems.add(cartItemTemporary);
         } else {

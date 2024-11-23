@@ -157,13 +157,16 @@ public class ProductService {
     // Role USER
     // Xem danh sách sản phẩm
     public Page<ProductResponse> getAllProduct(Pageable pageable) {
-        return productRepository.findAll(pageable).map(product -> {
+        return productRepository.findAll(pageable)
+                .map(product -> {
             // Lấy hình ảnh đầu tiên
             Image firstImage = imageRepository.findFirstByProductId(product.getId());
             String url = firstImage != null ? firstImage.getSource() : null;
 
             // Lấy danh sách đơn vị và giá sản phẩm
-            Set<Price> prices = priceRepository.findByProductId(product.getId());
+            Set<Price> prices = priceRepository.findByProductId(product.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
             Set<Integer> price = prices.stream()
                     .map(Price::getPrice)
                     .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
@@ -193,7 +196,9 @@ public class ProductService {
             String url = firstImage != null ? firstImage.getSource() : null;
 
             // Lấy danh sách đơn vị và giá sản phẩm
-            Set<Price> prices = priceRepository.findByProductId(product.getId());
+            Set<Price> prices = priceRepository.findByProductId(product.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
             Set<Integer> price = prices.stream()
                     .map(Price::getPrice)
                     .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
@@ -224,15 +229,17 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return priceRepository.findByProductId(product.getId())
-                .stream()
-                .map(price -> {
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
-                    productResponse.setUnit_one_id(price.getUnit().getId());
-                    productResponse.setUnit_one(price.getUnit().getName());
-                    productResponse.setPrice_one(price.getPrice());
-                    productResponse.setImages(imageUrls);
-                    return productResponse;
+                .map(prices -> prices.stream()
+                        .map(price -> {
+                            ProductResponse productResponse = productMapper.toProductResponse(product);
+                            productResponse.setUnit_one_id(price.getUnit().getId());
+                            productResponse.setUnit_one(price.getUnit().getName());
+                            productResponse.setPrice_one(price.getPrice());
+                            productResponse.setImages(imageUrls);
+                            return productResponse;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+            )
+            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
     }
 }

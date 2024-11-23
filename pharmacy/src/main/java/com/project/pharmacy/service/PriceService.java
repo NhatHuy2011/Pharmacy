@@ -41,12 +41,10 @@ public class PriceService {
     // ADMIN and EMPLOYEE
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public PriceResponse createPrice(PriceCreateRequest request) {
-        Product product = productRepository
-                .findById(request.getProductId())
+        Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        Unit unit = unitRepository
-                .findById(request.getUnitId())
+        Unit unit = unitRepository.findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
         if (priceRepository.existsByProductAndUnit(product, unit)) {
@@ -57,7 +55,9 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        Set<Price> prices = priceRepository.findByProductId(request.getProductId());
+        Set<Price> prices = priceRepository.findByProductId(request.getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
         for (Price price1 : prices) {
             if (price1.getPrice() == request.getPrice()) {
                 throw new AppException(ErrorCode.PRICE_NOT_BE_EQUAL);
@@ -101,14 +101,15 @@ public class PriceService {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void updatePrice(PriceUpdateRequest request) {
-        Product product = productRepository
-                .findById(request.getProductId())
+        Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        Unit unit = unitRepository
-                .findById(request.getUnitId())
+        
+        Unit unit = unitRepository.findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 
-        Price price = priceRepository.findByProductAndUnit(product, unit);
+        Price price = priceRepository.findByProductAndUnit(product, unit)
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
         if (price == null) {
             throw new AppException(ErrorCode.PRICE_NOT_FOUND);
         }
@@ -123,7 +124,8 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        Set<Price> prices = priceRepository.findByProductId(request.getProductId());
+        Set<Price> prices = priceRepository.findByProductId(request.getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));;
 
         double priceRatio = (double) request.getPrice() / oldPrice;
 

@@ -49,8 +49,7 @@ public class CategoryService {
         // Check parent
         Category parent = null;
         if (request.getParent() != null) {
-            parent = categoryRepository
-                    .findById(request.getParent())
+            parent = categoryRepository.findById(request.getParent())
                     .orElseThrow(() -> new AppException(ErrorCode.PARENT_CATEGORY_NOT_FOUND));
         }
 

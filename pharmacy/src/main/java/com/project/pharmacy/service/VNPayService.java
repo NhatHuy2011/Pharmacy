@@ -131,7 +131,8 @@ public class VNPayService {
 
         Orders orders = user.getOrders().stream()
                 .filter(orders1 -> orders1.getId().equals(orderId)
-                        && orders1.getPaymentMethod().equals(PaymentMethod.VNPAY))
+                        && orders1.getPaymentMethod().equals(PaymentMethod.VNPAY)
+                        && orders1.getStatus().equals(OrderStatus.PENDING))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
