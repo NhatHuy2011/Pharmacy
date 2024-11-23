@@ -81,7 +81,6 @@ public class PriceService {
                 .build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public Page<PriceResponse> getPrice(Pageable pageable){
         return priceRepository.findAll(pageable)
                 .map(price -> {
@@ -103,7 +102,7 @@ public class PriceService {
     public void updatePrice(PriceUpdateRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        
+
         Unit unit = unitRepository.findById(request.getUnitId())
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
 

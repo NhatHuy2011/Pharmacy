@@ -44,7 +44,6 @@ public class UnitService {
     }
 
     // Xem danh sach don vi
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<UnitResponse> getUnit(Pageable pageable) {
         return unitRepository.findAll(pageable)
                 .map(unitMapper::toUnitResponse);

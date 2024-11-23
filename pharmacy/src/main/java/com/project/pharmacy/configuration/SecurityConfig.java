@@ -36,8 +36,11 @@ public class SecurityConfig {
         "/zalopay/create-payment"
     };
 
-    private final String[] PUBLIC_GET_ENDPOINTS = {"/product/**",
+    private final String[] PUBLIC_GET_ENDPOINTS = {
+            "/product/**",
             "/category/**",
+            "/unit",
+            "/price",
             "/company",
             "/cart/guest",
             "/vnpay/callback",
