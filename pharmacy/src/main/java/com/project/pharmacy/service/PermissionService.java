@@ -50,7 +50,6 @@ public class PermissionService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deletePermission(String id) {
         roleRepository.removePermissionFromRoles(id);
-
         permissionRepository.deleteById(id);
     }
 }

@@ -43,7 +43,8 @@ public class CompanyService {
     // Them cong ty
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
-        if (companyRepository.existsByName(request.getName())) throw new AppException(ErrorCode.COMPANY_EXISTED);
+        if (companyRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.COMPANY_EXISTED);
         String url = cloudinaryService.uploadImage(files);
 
         Company company = companyMapper.toCompany(request);
@@ -56,8 +57,7 @@ public class CompanyService {
     // Sua cong ty
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public CompanyResponse updateCompany(CompanyUpdateRequest request, MultipartFile files) throws IOException {
-        Company company = companyRepository
-                .findById(request.getId())
+        Company company = companyRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 
         if (files != null && !files.isEmpty()) {
@@ -76,8 +76,8 @@ public class CompanyService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteCompany(String id) {
-        Company company =
-                companyRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
         List<Product> products = productRepository.findByCompanyId(id);
         for (Product product : products) {
             imageRepository.deleteAllByProductId(product.getId());

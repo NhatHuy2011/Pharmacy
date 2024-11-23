@@ -73,7 +73,10 @@ public class ProductService {
             for (MultipartFile multipartFile : multipartFiles) {
                 String urlImage = cloudinaryService.uploadImage(multipartFile);
                 imageUrls.add(urlImage);
-                Image image = Image.builder().product(product).source(urlImage).build();
+                Image image = Image.builder()
+                        .product(product)
+                        .source(urlImage)
+                        .build();
                 imageRepository.save(image);
             }
         } else {

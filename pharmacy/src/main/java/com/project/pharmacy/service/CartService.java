@@ -215,7 +215,7 @@ public class CartService {
         List<CartItemTemporary> cartItems = temporaryCart.getCartItems();
 
         CartItemTemporary cartItemTemporary = cartItems.stream()
-                .filter(item -> item.getId().equals(request.getCartId()))
+                .filter(item -> item.getPriceId().equals(price.getId()))
                 .findFirst()
                 .orElse(null);
 
