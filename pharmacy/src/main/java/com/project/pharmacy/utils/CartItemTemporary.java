@@ -15,5 +15,6 @@ public class CartItemTemporary {
     String unitName;
     int price;
     int quantity;
+    int amount;
     String url;
 }

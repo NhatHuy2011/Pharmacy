@@ -3,7 +3,9 @@ package com.project.pharmacy.service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.project.pharmacy.dto.response.ProductResponse;
 import com.project.pharmacy.entity.Image;
+import com.project.pharmacy.mapper.PriceMapper;
 import com.project.pharmacy.repository.ImageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,8 @@ public class PriceService {
     PriceRepository priceRepository;
 
     ImageRepository imageRepository;
+
+    PriceMapper priceMapper;
 
     // ADMIN and EMPLOYEE
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
@@ -72,13 +76,12 @@ public class PriceService {
                 .build();
         priceRepository.save(price);
 
-        return PriceResponse.builder()
-                .id(price.getId())
-                .product(price.getProduct().getName())
-                .unit(price.getUnit().getName())
-                .price(price.getPrice())
-                .description(price.getDescription())
-                .build();
+        PriceResponse priceResponse =  priceMapper.toPriceResponse(price);
+        priceResponse.setProduct(ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .build());
+        return priceResponse;
     }
 
     public Page<PriceResponse> getPrice(Pageable pageable){
@@ -87,31 +90,23 @@ public class PriceService {
                     Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
                     String url = firstImage != null ? firstImage.getSource() : null;
 
-                    return PriceResponse.builder()
-                            .id(price.getId())
-                            .product(price.getProduct().getName())
-                            .unit(price.getUnit().getName())
-                            .image(url)
-                            .price(price.getPrice())
-                            .description(price.getDescription())
+                    ProductResponse productResponse = ProductResponse.builder()
+                            .id(price.getProduct().getId())
+                            .name(price.getProduct().getName())
                             .build();
+
+                    PriceResponse priceResponse = priceMapper.toPriceResponse(price);
+                    priceResponse.setProduct(productResponse);
+                    priceResponse.setImage(url);
+
+                    return priceResponse;
                 });
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void updatePrice(PriceUpdateRequest request) {
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        Unit unit = unitRepository.findById(request.getUnitId())
-                .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-        Price price = priceRepository.findByProductAndUnit(product, unit)
+        Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
-
-        if (price == null) {
-            throw new AppException(ErrorCode.PRICE_NOT_FOUND);
-        }
 
         int oldPrice = price.getPrice();
 

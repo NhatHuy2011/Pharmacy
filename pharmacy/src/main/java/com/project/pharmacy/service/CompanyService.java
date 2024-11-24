@@ -89,6 +89,7 @@ public class CompanyService {
     // Role USER
     // Xem danh sach cong ty
     public Page<CompanyResponse> getCompany(Pageable pageable) {
-        return companyRepository.findAll(pageable).map(companyMapper::toCompanyResponse);
+        return companyRepository.findAll(pageable)
+                .map(companyMapper::toCompanyResponse);
     }
 }

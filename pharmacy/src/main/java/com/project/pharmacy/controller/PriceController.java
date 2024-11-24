@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import com.project.pharmacy.dto.request.PriceCreateRequest;
@@ -36,8 +37,12 @@ public class PriceController {
 
     @GetMapping
     public ApiResponse<Page<PriceResponse>> getPrice(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
+                                                     @RequestParam(defaultValue = "10") int size,
+                                                     @RequestParam(defaultValue = "asc") String sortOrder){
+        Sort sort = sortOrder.equals("desc")
+                ? Sort.by("product.name").descending()
+                : Sort.by("product.name").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<PriceResponse> priceResponses = priceService.getPrice(pageable);
 
         return ApiResponse.<Page<PriceResponse>>builder()

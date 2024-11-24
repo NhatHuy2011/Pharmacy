@@ -36,11 +36,10 @@ public class RoleService {
     // Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse updateRole(RoleUpdateRequest request) {
-        Role role =
-                roleRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Role role = roleRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        var permissions = permissionRepository
-                .findAllByNameIn(request.getPermissions())
+        var permissions = permissionRepository.findAllByNameIn(request.getPermissions())
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
 
         roleMapper.updateRole(role, request);
@@ -52,7 +51,10 @@ public class RoleService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<RoleResponse> getAll() {
-        return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).collect(Collectors.toList());
+        return roleRepository.findAll()
+                .stream()
+                .map(roleMapper::toRoleResponse)
+                .collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('ADMIN')")

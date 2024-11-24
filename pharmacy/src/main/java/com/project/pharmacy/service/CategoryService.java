@@ -74,15 +74,13 @@ public class CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(CategoryUpdateRequest request, MultipartFile multipartFile)
             throws IOException {
-        Category category = categoryRepository
-                .findById(request.getId())
+        Category category = categoryRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // Check parent
         Category parent = null;
         if (request.getParent() != null) {
-            parent = categoryRepository
-                    .findById(request.getParent())
+            parent = categoryRepository.findById(request.getParent())
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         }
 
@@ -102,8 +100,9 @@ public class CategoryService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(String id) {
-        Category category =
-                categoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        Category category = categoryRepository.findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
         List<Product> products = productRepository.findByCategoryId(id);
         for (Product product : products) {
             imageRepository.deleteAllByProductId(product.getId());

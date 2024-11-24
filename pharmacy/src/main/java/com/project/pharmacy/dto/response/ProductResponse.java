@@ -19,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductResponse {
     String id;
     String name;
-    int quantity;
+    Integer quantity;
     String benefits;
     String ingredients;
     String constraindication;
@@ -28,7 +28,7 @@ public class ProductResponse {
     String preserve;
     String description;
     String note;
-    boolean doctor_advice;
+    Boolean doctor_advice;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dateCreation;
@@ -40,15 +40,11 @@ public class ProductResponse {
 
     CategoryResponse category;
 
-    Set<String> unit_all;
-    String unit_one;
+    Set<PriceResponse> prices;
 
-    Set<String> unit_all_id;
-    String unit_one_id;
-
-    Set<Integer> price_all;
-    Integer price_one;
+    PriceResponse price;
 
     List<String> images;
+
     String image;
 }

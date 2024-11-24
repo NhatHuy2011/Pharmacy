@@ -12,19 +12,11 @@ import com.project.pharmacy.entity.Product;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {
-    @Mapping(target = "category", ignore = true)
-    @Mapping(target = "company", ignore = true)
     Product toProduct(ProductCreateRequest request);
 
     @Mapping(target = "images", ignore = true)
-    @Mapping(target = "price_all", ignore = true)
-    @Mapping(target = "price_one", ignore = true)
-    @Mapping(target = "unit_all", ignore = true)
-    @Mapping(target = "unit_one", ignore = true)
-    @Mapping(target = "image", ignore = true)
+    @Mapping(target = "prices", ignore = true)
     ProductResponse toProductResponse(Product product);
-
-    @Mapping(target = "category", ignore = true)
-    @Mapping(target = "company", ignore = true)
+    
     void updateProduct(@MappingTarget Product product, ProductUpdateRequest request);
 }

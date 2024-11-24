@@ -24,7 +24,7 @@ public class Product {
     String name;
 
     @Column(nullable = false)
-    int quantity;
+    Integer quantity;
 
     @Column(nullable = false)
     String benefits;
@@ -52,9 +52,9 @@ public class Product {
     LocalDate dateExpiration;
 
     @Column(nullable = false)
-    boolean doctor_advice;
+    Boolean doctor_advice;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
 
@@ -63,7 +63,7 @@ public class Product {
     Company company;
 
     @OneToMany(mappedBy = "product")
-    Set<Image> images;
+    List<Image> images;
 
     @OneToMany(mappedBy = "product")
     Set<Price> prices;

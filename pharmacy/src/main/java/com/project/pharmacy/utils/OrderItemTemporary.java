@@ -15,4 +15,5 @@ public class OrderItemTemporary {
     String unitName;
     int quantity;
     int price;
+    int amount;
 }

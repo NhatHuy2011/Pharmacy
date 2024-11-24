@@ -13,8 +13,8 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PriceResponse {
     String id;
-    String product;
-    String unit;
+    ProductResponse product;
+    UnitResponse unit;
     int price;
     String description;
     String image;

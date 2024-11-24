@@ -16,8 +16,6 @@ public interface PriceRepository extends JpaRepository<Price, String> {
 
     Optional<Set<Price>> findByProductId(String productId);
 
-    Optional<Price> findByProductAndUnit(Product product, Unit unit);
-
     void deleteAllByProductId(String id);
 
     void deleteAllByUnitId(String id);

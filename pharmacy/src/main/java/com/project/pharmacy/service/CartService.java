@@ -29,13 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CartService {
-    ProductRepository productRepository;
-
     UserRepository userRepository;
 
     PriceRepository priceRepository;
-
-    UnitRepository unitRepository;
 
     CartRepository cartRepository;
 
@@ -50,13 +46,7 @@ public class CartService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        Unit unit = unitRepository.findById(request.getUnitId())
-                .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-        Price price = priceRepository.findByProductAndUnit(product, unit)
+        Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
         Cart cart = user.getCart();
@@ -73,13 +63,14 @@ public class CartService {
         List<CartItem> cartItems = cart.getCartItems();
 
         CartItem cartItem = cartItems.stream()
-                .filter(item -> item.getId().equals(request.getCartId()))
+                .filter(item -> item.getPrice().getId().equals(request.getPriceId()))
                 .findFirst()
                 .orElse(new CartItem());
 
         cartItem.setCart(cart);
         cartItem.setPrice(price);
         cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+        cartItem.setAmount(price.getPrice() * request.getQuantity());
         cartItemRepository.save(cartItem);
 
         cart.setTotalPrice(cart.getTotalPrice() + price.getPrice() * request.getQuantity());
@@ -103,23 +94,19 @@ public class CartService {
         AtomicInteger totalPrice = new AtomicInteger();
         List<CartItemResponse> cartItemResponses = cart.getCartItems().stream()
                 .map(cartItem -> {
-                    CartItemResponse cartItemResponse = new CartItemResponse();
-                    cartItemResponse.setId(cartItem.getId());
-
-                    Product product = cartItem.getPrice().getProduct();
-                    cartItemResponse.setProductName(product.getName());
-
-                    Unit unit = cartItem.getPrice().getUnit();
-                    cartItemResponse.setUnitName(unit.getName());
-
-                    Image firstImage = imageRepository.findFirstByProductId(product.getId());
+                    Image firstImage = imageRepository.findFirstByProductId(cartItem.getPrice().getProduct().getId());
                     String url = firstImage != null ? firstImage.getSource() : null;
 
-                    cartItemResponse.setImage(url);
-
-                    cartItemResponse.setQuantity(cartItem.getQuantity());
-                    cartItemResponse.setPrice(cartItem.getPrice().getPrice());
-                    cartItemResponse.setAmount(cartItem.getQuantity() * cartItem.getPrice().getPrice());
+                    CartItemResponse cartItemResponse = CartItemResponse.builder()
+                            .id(cartItem.getId())
+                            .image(url)
+                            .priceId(cartItem.getPrice().getId())
+                            .productName(cartItem.getPrice().getProduct().getName())
+                            .unitName(cartItem.getPrice().getUnit().getName())
+                            .price(cartItem.getPrice().getPrice())
+                            .quantity(cartItem.getQuantity())
+                            .amount(cartItem.getQuantity() * cartItem.getPrice().getPrice())
+                            .build();
 
                     totalPrice.addAndGet(cartItemResponse.getAmount());
 
@@ -147,10 +134,16 @@ public class CartService {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
-        CartItem cartItem = cartItemRepository.findById(request.getCartItemId())
-                        .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
+        Price price = priceRepository.findById(request.getPriceId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
+        CartItem cartItem = cart.getCartItems().stream()
+                    .filter(item -> item.getPrice().getId().equals(request.getPriceId()))
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
         cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+        cartItem.setAmount(cartItem.getAmount() + price.getPrice()*request.getQuantity());
 
         cartItemRepository.save(cartItem);
 
@@ -159,7 +152,7 @@ public class CartService {
             cart.getCartItems().remove(cartItem);
         }
 
-        cart.setTotalPrice(cart.getTotalPrice() + cartItem.getPrice().getPrice() * request.getQuantity());
+        cart.setTotalPrice(cart.getTotalPrice() + price.getPrice() * request.getQuantity());
 
         if (cart.getTotalPrice() <= 0) {
             cart.setTotalPrice(0);
@@ -181,10 +174,9 @@ public class CartService {
 
         CartItem cartItem = cartItemRepository.findById(request.getCartItemId())
                         .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
-
         cartItemRepository.delete(cartItem);
 
-        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getPrice().getPrice());
+        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getAmount());
         if (cart.getTotalPrice() <= 0) {
             cart.setTotalPrice(0);
         }
@@ -200,17 +192,11 @@ public class CartService {
             session.setAttribute("Cart", temporaryCart);
         }
 
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        Image firstImage = imageRepository.findFirstByProductId(product.getId());
-        String url = firstImage != null ? firstImage.getSource() : null;
-
-        Unit unit = unitRepository.findById(request.getUnitId())
-                .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-        Price price = priceRepository.findByProductAndUnit(product, unit)
+        Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
+        Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
+        String url = firstImage != null ? firstImage.getSource() : null;
 
         List<CartItemTemporary> cartItems = temporaryCart.getCartItems();
 
@@ -223,16 +209,17 @@ public class CartService {
             cartItemTemporary = CartItemTemporary.builder()
                     .id(UUID.randomUUID().toString())
                     .priceId(price.getId())
-                    .productName(product.getName())
-                    .unitName(unit.getName())
+                    .productName(price.getProduct().getName())
+                    .unitName(price.getUnit().getName())
                     .price(price.getPrice())
                     .quantity(request.getQuantity())
+                    .amount(price.getPrice()*request.getQuantity())
                     .url(url)
                     .build();
             cartItems.add(cartItemTemporary);
         } else {
             cartItemTemporary.setQuantity(cartItemTemporary.getQuantity() + request.getQuantity());
-            cartItemTemporary.setPrice(cartItemTemporary.getPrice() + price.getPrice() * request.getQuantity());
+            cartItemTemporary.setAmount(cartItemTemporary.getAmount() + price.getPrice() * request.getQuantity());
         }
 
         temporaryCart.setTotalPrice(temporaryCart.getTotalPrice() + price.getPrice() * request.getQuantity());
@@ -249,18 +236,22 @@ public class CartService {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
+        Price price = priceRepository.findById(request.getPriceId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
         CartItemTemporary cartItemTemporary = temporaryCart.getCartItems().stream()
-                .filter(item -> item.getId().equals(request.getCartItemId()))
+                .filter(item -> item.getPriceId().equals(request.getPriceId()))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
+        cartItemTemporary.setAmount(cartItemTemporary.getAmount() + price.getPrice()*request.getQuantity());
         cartItemTemporary.setQuantity(cartItemTemporary.getQuantity() + request.getQuantity());
 
         if (cartItemTemporary.getQuantity() <= 0) {
             temporaryCart.getCartItems().remove(cartItemTemporary);
         }
 
-        temporaryCart.setTotalPrice(temporaryCart.getTotalPrice() + cartItemTemporary.getPrice() * request.getQuantity());
+        temporaryCart.setTotalPrice(temporaryCart.getTotalPrice() + price.getPrice() * request.getQuantity());
 
         if (temporaryCart.getTotalPrice() <= 0) {
             temporaryCart.setTotalPrice(0);
@@ -281,7 +272,7 @@ public class CartService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
-        cartTemporary.setTotalPrice(cartTemporary.getTotalPrice() - cartItemTemporary.getPrice());
+        cartTemporary.setTotalPrice(cartTemporary.getTotalPrice() - cartItemTemporary.getAmount());
         cartTemporary.getCartItems().remove(cartItemTemporary);
 
         session.setAttribute("Cart", cartTemporary);
@@ -293,7 +284,8 @@ public class CartService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         Cart userCart = user.getCart();
         if (userCart == null) {
@@ -319,11 +311,12 @@ public class CartService {
                         .cart(userCart)
                         .price(price)
                         .quantity(guestItem.getQuantity())
+                        .amount(guestItem.getAmount())
                         .build();
                 cartItemRepository.save(userCartItem);
             } else {
                 userCartItem.setQuantity(userCartItem.getQuantity() + guestItem.getQuantity());
-                userCartItem.setPrice(price);
+                userCartItem.setAmount(userCartItem.getAmount() + guestItem.getAmount());
             }
         }
 

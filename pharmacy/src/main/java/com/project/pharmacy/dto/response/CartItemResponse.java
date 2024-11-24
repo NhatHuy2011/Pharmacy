@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class CartItemResponse {
     String id;
     String image;
+    String priceId;
     String productName;
     String unitName;
     int price;

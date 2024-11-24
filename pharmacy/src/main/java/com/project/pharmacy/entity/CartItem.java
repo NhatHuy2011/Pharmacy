@@ -18,12 +18,15 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
-    private Cart cart;
+    Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "price_id")
-    private Price price;
+    Price price;
 
     @Column
-    private int quantity;
+    int quantity;
+
+    @Column
+    int amount;
 }

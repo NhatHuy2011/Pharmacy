@@ -49,6 +49,7 @@ public class OrderService {
 
 	CartItemRepository cartItemRepository;
 
+	//For User
 	@Transactional
 	public OrderResponse createOrderAtCartUser(CreateOrderRequestAtCartUser request){
     	var context = SecurityContextHolder.getContext();
@@ -88,6 +89,7 @@ public class OrderService {
 							OrderItem orderItem = OrderItem.builder()
                                     .quantity(cartItem.getQuantity())
                                     .price(cartItem.getPrice())
+									.amount(cartItem.getAmount())
                                     .orders(order)
                                     .build();
 							orderItemRepository.save(orderItem);
@@ -98,8 +100,6 @@ public class OrderService {
 		order.setOrderItems(orderItems);
 
 		cartItemRepository.deleteAll(cart.getCartItems());
-
-		//cartItemRepository.deleteAllByCartId(cart.getId());
 		cart.setTotalPrice(0);
 		cartRepository.save(cart);
 
@@ -111,6 +111,7 @@ public class OrderService {
                         .unitName(orderItem.getPrice().getUnit().getName())
                         .quantity(orderItem.getQuantity())
                         .price(orderItem.getPrice().getPrice())
+						.amount(orderItem.getAmount())
                         .build())
 				.toList();
 
@@ -136,13 +137,7 @@ public class OrderService {
 				.findFirst()
 				.orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
 
-		Product product = productRepository.findById(request.getProductId())
-				.orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-		Unit unit = unitRepository.findById(request.getUnitId())
-				.orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-		Price price = priceRepository.findByProductAndUnit(product, unit)
+		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		Orders orders = Orders.builder()
@@ -160,6 +155,7 @@ public class OrderService {
 				.orders(orders)
 				.price(price)
 				.quantity(1)
+				.amount(price.getPrice())
 				.build();
 		orderItemRepository.save(orderItem);
 
@@ -174,6 +170,7 @@ public class OrderService {
 									.priceId(orderItem.getPrice().getId())
 									.quantity(orderItem.getQuantity())
 									.price(orderItem.getPrice().getPrice())
+									.amount(orderItem.getAmount())
 									.build();
 						})
 				.collect(Collectors.toList());
@@ -184,6 +181,7 @@ public class OrderService {
 		return orderResponse;
 	}
 
+	//For Guest
 	public OrderTemporary createOrderAtCartGuest(CreateOrderRequestAtCartGuest request, HttpSession session){
 		CartTemporary cartTemporary = (CartTemporary) session.getAttribute("Cart");
 
@@ -199,6 +197,7 @@ public class OrderService {
                             .unitName(cartItemTemporary.getUnitName())
                             .quantity(cartItemTemporary.getQuantity())
                             .price(cartItemTemporary.getPrice())
+							.amount(cartItemTemporary.getAmount())
                             .build();
 				})
 				.toList();
@@ -219,22 +218,17 @@ public class OrderService {
 	}
 
 	public OrderTemporary createOrderAtHomeGuest(CreateOrderRequestAtHomeGuest request, HttpSession session){
-		Product product = productRepository.findById(request.getProductId())
-				.orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-		Unit unit = unitRepository.findById(request.getUnitId())
-				.orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-
-		Price price = priceRepository.findByProductAndUnit(product, unit)
+		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		OrderItemTemporary orderItemTemporary = OrderItemTemporary.builder()
 				.id(UUID.randomUUID().toString())
-				.productName(product.getName())
-				.unitName(unit.getName())
+				.productName(price.getProduct().getName())
+				.unitName(price.getUnit().getName())
 				.priceId(price.getId())
 				.quantity(1)
 				.price(price.getPrice())
+				.amount(price.getPrice())
 				.build();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryHome(request);

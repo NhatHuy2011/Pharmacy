@@ -14,5 +14,4 @@ import lombok.experimental.FieldDefaults;
 public class UnitResponse {
     String id;
     String name;
-    String description;
 }

@@ -12,8 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class CreateOrderRequestAtHomeGuest {
-    String productId;
-    String unitId;
+    String priceId;
 
     @NotNull(message = "Vui lòng điền tên người nhận")
     String fullname;

@@ -15,4 +15,5 @@ public class OrderItemResponse {
     String unitName;
     int quantity;
     int price;
+    int amount;
 }

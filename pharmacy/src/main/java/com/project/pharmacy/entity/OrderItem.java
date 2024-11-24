@@ -27,4 +27,7 @@ public class OrderItem {
 
     @Column
     int quantity;
+
+    @Column
+    int amount;
 }

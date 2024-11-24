@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.project.pharmacy.dto.response.PriceResponse;
+import com.project.pharmacy.dto.response.UnitResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -92,8 +96,7 @@ public class ProductService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> files) throws IOException {
-        Product product = productRepository
-                .findById(request.getId())
+        Product product = productRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // Cập nhật thông tin
@@ -105,15 +108,13 @@ public class ProductService {
             throw new AppException(ErrorCode.PRODUCT_EXPIRATION_INVALID);
 
         if (request.getCategoryId() != null) {
-            Category category = categoryRepository
-                    .findById(request.getCategoryId())
+            Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
             product.setCategory(category);
         }
 
         if (request.getCompanyId() != null) {
-            Company company = companyRepository
-                    .findById(request.getCompanyId())
+            Company company = companyRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
             product.setCompany(company);
         }
@@ -170,20 +171,22 @@ public class ProductService {
             Set<Price> prices = priceRepository.findByProductId(product.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-            Set<Integer> price = prices.stream()
-                    .map(Price::getPrice)
-                    .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-            Set<String> unit_name = prices.stream()
-                    .map(productUnit -> productUnit.getUnit().getName())
+            Set<PriceResponse> priceResponses = prices.stream()
+                    .map(price -> {
+                        return PriceResponse.builder()
+                                .id(price.getId())
+                                .unit(UnitResponse.builder()
+                                        .id(price.getUnit().getId())
+                                        .name(price.getUnit().getName())
+                                        .build())
+                                .price(price.getPrice())
+                                .description(price.getDescription())
+                                .build();
+                    })
                     .collect(Collectors.toSet());
-            Set<String> unit_id = prices.stream()
-                    .map(productUnit -> productUnit.getUnit().getId())
-                    .collect(Collectors.toSet());
+
             ProductResponse productResponse = productMapper.toProductResponse(product);
-            productResponse.setUnit_all_id(unit_id);
-            productResponse.setUnit_all(unit_name);
-            productResponse.setPrice_all(price);
+            productResponse.setPrices(priceResponses);
             productResponse.setImage(url);
 
             return productResponse;
@@ -202,20 +205,22 @@ public class ProductService {
             Set<Price> prices = priceRepository.findByProductId(product.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-            Set<Integer> price = prices.stream()
-                    .map(Price::getPrice)
-                    .sorted(Comparator.reverseOrder()) // Sap xep gia giam dan
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-            Set<String> unit_name = prices.stream()
-                    .map(productUnit -> productUnit.getUnit().getName())
+            Set<PriceResponse> priceResponses = prices.stream()
+                    .map(price -> {
+                        return PriceResponse.builder()
+                                .id(price.getId())
+                                .unit(UnitResponse.builder()
+                                        .id(price.getUnit().getId())
+                                        .name(price.getUnit().getName())
+                                        .build())
+                                .price(price.getPrice())
+                                .description(price.getDescription())
+                                .build();
+                    })
                     .collect(Collectors.toSet());
-            Set<String> unit_id = prices.stream()
-                    .map(productUnit -> productUnit.getUnit().getId())
-                    .collect(Collectors.toSet());
+
             ProductResponse productResponse = productMapper.toProductResponse(product);
-            productResponse.setUnit_all_id(unit_id);
-            productResponse.setUnit_all(unit_name);
-            productResponse.setPrice_all(price);
+            productResponse.setPrices(priceResponses);
             productResponse.setImage(url);
 
             return productResponse;
@@ -235,9 +240,15 @@ public class ProductService {
                 .map(prices -> prices.stream()
                         .map(price -> {
                             ProductResponse productResponse = productMapper.toProductResponse(product);
-                            productResponse.setUnit_one_id(price.getUnit().getId());
-                            productResponse.setUnit_one(price.getUnit().getName());
-                            productResponse.setPrice_one(price.getPrice());
+                            productResponse.setPrice(PriceResponse.builder()
+                                            .id(price.getId())
+                                            .unit(UnitResponse.builder()
+                                                    .id(price.getUnit().getId())
+                                                    .name(price.getUnit().getName())
+                                                    .build())
+                                            .price(price.getPrice())
+                                            .description(price.getDescription())
+                                            .build());
                             productResponse.setImages(imageUrls);
                             return productResponse;
                 })
