@@ -68,7 +68,7 @@ public class ProductController {
         Sort sort = sortOrder.equals("desc")
                 ? Sort.by("prices.price").descending()
                 : Sort.by("prices.price").ascending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size);
         Page<ProductResponse> productResponses = productService.getAllProduct(pageable);
 
         return ApiResponse.<Page<ProductResponse>>builder()
@@ -82,12 +82,17 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sortOrder,
             @PathVariable String categoryId) {
-        Sort sort = sortOrder.equals("desc")
-                ? Sort.by("prices.price").descending()
-                : Sort.by("prices.price").ascending();
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<ProductResponse> productResponses = productService.getProductByCategory(pageable, categoryId);
-
+        /*Sort sort = sortOrder.equals("desc")
+                ? Sort.by("name").descending()
+                : Sort.by("name").ascending();*/
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductResponse> productResponses;
+        if(sortOrder.equals("asc")) {
+            productResponses = productService.getProductByCategoryAsc(pageable, categoryId);
+        }
+        else {
+            productResponses = productService.getProductByCategoryDesc(pageable, categoryId);
+        }
         return ApiResponse.<Page<ProductResponse>>builder()
                 .result(productResponses)
                 .build();

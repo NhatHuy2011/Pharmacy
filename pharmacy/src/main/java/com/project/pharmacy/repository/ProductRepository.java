@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.project.pharmacy.entity.Product;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
     boolean existsByName(String name);
@@ -20,5 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     List<Product> findByCompanyId(String companyId);
 
-    Page<Product> findByCategoryId(Pageable pageable, String id);
+    @Query(value = "Select p from Product p JOIN Price pr On p.id = pr.product.id Where p.category.id IN :categoryIds ORDER BY pr.price ASC")
+    Page<Product> findByCategoryIdsAsc(Pageable pageable, List<String> categoryIds);
+
+    @Query(value = "Select p from Product p JOIN Price pr On p.id = pr.product.id Where p.category.id IN :categoryIds ORDER BY pr.price DESC")
+    Page<Product> findByCategoryIdsDesc(Pageable pageable, List<String> categoryIds);
 }

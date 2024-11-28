@@ -194,8 +194,11 @@ public class ProductService {
     }
 
     // Xem theo danh muc
-    public Page<ProductResponse> getProductByCategory(Pageable pageable, String categoryId) {
-        return productRepository.findByCategoryId(pageable, categoryId)
+    public Page<ProductResponse> getProductByCategoryAsc(Pageable pageable, String categoryId) {
+
+        List<String> categoryIds = getAllCategoryIds(categoryId);
+
+        return productRepository.findByCategoryIdsAsc(pageable, categoryIds)
                 .map(product -> {
             // Lấy hình ảnh đầu tiên
             Image firstImage = imageRepository.findFirstByProductId(product.getId());
@@ -225,6 +228,56 @@ public class ProductService {
 
             return productResponse;
         });
+    }
+
+    public Page<ProductResponse> getProductByCategoryDesc(Pageable pageable, String categoryId) {
+
+        List<String> categoryIds = getAllCategoryIds(categoryId);
+
+        return productRepository.findByCategoryIdsDesc(pageable, categoryIds)
+                .map(product -> {
+                    // Lấy hình ảnh đầu tiên
+                    Image firstImage = imageRepository.findFirstByProductId(product.getId());
+                    String url = firstImage != null ? firstImage.getSource() : null;
+
+                    // Lấy danh sách đơn vị và giá sản phẩm
+                    Set<Price> prices = priceRepository.findByProductId(product.getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+
+                    Set<PriceResponse> priceResponses = prices.stream()
+                            .map(price -> {
+                                return PriceResponse.builder()
+                                        .id(price.getId())
+                                        .unit(UnitResponse.builder()
+                                                .id(price.getUnit().getId())
+                                                .name(price.getUnit().getName())
+                                                .build())
+                                        .price(price.getPrice())
+                                        .description(price.getDescription())
+                                        .build();
+                            })
+                            .collect(Collectors.toSet());
+
+                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    productResponse.setPrices(priceResponses);
+                    productResponse.setImage(url);
+
+                    return productResponse;
+                });
+    }
+
+    private List<String> getAllCategoryIds(String parentId) {
+        List<String> categoryIds = new ArrayList<>();
+        getCategoryIdsRecursively(parentId, categoryIds);
+        return categoryIds;
+    }
+
+    private void getCategoryIdsRecursively(String parentId, List<String> categoryIds) {
+        categoryIds.add(parentId);
+        List<Category> subCategories = categoryRepository.findAllByParentId(parentId);
+        for (Category subCategory : subCategories) {
+            getCategoryIdsRecursively(subCategory.getId(), categoryIds);
+        }
     }
 
     // Xem chi tiết sản phẩm
