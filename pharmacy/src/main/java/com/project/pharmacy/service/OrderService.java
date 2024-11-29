@@ -15,6 +15,7 @@ import com.project.pharmacy.utils.CartTemporary;
 import com.project.pharmacy.utils.OrderItemTemporary;
 import com.project.pharmacy.utils.OrderTemporary;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.project.pharmacy.entity.*;
@@ -181,6 +182,40 @@ public class OrderService {
 		return orderResponse;
 	}
 
+	//Xem lich su don hang cua User
+	public List<OrderResponse> getOrderByUser(){
+		var context = SecurityContextHolder.getContext();
+		String name = context.getAuthentication().getName();
+
+		User user = userRepository.findByUsername(name)
+				.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+		return user.getOrders().stream()
+				.map(orders -> {
+					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+					List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+							.map(orderItem -> {
+								return OrderItemResponse.builder()
+										.id(orderItem.getId())
+										.productName(orderItem.getPrice().getProduct().getName())
+										.unitName(orderItem.getPrice().getUnit().getName())
+										.priceId(orderItem.getPrice().getId())
+										.quantity(orderItem.getQuantity())
+										.price(orderItem.getPrice().getPrice())
+										.amount(orderItem.getAmount())
+										.build();
+							})
+							.toList();
+
+					orderResponse.setOrderItemResponses(orderItemResponses);
+					orderResponse.setUserId(orders.getUser().getId());
+
+					return orderResponse;
+				})
+				.toList();
+	}
+
 	//For Guest
 	public OrderTemporary createOrderAtCartGuest(CreateOrderRequestAtCartGuest request, HttpSession session){
 		CartTemporary cartTemporary = (CartTemporary) session.getAttribute("Cart");
@@ -242,6 +277,35 @@ public class OrderService {
 		session.setAttribute("Order", orderTemporary);
 
 		return orderTemporary;
+	}
+
+	//For Admin
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+	public List<OrderResponse> getAll(){
+		return orderRepository.findAll().stream()
+				.map(orders -> {
+					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+					List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+							.map(orderItem -> {
+								return OrderItemResponse.builder()
+										.id(orderItem.getId())
+										.productName(orderItem.getPrice().getProduct().getName())
+										.unitName(orderItem.getPrice().getUnit().getName())
+										.priceId(orderItem.getPrice().getId())
+										.quantity(orderItem.getQuantity())
+										.price(orderItem.getPrice().getPrice())
+										.amount(orderItem.getAmount())
+										.build();
+							})
+							.toList();
+
+					orderResponse.setOrderItemResponses(orderItemResponses);
+					orderResponse.setUserId(orders.getUser().getId());
+
+					return orderResponse;
+				})
+				.toList();
 	}
 }
 

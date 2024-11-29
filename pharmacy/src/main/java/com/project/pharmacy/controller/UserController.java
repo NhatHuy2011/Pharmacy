@@ -153,12 +153,16 @@ public class UserController {
     @PutMapping("/ban/{id}")
     public ApiResponse<Void> banUser(@PathVariable String id) {
         userService.banUser(id);
-        return ApiResponse.<Void>builder().message("User has been banned").build();
+        return ApiResponse.<Void>builder()
+                .message("User has been banned")
+                .build();
     }
 
     @PutMapping("/unban/{id}")
     public ApiResponse<Void> unbanUser(@PathVariable String id) {
         userService.unbanUser(id);
-        return ApiResponse.<Void>builder().message("User has been unbanned").build();
+        return ApiResponse.<Void>builder()
+                .message("User has been unbanned")
+                .build();
     }
 }

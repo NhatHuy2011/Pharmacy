@@ -56,6 +56,14 @@ public class CategoryController {
                 .build();
     }
 
+    //Xem danh sach danh muc
+    @GetMapping
+    public ApiResponse<List<CategoryResponse>> getAll(){
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .result(categoryService.getAll())
+                .build();
+    }
+
     // Sua danh muc
     @PutMapping
     public ApiResponse<CategoryResponse> updateCategory(

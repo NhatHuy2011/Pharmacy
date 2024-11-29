@@ -70,6 +70,14 @@ public class CategoryService {
         return categoryMapper.toCategoryResponse(category);
     }
 
+    //Xem danh sach danh muc
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<CategoryResponse> getAll(){
+        return categoryRepository.findAll().stream()
+                .map(categoryMapper::toCategoryResponse)
+                .toList();
+    }
+
     // Sua danh muc
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(CategoryUpdateRequest request, MultipartFile multipartFile)
