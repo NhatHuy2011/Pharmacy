@@ -49,6 +49,14 @@ public class AddressService {
             throw new AppException(ErrorCode.ADDRESS_EXISTED);
         }
 
+        if(request.getAddressDefault()){
+            for (Address address1 : user.getAddresses()){
+                if (address1.getAddressDefault())
+                    address1.setAddressDefault(false);
+                addressRepository.save(address1);
+            }
+        }
+
         addressRepository.save(address);
 
         user.getAddresses().add(address);
