@@ -78,6 +78,7 @@ public class CategoryController {
     @DeleteMapping("{id}")
     public ApiResponse<Objects> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
-        return ApiResponse.<Objects>builder().message("Delete Successful").build();
+        return ApiResponse.<Objects>builder()
+                .message("Delete Successful").build();
     }
 }

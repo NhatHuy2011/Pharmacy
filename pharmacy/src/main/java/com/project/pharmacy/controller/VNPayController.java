@@ -6,7 +6,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vnpay")
@@ -24,17 +29,29 @@ public class VNPayController {
     }
 
     @GetMapping("/callback")
-    public ApiResponse<Void> callback(@RequestParam(value = "vnp_ResponseCode") String responseCode,
-                                      @RequestParam(value = "vnp_TxnRef") String orderId) {
-        String message;
-        if (responseCode.equals("00")){
-            message = "Thanh toán thành công";
-        }else {
-            message = "Thanh toán thất bại";
-        }
+    public ResponseEntity<Void> callback(@RequestParam Map<String, String> params) {
+        // Lấy mã phản hồi và thông tin ticketId từ tham số
+        String responseCode = params.get("vnp_ResponseCode");
+        String orderId = params.get("vnp_TxnRef");
+
+        // Xử lý thanh toán
         vnPayService.callBack(responseCode, orderId);
-        return ApiResponse.<Void>builder()
-                .message(message)
+
+        // URL của frontend, kèm theo các tham số động
+        String frontendUrl = "http://localhost:3000/paymentCallback";
+        String redirectUrl = frontendUrl + "?";
+
+        // Thêm tất cả các tham số vào URL redirect
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            redirectUrl += entry.getKey() + "=" + entry.getValue() + "&";
+        }
+
+        // Loại bỏ dấu "&" thừa cuối cùng
+        redirectUrl = redirectUrl.substring(0, redirectUrl.length() - 1);
+
+        // Redirect người dùng đến frontend với các tham số
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
                 .build();
     }
 }

@@ -5,6 +5,9 @@ import com.project.pharmacy.service.MoMoService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,17 +28,29 @@ public class MoMoController {
     }
 
     @GetMapping("/callback")
-    public ApiResponse<Void> callback(@RequestParam(value = "errorCode") int errorCode,
-                                      @RequestParam(value = "orderId") String orderId) {
-        String message;
-        if (errorCode == 0){
-            message = "Thanh toán thành công";
-        }else {
-            message = "Thanh toán thất bại";
+    public ResponseEntity<Void> callback(@RequestParam Map<String, String> params) {
+        // Lấy mã phản hồi và thông tin orderId từ tham số
+        String errorCode = params.get("errorCode");
+        String orderId = params.get("orderId");
+
+        // Xử lý thanh toán
+        moMoService.callBack(Integer.parseInt(errorCode), orderId);
+
+        // URL của frontend, kèm theo các tham số động
+        String frontendUrl = "http://localhost:3000/paymentCallback";
+        String redirectUrl = frontendUrl + "?";
+
+        // Thêm tất cả các tham số vào URL redirect
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            redirectUrl += entry.getKey() + "=" + entry.getValue() + "&";
         }
-        moMoService.callBack(errorCode, orderId);
-        return ApiResponse.<Void>builder()
-                .message(message)
+
+        // Loại bỏ dấu "&" thừa cuối cùng
+        redirectUrl = redirectUrl.substring(0, redirectUrl.length() - 1);
+
+        // Redirect người dùng đến frontend với các tham số
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
                 .build();
     }
 }
