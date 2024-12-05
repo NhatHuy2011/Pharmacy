@@ -280,7 +280,7 @@ public class OrderService {
 	}
 
 	//For Employee
-	@PreAuthorize("hasRole('EMPLOYEE')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
 	public List<OrderResponse> getAll(){
 		return orderRepository.findAll().stream()
 				.map(orders -> {
@@ -308,7 +308,7 @@ public class OrderService {
 				.toList();
 	}
 
-	@PreAuthorize("hasRole('EMPLOYEE')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
 	public OrderResponse getOrderDetails(String id){
 		Orders orders = orderRepository.findById(id)
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
