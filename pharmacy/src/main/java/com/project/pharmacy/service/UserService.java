@@ -329,24 +329,9 @@ public class UserService {
 
     // Role ADMIN
     @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse updateRole(UserUpdateRole request) {
-        User user = userRepository
-                .findById(request.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        Role role = roleRepository
-                .findByName(request.getRole())
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-
-        user.getRoles().add(role);
-        userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<UserResponse> getAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(userMapper::toUserResponse);
+    public Page<UserResponse> getAllUser(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userMapper::toUserResponse);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -363,5 +348,37 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(true);
         userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse createEmployee(CreateEmployeeRequest request){
+        if (userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
+        Role role = roleRepository.findByName("EMPLOYEE")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode("12345678"))
+                .roles(roles)
+                .isVerified(true)
+                .status(true)
+                .build();
+
+        userRepository.save(user);
+
+        return userMapper.toUserResponse(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserResponse> getAllEmployee(Pageable pageable) {
+        Role role = roleRepository.findByName("EMPLOYEE")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        return userRepository.findAllByRoles(pageable, role)
+                .map(userMapper::toUserResponse);
     }
 }

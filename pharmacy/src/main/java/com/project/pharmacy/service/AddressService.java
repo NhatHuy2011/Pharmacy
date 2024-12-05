@@ -3,6 +3,9 @@ package com.project.pharmacy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.project.pharmacy.entity.Orders;
+import com.project.pharmacy.repository.OrderItemRepository;
+import com.project.pharmacy.repository.OrderRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import com.project.pharmacy.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +35,10 @@ public class AddressService {
     UserRepository userRepository;
 
     AddressRepository addressRepository;
+
+    OrderRepository orderRepository;
+
+    OrderItemRepository orderItemRepository;
 
     public AddressResponse createAddress(CreateAddressRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -94,15 +102,25 @@ public class AddressService {
         return addressMapper.toAddressResponse(address);
     }
 
+    @Transactional
     public void deleteAddress(String id) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
         Address address = addressRepository.findById(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
 
-        if(!address.getUser().getUsername().equals(name)){
+        if (!address.getUser().getUsername().equals(name)) {
             throw new AccessDeniedException("Bạn không có quyền xoá địa chỉ này");
+        }
+
+        List<Orders> orders = orderRepository.findAllByAddress(address);
+
+        if (orders != null) {
+            orders.forEach(order -> {
+                orderItemRepository.deleteAllByOrders(order);
+                orderRepository.delete(order);
+            });
         }
 
         addressRepository.delete(address);

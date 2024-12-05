@@ -1,9 +1,13 @@
 package com.project.pharmacy.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.project.pharmacy.entity.Role;
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +30,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     void removeRoleFromUsers(@Param("roleId") String roleId);
 
     Optional<User> findByEmail(String email);
+
+    Page<User> findAllByRoles(Pageable pageable, Role role);
 }

@@ -279,8 +279,8 @@ public class OrderService {
 		return orderTemporary;
 	}
 
-	//For Admin
-	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+	//For Employee
+	@PreAuthorize("hasRole('EMPLOYEE')")
 	public List<OrderResponse> getAll(){
 		return orderRepository.findAll().stream()
 				.map(orders -> {
@@ -306,6 +306,33 @@ public class OrderService {
 					return orderResponse;
 				})
 				.toList();
+	}
+
+	@PreAuthorize("hasRole('EMPLOYEE')")
+	public OrderResponse getOrderDetails(String id){
+		Orders orders = orderRepository.findById(id)
+				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+		List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+				.map(orderItem -> {
+					return OrderItemResponse.builder()
+							.id(orderItem.getId())
+							.productName(orderItem.getPrice().getProduct().getName())
+							.unitName(orderItem.getPrice().getUnit().getName())
+							.priceId(orderItem.getPrice().getId())
+							.quantity(orderItem.getQuantity())
+							.price(orderItem.getPrice().getPrice())
+							.amount(orderItem.getAmount())
+							.build();
+				})
+				.toList();
+
+		orderResponse.setOrderItemResponses(orderItemResponses);
+		orderResponse.setUserId(orders.getUser().getId());
+
+		return orderResponse;
 	}
 }
 

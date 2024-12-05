@@ -76,13 +76,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<Page<UserResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserResponse> userResponses = userService.getAll(pageable);
-        return ApiResponse.<Page<UserResponse>>builder().result(userResponses).build();
-    }
+
 
     @GetMapping("/bio")
     public ApiResponse<UserResponse> getMyInFo() {
@@ -143,10 +137,13 @@ public class UserController {
     }
 
     // Role ADMIN
-    @PutMapping("/updateRole")
-    public ApiResponse<UserResponse> updateRole(@RequestBody UserUpdateRole request) {
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.updateRole(request))
+    @GetMapping
+    public ApiResponse<Page<UserResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserResponse> userResponses = userService.getAllUser(pageable);
+        return ApiResponse.<Page<UserResponse>>builder()
+                .result(userResponses)
                 .build();
     }
 
@@ -163,6 +160,23 @@ public class UserController {
         userService.unbanUser(id);
         return ApiResponse.<Void>builder()
                 .message("User has been unbanned")
+                .build();
+    }
+
+    @PostMapping("/employee")
+    public ApiResponse<UserResponse> createEmployee(@RequestBody @Valid CreateEmployeeRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createEmployee(request))
+                .build();
+    }
+
+    @GetMapping("/employee")
+    public ApiResponse<Page<UserResponse>> getAllEmployee(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserResponse> userResponses = userService.getAllEmployee(pageable);
+        return ApiResponse.<Page<UserResponse>>builder()
+                .result(userResponses)
                 .build();
     }
 }

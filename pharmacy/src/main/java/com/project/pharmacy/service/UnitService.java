@@ -32,7 +32,7 @@ public class UnitService {
 
     // Role ADMIN
     // Them Don Vi
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public UnitResponse createUnit(UnitCreateRequest request) {
         if (unitRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.UNIT_EXISTED);
@@ -50,7 +50,7 @@ public class UnitService {
     }
 
     // Sua don vi
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public UnitResponse updateUnit(UnitUpdateRequest request) {
         Unit unit = unitRepository.findById(request.getId())
                         .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
@@ -63,7 +63,7 @@ public class UnitService {
 
     // Xoa don vi
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void deleteUnit(String id) {
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));

@@ -70,11 +70,18 @@ public class OrderController {
                 .build();
     }
 
-    //For Admin
+    //For Employee
     @GetMapping
     public ApiResponse<List<OrderResponse>> getAll() {
         return ApiResponse.<List<OrderResponse>>builder()
                 .result(orderService.getAll())
+                .build();
+    }
+
+    @GetMapping("{id}")
+    public ApiResponse<OrderResponse> getOrderDetails(@PathVariable String id) {
+        return ApiResponse.<OrderResponse>builder()
+                .result(orderService.getOrderDetails(id))
                 .build();
     }
 }
