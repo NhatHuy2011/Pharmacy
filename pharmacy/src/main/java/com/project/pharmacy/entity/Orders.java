@@ -45,6 +45,9 @@ public class Orders {
     @Column(name = "status", columnDefinition = "ENUM('PENDING', 'SUCCESS', 'FAILED', 'CANCELLED') DEFAULT 'PENDING'")
     OrderStatus status;
 
+    @Column
+    Boolean isConfirm;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "paymentMethod", columnDefinition = "ENUM('CASH', 'VNPAY', 'MOMO', 'ZALOPAY') DEFAULT 'CASH'")
     PaymentMethod paymentMethod;

@@ -10,6 +10,10 @@ import com.project.pharmacy.service.OrderService;
 import com.project.pharmacy.utils.OrderTemporary;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AccessLevel;
@@ -72,12 +76,31 @@ public class OrderController {
 
     //For Employee and Admin
     @GetMapping
-    public ApiResponse<List<OrderResponse>> getAll() {
-        return ApiResponse.<List<OrderResponse>>builder()
-                .result(orderService.getAll())
+    public ApiResponse<Page<OrderResponse>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size,
+                                                   @RequestParam(defaultValue = "asc") String sortBy) {
+        Sort.Order isConfirmOrder = sortBy.equals("desc")
+                ? Sort.Order.desc("isConfirm")
+                : Sort.Order.asc("isConfirm");
+
+        Sort.Order orderDateOrder = Sort.Order.asc("orderDate");
+
+        Sort sort = Sort.by(isConfirmOrder, orderDateOrder);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ApiResponse.<Page<OrderResponse>>builder()
+                .result(orderService.getAll(pageable))
                 .build();
     }
 
+    @PutMapping("{id}")
+    public ApiResponse<Void> confirmOrder(@PathVariable String id){
+        orderService.confirmOrders(id);
+        return ApiResponse.<Void>builder()
+                .message("Cập nhật đơn hàng thành công")
+                .build();
+    }
+    
+    //Public
     @GetMapping("{id}")
     public ApiResponse<OrderResponse> getOrderDetails(@PathVariable String id) {
         return ApiResponse.<OrderResponse>builder()

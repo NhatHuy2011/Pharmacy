@@ -24,4 +24,5 @@ public class OrderResponse {
     int totalPrice;
     String paymentMethod;
     String status;
+    Boolean isConfirm;
 }

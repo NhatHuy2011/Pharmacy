@@ -15,6 +15,8 @@ import com.project.pharmacy.utils.CartTemporary;
 import com.project.pharmacy.utils.OrderItemTemporary;
 import com.project.pharmacy.utils.OrderTemporary;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -77,6 +79,7 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.orderItems(new ArrayList<>())
 				.paymentMethod(request.getPaymentMethod())
+				.isConfirm(false)
 				.totalPrice(cart.getTotalPrice())
     			.build();
 		orderRepository.save(order);
@@ -145,6 +148,7 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
 				.totalPrice(price.getPrice())
+				.isConfirm(false)
 				.orderItems(new ArrayList<>())
 				.build();
 		orderRepository.save(orders);
@@ -237,6 +241,7 @@ public class OrderService {
 		orderTemporary.setOrderItemTemporaries(orderItemTemporaries);
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setOrderStatus(OrderStatus.PENDING);
+		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(cartTemporary.getTotalPrice());
 
 		cartTemporary.getCartItems().clear();
@@ -263,6 +268,7 @@ public class OrderService {
 				.paymentMethod(orderTemporary.getPaymentMethod())
 				.address(address)
 				.totalPrice(orderTemporary.getTotalPrice())
+				.isConfirm(false)
 				.build();
 
 		orderRepository.save(orders);
@@ -308,6 +314,7 @@ public class OrderService {
 		orderTemporary.setOrderItemTemporaries(new ArrayList<>());
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setOrderStatus(OrderStatus.PENDING);
+		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(price.getPrice());
 		orderTemporary.getOrderItemTemporaries().add(orderItemTemporary);
 
@@ -331,6 +338,7 @@ public class OrderService {
 				.paymentMethod(orderTemporary.getPaymentMethod())
 				.address(address)
 				.totalPrice(orderTemporary.getTotalPrice())
+				.isConfirm(false)
 				.orderItems(new ArrayList<>())
 				.build();
 		orderRepository.save(orders);
@@ -351,11 +359,12 @@ public class OrderService {
 		return orderTemporary;
 	}
 
-	//For Employee
+	//For Employee and ADMIN
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-	public List<OrderResponse> getAll(){
-		return orderRepository.findAll().stream()
-				.map(orders -> {
+	public Page<OrderResponse> getAll(Pageable pageable){
+		Page<Orders> ordersPage = orderRepository.findByStatus(OrderStatus.SUCCESS, pageable);
+
+		return ordersPage.map(orders -> {
 					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
 
 					List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
@@ -373,14 +382,21 @@ public class OrderService {
 							.toList();
 
 					orderResponse.setOrderItemResponses(orderItemResponses);
-					orderResponse.setUserId(orders.getUser().getId());
+					orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
 
 					return orderResponse;
-				})
-				.toList();
+				});
 	}
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+	public void confirmOrders(String orderId){
+		Orders orders = orderRepository.findById(orderId)
+				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+		orders.setIsConfirm(true);
+		orderRepository.save(orders);
+	}
+
+	//For ALL (Follow order)
 	public OrderResponse getOrderDetails(String id){
 		Orders orders = orderRepository.findById(id)
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));

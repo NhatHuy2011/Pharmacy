@@ -30,5 +30,6 @@ public class OrderTemporary {
     LocalDateTime orderDate;
     PaymentMethod paymentMethod;
     OrderStatus orderStatus;
+    Boolean isConfirm;
     int totalPrice;
 }
