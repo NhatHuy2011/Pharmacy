@@ -418,7 +418,7 @@ public class OrderService {
 				.toList();
 
 		orderResponse.setOrderItemResponses(orderItemResponses);
-		orderResponse.setUserId(orders.getUser().getId());
+		orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
 
 		return orderResponse;
 	}
