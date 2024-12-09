@@ -57,20 +57,20 @@ public class OrderController {
 
     //For Guest
     @PostMapping("/guest/cart")
-    public ApiResponse<OrderTemporary> createOrderAtCartGuest(@RequestBody CreateOrderRequestAtCartGuest request, HttpSession session){
+    public ApiResponse<OrderTemporary> createOrderAtCartGuest(@RequestBody @Valid CreateOrderRequestAtCartGuest request, HttpSession session){
         return ApiResponse.<OrderTemporary>builder()
                 .result(orderService.createOrderAtCartGuest(request, session))
                 .build();
     }
 
     @PostMapping("/guest/home")
-    public ApiResponse<OrderTemporary> createOrderAtHomeGuest(@RequestBody CreateOrderRequestAtHomeGuest request, HttpSession session){
+    public ApiResponse<OrderTemporary> createOrderAtHomeGuest(@RequestBody @Valid CreateOrderRequestAtHomeGuest request, HttpSession session){
         return ApiResponse.<OrderTemporary>builder()
                 .result(orderService.createOrderAtHomeGuest(request, session))
                 .build();
     }
 
-    //For Employee
+    //For Employee and Admin
     @GetMapping
     public ApiResponse<List<OrderResponse>> getAll() {
         return ApiResponse.<List<OrderResponse>>builder()

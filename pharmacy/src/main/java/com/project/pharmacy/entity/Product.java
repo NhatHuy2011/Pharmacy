@@ -67,4 +67,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     Set<Price> prices;
+
+    @OneToMany(mappedBy = "product")
+    List<FeedBack> feedBacks;
 }

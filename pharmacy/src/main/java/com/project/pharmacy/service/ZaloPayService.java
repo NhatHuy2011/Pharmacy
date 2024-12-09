@@ -62,7 +62,7 @@ public class ZaloPayService {
     @Value("${zalopay.create-order}")
     protected String createOrder;
 
-    UserRepository userRepository;
+    OrderRepository orderRepository;
 
     private String getCurrentTimeString(String format) {
 
@@ -125,13 +125,7 @@ public class ZaloPayService {
     }
 
     private int getAmount(String orderId){
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        Orders orders = user.getOrders().stream()
+        Orders orders = orderRepository.findById(orderId).stream()
                 .filter(orders1 -> orders1.getId().equals(orderId)
                         && orders1.getPaymentMethod().equals(PaymentMethod.ZALOPAY)
                         && orders1.getStatus().equals(OrderStatus.PENDING))

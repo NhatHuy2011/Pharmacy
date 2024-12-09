@@ -19,7 +19,8 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(400);
         apiResponse.setMessage(exception.getMessage());
 
-        return ResponseEntity.status(400).body(apiResponse);
+        return ResponseEntity.status(400)
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)

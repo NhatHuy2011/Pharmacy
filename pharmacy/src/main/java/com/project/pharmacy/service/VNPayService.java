@@ -123,13 +123,7 @@ public class VNPayService {
     }
 
     private int getAmount(String orderId){
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        Orders orders = user.getOrders().stream()
+        Orders orders = orderRepository.findById(orderId).stream()
                 .filter(orders1 -> orders1.getId().equals(orderId)
                         && orders1.getPaymentMethod().equals(PaymentMethod.VNPAY)
                         && orders1.getStatus().equals(OrderStatus.PENDING))

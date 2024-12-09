@@ -125,6 +125,8 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)); // Check username
 
+        String message = "Đăng nhập thành công";
+
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword()); // Check password
         if (!authenticated)
@@ -133,14 +135,11 @@ public class AuthenticationService {
         if (!user.getStatus())
             throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
 
-        var token = generateToken(user);
-
-        String message = "Đăng nhập thành công";
-
-        // Kiểm tra xem email đã được xác thực hay chưa
         if (!user.getIsVerified()) {
             message = "Email của bạn chưa được xác thực. Vui lòng xác thực email";
         }
+
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -185,9 +184,6 @@ public class AuthenticationService {
         if (!CollectionUtils.isEmpty(user.getRoles())) {
             user.getRoles().forEach(role -> {
                 stringJoiner.add("ROLE_" + role.getName());
-                if (!CollectionUtils.isEmpty(role.getPermissions()))
-                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
-                log.info("Permissions: " + role.getPermissions());
             });
         }
 

@@ -13,7 +13,6 @@ import com.project.pharmacy.entity.Role;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.RoleMapper;
-import com.project.pharmacy.repository.PermissionRepository;
 import com.project.pharmacy.repository.RoleRepository;
 import com.project.pharmacy.repository.UserRepository;
 
@@ -27,28 +26,11 @@ import lombok.experimental.FieldDefaults;
 public class RoleService {
     RoleRepository roleRepository;
 
-    PermissionRepository permissionRepository;
-
     UserRepository userRepository;
 
     RoleMapper roleMapper;
 
     // Role ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
-    public RoleResponse updateRole(RoleUpdateRequest request) {
-        Role role = roleRepository.findById(request.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-
-        var permissions = permissionRepository.findAllByNameIn(request.getPermissions())
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
-
-        roleMapper.updateRole(role, request);
-        role.setPermissions(new HashSet<>(permissions));
-        roleRepository.save(role);
-
-        return roleMapper.toRoleResponse(role);
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     public List<RoleResponse> getAll() {
         return roleRepository.findAll()

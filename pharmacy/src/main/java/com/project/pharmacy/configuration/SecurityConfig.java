@@ -33,6 +33,8 @@ public class SecurityConfig {
         "/auth/refresh",
         "/cart/guest",
         "/order/guest/**",
+        "/vnpay/create-payment",
+        "/momo/create-payment",
         "/zalopay/create-payment"
     };
 

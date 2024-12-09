@@ -29,13 +29,6 @@ public class RoleController {
                 .build();
     }
 
-    @PutMapping
-    public ApiResponse<RoleResponse> updateRole(@RequestBody RoleUpdateRequest request) {
-        return ApiResponse.<RoleResponse>builder()
-                .result(roleService.updateRole(request))
-                .build();
-    }
-
     @DeleteMapping("{id}")
     public ApiResponse<Objects> deleteRole(@PathVariable String id) {
         roleService.deleteRole(id);

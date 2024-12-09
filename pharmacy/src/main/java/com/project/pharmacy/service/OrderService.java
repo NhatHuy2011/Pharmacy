@@ -40,16 +40,13 @@ public class OrderService {
 
 	OrdersMapper ordersMapper;
 
-	ProductRepository productRepository;
-
-	UnitRepository unitRepository;
-
 	PriceRepository priceRepository;
 
 	CartRepository cartRepository;
 
 	CartItemRepository cartItemRepository;
 
+	AddressRepository addressRepository;
 	//For User
 	@Transactional
 	public OrderResponse createOrderAtCartUser(CreateOrderRequestAtCartUser request){
@@ -226,7 +223,6 @@ public class OrderService {
 		List<OrderItemTemporary> orderItemTemporaries = cartTemporary.getCartItems().stream()
 				.map(cartItemTemporary -> {
                     return OrderItemTemporary.builder()
-                            .id(UUID.randomUUID().toString())
                             .priceId(cartItemTemporary.getPriceId())
                             .productName(cartItemTemporary.getProductName())
                             .unitName(cartItemTemporary.getUnitName())
@@ -238,16 +234,59 @@ public class OrderService {
 				.toList();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryCart(request);
-		orderTemporary.setId(UUID.randomUUID().toString());
 		orderTemporary.setOrderItemTemporaries(orderItemTemporaries);
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setOrderStatus(OrderStatus.PENDING);
 		orderTemporary.setTotalPrice(cartTemporary.getTotalPrice());
 
-		session.setAttribute("Order", orderTemporary);
-
 		cartTemporary.getCartItems().clear();
 		cartTemporary.setTotalPrice(0);
+
+		//Luu order vao database
+		Address address = Address.builder()
+				.user(null)
+				.fullname(orderTemporary.getFullname())
+				.phone(orderTemporary.getPhone())
+				.province(orderTemporary.getProvince())
+				.district(orderTemporary.getDistrict())
+				.village(orderTemporary.getVillage())
+				.address(orderTemporary.getAddress())
+				.addressCategory(orderTemporary.getAddressCategory())
+				.build();
+
+		addressRepository.save(address);
+
+		Orders orders = Orders.builder()
+				.user(null)
+				.orderDate(orderTemporary.getOrderDate())
+				.status(orderTemporary.getOrderStatus())
+				.paymentMethod(orderTemporary.getPaymentMethod())
+				.address(address)
+				.totalPrice(orderTemporary.getTotalPrice())
+				.build();
+
+		orderRepository.save(orders);
+
+		List<OrderItem> orderItems = orderItemTemporaries.stream()
+				.map(orderItemTemporary -> {
+					OrderItem orderItem = OrderItem.builder()
+							.price(priceRepository.findById(orderItemTemporary.getPriceId())
+									.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND)))
+							.orders(orders)
+							.quantity(orderItemTemporary.getQuantity())
+							.amount(orderItemTemporary.getAmount())
+							.build();
+
+					orderItemRepository.save(orderItem);
+
+					return orderItem;
+				})
+				.toList();
+
+		orders.setOrderItems(orderItems);
+
+		orderTemporary.setId(orders.getId());
+		session.setAttribute("Order", orderTemporary);
 
 		return orderTemporary;
 	}
@@ -257,7 +296,6 @@ public class OrderService {
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		OrderItemTemporary orderItemTemporary = OrderItemTemporary.builder()
-				.id(UUID.randomUUID().toString())
 				.productName(price.getProduct().getName())
 				.unitName(price.getUnit().getName())
 				.priceId(price.getId())
@@ -267,13 +305,47 @@ public class OrderService {
 				.build();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryHome(request);
-		orderTemporary.setId(UUID.randomUUID().toString());
 		orderTemporary.setOrderItemTemporaries(new ArrayList<>());
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setOrderStatus(OrderStatus.PENDING);
 		orderTemporary.setTotalPrice(price.getPrice());
 		orderTemporary.getOrderItemTemporaries().add(orderItemTemporary);
 
+		//Luu order vao database
+		Address address = Address.builder()
+				.user(null)
+				.fullname(orderTemporary.getFullname())
+				.phone(orderTemporary.getPhone())
+				.province(orderTemporary.getProvince())
+				.district(orderTemporary.getDistrict())
+				.village(orderTemporary.getVillage())
+				.address(orderTemporary.getAddress())
+				.addressCategory(orderTemporary.getAddressCategory())
+				.build();
+		addressRepository.save(address);
+
+		Orders orders = Orders.builder()
+				.user(null)
+				.orderDate(orderTemporary.getOrderDate())
+				.status(orderTemporary.getOrderStatus())
+				.paymentMethod(orderTemporary.getPaymentMethod())
+				.address(address)
+				.totalPrice(orderTemporary.getTotalPrice())
+				.orderItems(new ArrayList<>())
+				.build();
+		orderRepository.save(orders);
+
+		OrderItem orderItem = OrderItem.builder()
+				.orders(orders)
+				.price(price)
+				.quantity(1)
+				.amount(price.getPrice())
+				.build();
+		orderItemRepository.save(orderItem);
+
+		orders.getOrderItems().add(orderItem);
+
+		orderTemporary.setId(orders.getId());
 		session.setAttribute("Order", orderTemporary);
 
 		return orderTemporary;

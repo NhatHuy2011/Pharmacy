@@ -79,4 +79,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     @EqualsAndHashCode.Exclude
     List<Orders> orders;
+
+    @OneToMany(mappedBy = "user")
+    List<FeedBack> feedBacks;
 }
