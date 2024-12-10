@@ -1,8 +1,10 @@
-package com.project.pharmacy.dto.request;
+package com.project.pharmacy.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -10,9 +12,14 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreateFeedBackRequest {
+public class FeedBackResponse {
+    String id;
+    String userId;
+    String username;
+    String avatar;
     String productId;
-    String priceId;
+    String productName;
     String feedback;
-    String parent;
+    FeedBackResponse parent;
+    LocalDate createDate;
 }

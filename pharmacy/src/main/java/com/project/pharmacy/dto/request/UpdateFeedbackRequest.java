@@ -10,9 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreateFeedBackRequest {
-    String productId;
-    String priceId;
+public class UpdateFeedbackRequest {
+    String id;
     String feedback;
-    String parent;
 }

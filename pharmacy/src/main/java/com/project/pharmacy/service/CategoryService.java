@@ -139,7 +139,8 @@ public class CategoryService {
 
     // Xem danh muc con cua mot danh muc
     public List<CategoryResponse> getSubCategories(String parentId) {
-        Category parent = categoryRepository.findById(parentId).orElseThrow();
+        Category parent = categoryRepository.findById(parentId)
+                .orElseThrow();
         return categoryRepository.findByParent(parent).stream()
                 .map(categoryMapper::toCategoryResponse)
                 .collect(Collectors.toList());

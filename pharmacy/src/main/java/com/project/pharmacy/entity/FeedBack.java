@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @Builder
@@ -30,5 +32,9 @@ public class FeedBack {
     int star;
 
     @Column
-    Boolean status;
+    LocalDate createDate;
+
+    @ManyToOne
+    @JoinColumn(name = "parent")
+    FeedBack parent;
 }

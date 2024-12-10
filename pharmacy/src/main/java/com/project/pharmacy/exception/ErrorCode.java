@@ -52,13 +52,15 @@ public enum ErrorCode {
     //Address exception
     ADDRESS_EXISTED("Địa chỉ đã tồn tại!", 400, HttpStatus.BAD_REQUEST),
 
+    //Feedback exception
+    FEEDBACK_NOT_FOUND("Feedback not found!", 400, HttpStatus.BAD_REQUEST),
+    DONT_FEEDBACK("Bạn vui lòng mua hàng để thực hiện đánh giá sản phẩm!", 400, HttpStatus.BAD_REQUEST),
+    USER_DONT_FEEDBACK("Đây không phải feedback của bạn!", 400, HttpStatus.BAD_REQUEST),
+    PRODUCT_DONT_FEEDBACK("Sản phẩm này chưa có đánh giá nào!", 400, HttpStatus.BAD_REQUEST),
+
     // Role exception
     ROLE_EXISTED("Role existed", 400, HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND("Role not found", 400, HttpStatus.BAD_REQUEST),
-
-    // Permission exception
-    PERMISSION_EXISTED("Permission existed", 400, HttpStatus.BAD_REQUEST),
-    PERMISSION_NOT_FOUND("Permission not found", 400, HttpStatus.BAD_REQUEST),
 
     // Login exception
     USER_NOT_EXISTED("Tên đăng nhập không tồn tại", 400, HttpStatus.BAD_REQUEST),
