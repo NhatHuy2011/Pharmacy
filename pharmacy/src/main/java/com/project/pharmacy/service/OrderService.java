@@ -49,6 +49,8 @@ public class OrderService {
 	CartItemRepository cartItemRepository;
 
 	AddressRepository addressRepository;
+
+	ImageRepository imageRepository;
 	//For User
 	@Transactional
 	public OrderResponse createOrderAtCartUser(CreateOrderRequestAtCartUser request){
@@ -92,6 +94,7 @@ public class OrderService {
                                     .price(cartItem.getPrice())
 									.amount(cartItem.getAmount())
                                     .orders(order)
+									.image(cartItem.getImage())
                                     .build();
 							orderItemRepository.save(orderItem);
 							return orderItem;
@@ -113,6 +116,7 @@ public class OrderService {
                         .quantity(orderItem.getQuantity())
                         .price(orderItem.getPrice().getPrice())
 						.amount(orderItem.getAmount())
+						.image(orderItem.getImage())
                         .build())
 				.toList();
 
@@ -141,6 +145,9 @@ public class OrderService {
 		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
+		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
+		String url = firstImage != null ? firstImage.getSource() : null;
+
 		Orders orders = Orders.builder()
 				.user(user)
 				.address(address)
@@ -158,6 +165,7 @@ public class OrderService {
 				.price(price)
 				.quantity(1)
 				.amount(price.getPrice())
+				.image(url)
 				.build();
 		orderItemRepository.save(orderItem);
 
@@ -173,6 +181,7 @@ public class OrderService {
 									.quantity(orderItem.getQuantity())
 									.price(orderItem.getPrice().getPrice())
 									.amount(orderItem.getAmount())
+									.image(orderItem.getImage())
 									.build();
 						})
 				.collect(Collectors.toList());
@@ -205,6 +214,7 @@ public class OrderService {
 										.quantity(orderItem.getQuantity())
 										.price(orderItem.getPrice().getPrice())
 										.amount(orderItem.getAmount())
+										.image(orderItem.getImage())
 										.build();
 							})
 							.toList();
@@ -233,6 +243,7 @@ public class OrderService {
                             .quantity(cartItemTemporary.getQuantity())
                             .price(cartItemTemporary.getPrice())
 							.amount(cartItemTemporary.getAmount())
+							.image(cartItemTemporary.getUrl())
                             .build();
 				})
 				.toList();
@@ -281,6 +292,7 @@ public class OrderService {
 							.orders(orders)
 							.quantity(orderItemTemporary.getQuantity())
 							.amount(orderItemTemporary.getAmount())
+							.image(orderItemTemporary.getImage())
 							.build();
 
 					orderItemRepository.save(orderItem);
@@ -301,6 +313,9 @@ public class OrderService {
 		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
+		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
+		String url = firstImage != null ? firstImage.getSource() : null;
+
 		OrderItemTemporary orderItemTemporary = OrderItemTemporary.builder()
 				.productName(price.getProduct().getName())
 				.unitName(price.getUnit().getName())
@@ -308,6 +323,7 @@ public class OrderService {
 				.quantity(1)
 				.price(price.getPrice())
 				.amount(price.getPrice())
+				.image(url)
 				.build();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryHome(request);
@@ -348,6 +364,7 @@ public class OrderService {
 				.price(price)
 				.quantity(1)
 				.amount(price.getPrice())
+				.image(url)
 				.build();
 		orderItemRepository.save(orderItem);
 
@@ -377,6 +394,7 @@ public class OrderService {
 										.quantity(orderItem.getQuantity())
 										.price(orderItem.getPrice().getPrice())
 										.amount(orderItem.getAmount())
+										.image(orderItem.getImage())
 										.build();
 							})
 							.toList();
@@ -413,6 +431,7 @@ public class OrderService {
 							.quantity(orderItem.getQuantity())
 							.price(orderItem.getPrice().getPrice())
 							.amount(orderItem.getAmount())
+							.image(orderItem.getImage())
 							.build();
 				})
 				.toList();

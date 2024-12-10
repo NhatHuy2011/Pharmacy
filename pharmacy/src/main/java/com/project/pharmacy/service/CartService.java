@@ -49,6 +49,9 @@ public class CartService {
         Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
+        Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
+        String url = firstImage != null ? firstImage.getSource() : null;
+
         Cart cart = user.getCart();
 
         if (cart == null) {
@@ -71,6 +74,7 @@ public class CartService {
         cartItem.setPrice(price);
         cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
         cartItem.setAmount(price.getPrice() * request.getQuantity());
+        cartItem.setImage(url);
         cartItemRepository.save(cartItem);
 
         cart.setTotalPrice(cart.getTotalPrice() + price.getPrice() * request.getQuantity());
@@ -94,18 +98,15 @@ public class CartService {
         AtomicInteger totalPrice = new AtomicInteger();
         List<CartItemResponse> cartItemResponses = cart.getCartItems().stream()
                 .map(cartItem -> {
-                    Image firstImage = imageRepository.findFirstByProductId(cartItem.getPrice().getProduct().getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
-
                     CartItemResponse cartItemResponse = CartItemResponse.builder()
                             .id(cartItem.getId())
-                            .image(url)
                             .priceId(cartItem.getPrice().getId())
                             .productName(cartItem.getPrice().getProduct().getName())
                             .unitName(cartItem.getPrice().getUnit().getName())
                             .price(cartItem.getPrice().getPrice())
                             .quantity(cartItem.getQuantity())
                             .amount(cartItem.getQuantity() * cartItem.getPrice().getPrice())
+                            .image(cartItem.getImage())
                             .build();
 
                     totalPrice.addAndGet(cartItemResponse.getAmount());
@@ -312,6 +313,7 @@ public class CartService {
                         .price(price)
                         .quantity(guestItem.getQuantity())
                         .amount(guestItem.getAmount())
+                        .image(guestItem.getUrl())
                         .build();
                 cartItemRepository.save(userCartItem);
             } else {

@@ -15,4 +15,5 @@ public class OrderItemTemporary {
     int quantity;
     int price;
     int amount;
+    String image;
 }

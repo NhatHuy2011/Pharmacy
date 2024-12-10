@@ -16,4 +16,5 @@ public class OrderItemResponse {
     int quantity;
     int price;
     int amount;
+    String image;
 }

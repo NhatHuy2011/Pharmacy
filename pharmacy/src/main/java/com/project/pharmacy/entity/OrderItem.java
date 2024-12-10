@@ -30,4 +30,7 @@ public class OrderItem {
 
     @Column
     int amount;
+
+    @Column
+    String image;
 }

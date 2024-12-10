@@ -1,7 +1,6 @@
-package com.project.pharmacy.dto.response;
+package com.project.pharmacy.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,13 +10,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CartItemResponse {
-    String id;
+public class CreateFeedBackRequest {
     String priceId;
-    String productName;
-    String unitName;
-    int price;
-    int quantity;
-    int amount;
-    String image;
+    String feedback;
+    int star;
 }

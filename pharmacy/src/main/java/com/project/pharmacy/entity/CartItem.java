@@ -29,4 +29,7 @@ public class CartItem {
 
     @Column
     int amount;
+
+    @Column
+    String image;
 }
