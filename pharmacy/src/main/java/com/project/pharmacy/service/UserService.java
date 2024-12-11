@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import com.project.pharmacy.enums.Level;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,7 +71,7 @@ public class UserService {
         user.setStatus(false);
         user.setIsVerified(false);
         user.setRoles(roles);
-        // user.setRank("Thành viên");
+        user.setLevel(Level.DONG);
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);

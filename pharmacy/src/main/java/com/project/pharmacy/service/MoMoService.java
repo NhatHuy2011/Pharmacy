@@ -3,6 +3,7 @@ package com.project.pharmacy.service;
 import com.project.pharmacy.configuration.MoMoConfig;
 import com.project.pharmacy.entity.Orders;
 import com.project.pharmacy.entity.User;
+import com.project.pharmacy.enums.Level;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
@@ -133,12 +134,43 @@ public class MoMoService {
         Orders orders = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(code == 0){
-            orders.setStatus(OrderStatus.SUCCESS);
-        } else {
-            orders.setStatus(OrderStatus.FAILED);
-        }
+        User user = orders.getUser();
 
-        orderRepository.save(orders);
+        if (user == null){
+            if(code == 0){
+                orders.setStatus(OrderStatus.SUCCESS);
+            } else {
+                orders.setStatus(OrderStatus.FAILED);
+            }
+
+            orderRepository.save(orders);
+        }
+        else {
+            user.setPoint(orders.getTotalPrice()/1000);
+            if (user.getPoint() > 8000){
+                user.setLevel(Level.KIMCUONG);
+            }
+            else {
+                if (user.getPoint() > 6000){
+                    user.setLevel(Level.BACHKIM);
+                }
+                else if (user.getPoint() > 4000){
+                    user.setLevel(Level.VANG);
+                }
+                else if (user.getPoint() > 2000) {
+                    user.setLevel(Level.BAC);
+                }
+                else user.setLevel(Level.DONG);
+            }
+            userRepository.save(user);
+
+            if(code == 0){
+                orders.setStatus(OrderStatus.SUCCESS);
+            } else {
+                orders.setStatus(OrderStatus.FAILED);
+            }
+
+            orderRepository.save(orders);
+        }
     }
 }

@@ -187,6 +187,7 @@ public class OrderService {
 				.collect(Collectors.toList());
 
 		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+		orderResponse.setUserId(orders.getUser().getId());
 		orderResponse.setOrderItemResponses(orderItemResponse);
 
 		return orderResponse;

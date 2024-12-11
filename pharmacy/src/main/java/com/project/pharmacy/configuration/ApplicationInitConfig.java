@@ -3,6 +3,7 @@ package com.project.pharmacy.configuration;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.project.pharmacy.enums.Level;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,7 @@ public class ApplicationInitConfig {
                         .status(true)
                         .isVerified(true)
                         .roles(roles)
+                        .level(Level.KIMCUONG)
                         .build();
                 userRepository.save(user);
             }

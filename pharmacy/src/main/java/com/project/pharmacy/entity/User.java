@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import com.project.pharmacy.enums.Level;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -52,6 +53,10 @@ public class User {
 
     @Column
     int point;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level", columnDefinition = "ENUM('DONG', 'BAC', 'VANG', 'BACHKIM', 'KIMCUONG') DEFAULT 'DONG'")
+    Level level;
 
     @Column
     Boolean status;

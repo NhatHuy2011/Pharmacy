@@ -5,6 +5,7 @@ import com.project.pharmacy.entity.Orders;
 import com.project.pharmacy.entity.User;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
+import com.project.pharmacy.enums.Level;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.OrderRepository;
@@ -16,7 +17,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -137,12 +137,43 @@ public class VNPayService {
         Orders orders = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        if(responseCode.equals("00")){
-            orders.setStatus(OrderStatus.SUCCESS);
-        } else {
-            orders.setStatus(OrderStatus.FAILED);
-        }
+        User user = orders.getUser();
 
-        orderRepository.save(orders);
+        if (user == null){
+            if(responseCode.equals("00")){
+                orders.setStatus(OrderStatus.SUCCESS);
+            } else {
+                orders.setStatus(OrderStatus.FAILED);
+            }
+
+            orderRepository.save(orders);
+        }
+        else {
+            user.setPoint(orders.getTotalPrice()/1000);
+            if (user.getPoint() > 8000){
+                user.setLevel(Level.KIMCUONG);
+            }
+            else {
+                if (user.getPoint() > 6000){
+                    user.setLevel(Level.BACHKIM);
+                }
+                else if (user.getPoint() > 4000){
+                    user.setLevel(Level.VANG);
+                }
+                else if (user.getPoint() > 2000) {
+                    user.setLevel(Level.BAC);
+                }
+                else user.setLevel(Level.DONG);
+            }
+            userRepository.save(user);
+
+            if(responseCode.equals("00")){
+                orders.setStatus(OrderStatus.SUCCESS);
+            } else {
+                orders.setStatus(OrderStatus.FAILED);
+            }
+
+            orderRepository.save(orders);
+        }
     }
 }

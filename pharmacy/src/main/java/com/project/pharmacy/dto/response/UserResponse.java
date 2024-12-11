@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import com.project.pharmacy.enums.Level;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -30,6 +31,7 @@ public class UserResponse {
     String email;
     String image;
     int point;
+    Level level;
     Boolean status;
     Boolean noPassword;
     Set<RoleResponse> roles;

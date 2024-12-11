@@ -18,6 +18,4 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     List<Orders> findAllByAddress(Address address);
 
     Page<Orders> findByStatus(OrderStatus status, Pageable pageable);
-
-    Optional<List<Orders>> findByUser(User user);
 }
