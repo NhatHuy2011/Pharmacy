@@ -147,17 +147,17 @@ public class MoMoService {
         }
         else {
             user.setPoint(orders.getTotalPrice()/1000);
-            if (user.getPoint() > 8000){
+            if (user.getPoint() >= 8000){
                 user.setLevel(Level.KIMCUONG);
             }
             else {
-                if (user.getPoint() > 6000){
+                if (user.getPoint() >= 6000){
                     user.setLevel(Level.BACHKIM);
                 }
-                else if (user.getPoint() > 4000){
+                else if (user.getPoint() >= 4000){
                     user.setLevel(Level.VANG);
                 }
-                else if (user.getPoint() > 2000) {
+                else if (user.getPoint() >= 2000) {
                     user.setLevel(Level.BAC);
                 }
                 else user.setLevel(Level.DONG);
