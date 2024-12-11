@@ -7,6 +7,7 @@ import com.project.pharmacy.dto.request.CreateOrderRequestAtHomeUser;
 import com.project.pharmacy.dto.response.OrderItemResponse;
 import com.project.pharmacy.dto.response.OrderResponse;
 import com.project.pharmacy.enums.OrderStatus;
+import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.OrdersMapper;
@@ -379,7 +380,7 @@ public class OrderService {
 
 	//For Employee and ADMIN
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-	public Page<OrderResponse> getAll(Pageable pageable){
+	public Page<OrderResponse> getAllByStatus(Pageable pageable){
 		Page<Orders> ordersPage = orderRepository.findByStatus(OrderStatus.SUCCESS, pageable);
 
 		return ordersPage.map(orders -> {
@@ -405,6 +406,35 @@ public class OrderService {
 
 					return orderResponse;
 				});
+	}
+
+	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+	public Page<OrderResponse> getAllOrderCOD(Pageable pageable){
+		Page<Orders> ordersPage = orderRepository.findByPaymentMethod(PaymentMethod.CASH, pageable);
+
+		return ordersPage.map(orders -> {
+			OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+			List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+					.map(orderItem -> {
+						return OrderItemResponse.builder()
+								.id(orderItem.getId())
+								.productName(orderItem.getPrice().getProduct().getName())
+								.unitName(orderItem.getPrice().getUnit().getName())
+								.priceId(orderItem.getPrice().getId())
+								.quantity(orderItem.getQuantity())
+								.price(orderItem.getPrice().getPrice())
+								.amount(orderItem.getAmount())
+								.image(orderItem.getImage())
+								.build();
+					})
+					.toList();
+
+			orderResponse.setOrderItemResponses(orderItemResponses);
+			orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
+
+			return orderResponse;
+		});
 	}
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")

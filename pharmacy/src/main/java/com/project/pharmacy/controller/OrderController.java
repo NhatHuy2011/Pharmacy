@@ -75,7 +75,7 @@ public class OrderController {
     }
 
     //For Employee and Admin
-    @GetMapping
+    @GetMapping("/success")
     public ApiResponse<Page<OrderResponse>> getAll(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size,
                                                    @RequestParam(defaultValue = "asc") String sortBy) {
@@ -88,7 +88,24 @@ public class OrderController {
         Sort sort = Sort.by(isConfirmOrder, orderDateOrder);
         Pageable pageable = PageRequest.of(page, size, sort);
         return ApiResponse.<Page<OrderResponse>>builder()
-                .result(orderService.getAll(pageable))
+                .result(orderService.getAllByStatus(pageable))
+                .build();
+    }
+
+    @GetMapping("/cod")
+    public ApiResponse<Page<OrderResponse>> getAllOrderCOD(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size,
+                                                   @RequestParam(defaultValue = "asc") String sortBy) {
+        Sort.Order isConfirmOrder = sortBy.equals("desc")
+                ? Sort.Order.desc("isConfirm")
+                : Sort.Order.asc("isConfirm");
+
+        Sort.Order orderDateOrder = Sort.Order.asc("orderDate");
+
+        Sort sort = Sort.by(isConfirmOrder, orderDateOrder);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ApiResponse.<Page<OrderResponse>>builder()
+                .result(orderService.getAllOrderCOD(pageable))
                 .build();
     }
 
