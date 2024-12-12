@@ -68,10 +68,10 @@ public class FeedBackController {
 
     //For ALL
     //Xem feedback goc
-    @GetMapping("/null")
-    public ApiResponse<List<FeedBackResponse>> getFeedBackByProduct(@RequestBody GetFeedBackByProductRequest request){
+    @GetMapping("/null/{id}")
+    public ApiResponse<List<FeedBackResponse>> getFeedBackByProduct(@PathVariable String id){
         return ApiResponse.<List<FeedBackResponse>>builder()
-                .result(feedBackService.getFeedBackByProduct(request))
+                .result(feedBackService.getFeedBackByProduct(id))
                 .build();
     }
 

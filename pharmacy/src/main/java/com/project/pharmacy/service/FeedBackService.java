@@ -261,8 +261,8 @@ public class FeedBackService {
 
     //For ALL
     //Xem feedback goc
-    public List<FeedBackResponse> getFeedBackByProduct(GetFeedBackByProductRequest request){
-        Product product = productRepository.findById(request.getProductId())
+    public List<FeedBackResponse> getFeedBackByProduct(String id){
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         List<FeedBack> feedBacks = feedBackRepository.findAllByProductAndParent(product, null)
