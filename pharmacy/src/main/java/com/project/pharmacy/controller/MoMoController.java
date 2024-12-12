@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -36,21 +38,23 @@ public class MoMoController {
         // Xử lý thanh toán
         moMoService.callBack(Integer.parseInt(errorCode), orderId);
 
-        // URL của frontend, kèm theo các tham số động
+        // URL của frontend
         String frontendUrl = "http://localhost:3000/paymentCallback";
-        String redirectUrl = frontendUrl + "?";
+        StringBuilder redirectUrl = new StringBuilder(frontendUrl + "?");
 
-        // Thêm tất cả các tham số vào URL redirect
+        // Encode các tham số để đảm bảo không có ký tự Unicode bất hợp lệ
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            redirectUrl += entry.getKey() + "=" + entry.getValue() + "&";
+            String encodedKey = URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8);
+            String encodedValue = URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8);
+            redirectUrl.append(encodedKey).append("=").append(encodedValue).append("&");
         }
 
         // Loại bỏ dấu "&" thừa cuối cùng
-        redirectUrl = redirectUrl.substring(0, redirectUrl.length() - 1);
+        redirectUrl.setLength(redirectUrl.length() - 1);
 
         // Redirect người dùng đến frontend với các tham số
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, redirectUrl)
+                .header(HttpHeaders.LOCATION, redirectUrl.toString())
                 .build();
     }
 }
