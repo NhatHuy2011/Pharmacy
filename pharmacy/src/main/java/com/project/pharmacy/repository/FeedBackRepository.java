@@ -2,6 +2,7 @@ package com.project.pharmacy.repository;
 
 import com.project.pharmacy.entity.FeedBack;
 import com.project.pharmacy.entity.Product;
+import com.project.pharmacy.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,6 @@ public interface FeedBackRepository extends JpaRepository<FeedBack, String> {
     Optional<List<FeedBack>> findAllByProductAndParent(Product product, FeedBack parent);
 
     List<FeedBack> findByParent(FeedBack feedBack);
+
+    List<FeedBack> findAllByUser(User user);
 }

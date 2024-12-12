@@ -1,20 +1,21 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.cleanup;
 
 import java.util.Date;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.project.pharmacy.repository.InvalidatedTokenRepository;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TokenCleanupService {
 
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
-
-    public TokenCleanupService(InvalidatedTokenRepository invalidatedTokenRepository) {
-        this.invalidatedTokenRepository = invalidatedTokenRepository;
-    }
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     // Chạy hàng ngày lúc 00:00 để xóa token đã hết hạn
     @Scheduled(cron = "0 0 0 * * ?")

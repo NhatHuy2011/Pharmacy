@@ -105,6 +105,42 @@ public class FeedBackService {
         return responseBuilder.build();
     }
 
+    public List<FeedBackResponse> getFeedBackByUser(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        return feedBackRepository.findAllByUser(user).stream()
+                .map(feedBack -> {
+                    FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
+                            .id(feedBack.getId())
+                            .userId(feedBack.getUser().getId())
+                            .username(feedBack.getUser().getUsername())
+                            .avatar(feedBack.getUser().getImage())
+                            .productId(feedBack.getProduct().getId())
+                            .productName(feedBack.getProduct().getName())
+                            .feedback(feedBack.getFeedback())
+                            .createDate(feedBack.getCreateDate());
+
+                    // Kiểm tra null cho parent
+                    if (feedBack.getParent() != null) {
+                        responseBuilder.parent(FeedBackResponse.builder()
+                                .id(feedBack.getParent().getId())
+                                .userId(feedBack.getParent().getUser().getId())
+                                .username(feedBack.getParent().getUser().getUsername())
+                                .avatar(feedBack.getParent().getUser().getImage())
+                                .feedback(feedBack.getParent().getFeedback())
+                                .createDate(feedBack.getParent().getCreateDate())
+                                .build());
+                    }
+
+                    return responseBuilder.build();
+                })
+                .toList();
+    }
+
     public FeedBackResponse updateFeedback(UpdateFeedbackRequest request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();

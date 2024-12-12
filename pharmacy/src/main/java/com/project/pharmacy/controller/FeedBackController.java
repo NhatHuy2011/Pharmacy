@@ -28,6 +28,13 @@ public class FeedBackController {
                 .build();
     }
 
+    @GetMapping("/user")
+    public ApiResponse<List<FeedBackResponse>> getFeedBackByUser(){
+        return ApiResponse.<List<FeedBackResponse>>builder()
+                .result(feedBackService.getFeedBackByUser())
+                .build();
+    }
+
     @PutMapping()
     public ApiResponse<FeedBackResponse> updateFeedBack(@RequestBody UpdateFeedbackRequest request){
         return ApiResponse.<FeedBackResponse>builder()

@@ -49,7 +49,8 @@ public class SecurityConfig {
             "/momo/callback",
             "/zalopay/callback",
             "/order/**",
-            "/feedback/**"
+            "/feedback/**",
+            "/home/**"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {

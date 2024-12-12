@@ -47,4 +47,6 @@ public class ProductResponse {
     List<String> images;
 
     String image;
+
+    Long totalSold;
 }
