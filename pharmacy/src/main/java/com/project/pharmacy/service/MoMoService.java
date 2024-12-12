@@ -146,7 +146,7 @@ public class MoMoService {
             orderRepository.save(orders);
         }
         else {
-            user.setPoint(orders.getTotalPrice()/1000);
+            user.setPoint(user.getPoint() + orders.getTotalPrice()/1000);
             if (user.getPoint() >= 8000){
                 user.setLevel(Level.KIMCUONG);
             }

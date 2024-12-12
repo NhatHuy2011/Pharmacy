@@ -111,6 +111,7 @@ public class OrderService {
 		List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream()
 				.map(orderItem -> OrderItemResponse.builder()
                         .id(orderItem.getId())
+						.productId(orderItem.getPrice().getProduct().getId())
                         .priceId(orderItem.getPrice().getId())
                         .productName(orderItem.getPrice().getProduct().getName())
                         .unitName(orderItem.getPrice().getUnit().getName())
@@ -176,6 +177,7 @@ public class OrderService {
 						.map(orderItem1 -> {
 							return OrderItemResponse.builder()
 									.id(orderItem.getId())
+									.productId(orderItem.getPrice().getProduct().getId())
 									.productName(orderItem.getPrice().getProduct().getName())
 									.unitName(orderItem.getPrice().getUnit().getName())
 									.priceId(orderItem.getPrice().getId())
@@ -210,6 +212,7 @@ public class OrderService {
 							.map(orderItem -> {
 								return OrderItemResponse.builder()
 										.id(orderItem.getId())
+										.productId(orderItem.getPrice().getProduct().getId())
 										.productName(orderItem.getPrice().getProduct().getName())
 										.unitName(orderItem.getPrice().getUnit().getName())
 										.priceId(orderItem.getPrice().getId())
@@ -390,6 +393,7 @@ public class OrderService {
 							.map(orderItem -> {
 								return OrderItemResponse.builder()
 										.id(orderItem.getId())
+										.productId(orderItem.getPrice().getProduct().getId())
 										.productName(orderItem.getPrice().getProduct().getName())
 										.unitName(orderItem.getPrice().getUnit().getName())
 										.priceId(orderItem.getPrice().getId())
@@ -419,6 +423,7 @@ public class OrderService {
 					.map(orderItem -> {
 						return OrderItemResponse.builder()
 								.id(orderItem.getId())
+								.productId(orderItem.getPrice().getProduct().getId())
 								.productName(orderItem.getPrice().getProduct().getName())
 								.unitName(orderItem.getPrice().getUnit().getName())
 								.priceId(orderItem.getPrice().getId())
@@ -456,6 +461,7 @@ public class OrderService {
 				.map(orderItem -> {
 					return OrderItemResponse.builder()
 							.id(orderItem.getId())
+							.productId(orderItem.getPrice().getProduct().getId())
 							.productName(orderItem.getPrice().getProduct().getName())
 							.unitName(orderItem.getPrice().getUnit().getName())
 							.priceId(orderItem.getPrice().getId())
