@@ -32,4 +32,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     Page<User> findAllByRoles(Pageable pageable, Role role);
+
+    @Query(value = "Select count(u.id) as TotalUser " +
+            "From user u", nativeQuery = true)
+    int getTotalUser();
 }

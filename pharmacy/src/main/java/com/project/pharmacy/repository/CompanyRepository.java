@@ -24,4 +24,8 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
             "GROUP BY c.id, c.name, c.image " +
             "ORDER BY totalQuantity DESC ", nativeQuery = true)
     List<TopCompany> getTop20Company(Pageable pageable);
+
+    @Query(value = "Select count(c.id) as totalCompany " +
+            "From company c", nativeQuery = true)
+    int getTotalCompany();
 }

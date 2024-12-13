@@ -17,4 +17,8 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     @Query(value = "Select c From Category c Where c.parent.id = :parent")
     List<Category> findAllByParentId(String parent);
+
+    @Query(value = "Select count(c.id) as totalCategory " +
+            "From category c", nativeQuery = true)
+    int getTotalCategory();
 }

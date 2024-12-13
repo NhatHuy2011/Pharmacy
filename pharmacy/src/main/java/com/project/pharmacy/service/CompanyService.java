@@ -34,7 +34,7 @@ public class CompanyService {
     CompanyMapper companyMapper;
     // ADMIN and EMPLOYEE
     // Them cong ty
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public CompanyResponse createCompany(CompanyCreateRequest request, MultipartFile files) throws IOException {
         if (companyRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.COMPANY_EXISTED);
@@ -48,7 +48,7 @@ public class CompanyService {
     }
 
     // Sua cong ty
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public CompanyResponse updateCompany(CompanyUpdateRequest request, MultipartFile files) throws IOException {
         Company company = companyRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));

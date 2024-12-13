@@ -43,4 +43,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("Select p From Product p Where p.id IN :ids")
     List<Product> findProductsByIds(@Param("ids") List<String> ids);
+
+    @Query(value = "Select count(p.id) as totalProduct " +
+            "From product p", nativeQuery = true)
+    int getTotalProduct();
 }

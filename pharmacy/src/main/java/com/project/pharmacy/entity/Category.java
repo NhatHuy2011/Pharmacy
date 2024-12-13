@@ -29,5 +29,5 @@ public class Category {
     Category parent;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    List<Product> products = new ArrayList<>();
+    List<Product> products;
 }
