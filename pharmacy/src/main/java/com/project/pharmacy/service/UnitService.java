@@ -26,8 +26,6 @@ import lombok.experimental.FieldDefaults;
 public class UnitService {
     UnitRepository unitRepository;
 
-    PriceRepository priceRepository;
-
     UnitMapper unitMapper;
 
     // Role ADMIN
@@ -67,7 +65,6 @@ public class UnitService {
     public void deleteUnit(String id) {
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
-        priceRepository.deleteAllByUnitId(id);
-        unitRepository.deleteById(unit.getId());
+        unitRepository.delete(unit);
     }
 }

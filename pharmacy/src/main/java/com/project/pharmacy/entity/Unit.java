@@ -22,6 +22,6 @@ public class Unit {
     @Column(nullable = false)
     String name;
 
-    @OneToMany(mappedBy = "unit")
-    Set<Price> prices;
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Price> prices;
 }

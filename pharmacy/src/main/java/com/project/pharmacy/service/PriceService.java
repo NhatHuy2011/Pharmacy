@@ -1,5 +1,6 @@
 package com.project.pharmacy.service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        Set<Price> prices = priceRepository.findByProductId(request.getProductId())
+        List<Price> prices = priceRepository.findByProductId(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
         for (Price price1 : prices) {
@@ -118,7 +119,7 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        Set<Price> prices = priceRepository.findByProductId(request.getProductId())
+        List<Price> prices = priceRepository.findByProductId(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));;
 
         double priceRatio = (double) request.getPrice() / oldPrice;
@@ -135,6 +136,8 @@ public class PriceService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public void deletePrice(String id) {
-        priceRepository.deleteAllByUnitId(id);
+        Price price = priceRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+        priceRepository.delete(price);
     }
 }

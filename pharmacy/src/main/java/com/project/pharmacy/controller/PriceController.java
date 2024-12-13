@@ -53,13 +53,16 @@ public class PriceController {
     @PutMapping
     public ApiResponse<Objects> updatePrice(@RequestBody PriceUpdateRequest request) {
         priceService.updatePrice(request);
-        return ApiResponse.<Objects>builder().message("Update Successful").build();
+        return ApiResponse.<Objects>builder()
+                .message("Update Successful")
+                .build();
     }
 
     @DeleteMapping("{id}")
     public ApiResponse<Objects> deletePrice(@PathVariable String id) {
         priceService.deletePrice(id);
         return ApiResponse.<Objects>builder()
-        .message("Delete Successful").build();
+                .message("Delete Successful")
+                .build();
     }
 }

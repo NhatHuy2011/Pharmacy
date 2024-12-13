@@ -111,12 +111,6 @@ public class CategoryService {
     public void deleteCategory(String id) {
         Category category = categoryRepository.findById(id)
                         .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        List<Product> products = productRepository.findByCategoryId(id);
-        for (Product product : products) {
-            imageRepository.deleteAllByProductId(product.getId());
-        }
-        productRepository.deleteAllByCategoryId(id);
         deleteCategoryRecursive(category);
     }
 

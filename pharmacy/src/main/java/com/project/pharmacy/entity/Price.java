@@ -31,9 +31,9 @@ public class Price {
 
     String description;
 
-    @OneToMany(mappedBy = "price")
+    @OneToMany(mappedBy = "price", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<CartItem> cartItems;
 
-    @OneToMany(mappedBy = "price")
+    @OneToMany(mappedBy = "price", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Set<OrderItem> orderItems;
 }

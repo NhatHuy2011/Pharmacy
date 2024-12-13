@@ -50,7 +50,7 @@ public class Address {
     @Column
     Boolean addressDefault;
 
-    @OneToMany(mappedBy = "address")
+    @OneToMany(mappedBy = "address", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Orders> orders;
 
     @Override

@@ -35,7 +35,7 @@ public class Orders {
     @JoinColumn(name = "address_id")
     Address address;
 
-    @OneToMany(mappedBy = "orders")
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<OrderItem> orderItems;
 
     @Column

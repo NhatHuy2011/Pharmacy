@@ -1,5 +1,6 @@
 package com.project.pharmacy.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,9 +15,7 @@ import com.project.pharmacy.entity.Unit;
 public interface PriceRepository extends JpaRepository<Price, String> {
     boolean existsByProductAndUnit(Product product, Unit unit);
 
-    Optional<Set<Price>> findByProductId(String productId);
-
-    void deleteAllByProductId(String id);
+    Optional<List<Price>> findByProductId(String productId);
 
     void deleteAllByUnitId(String id);
 }

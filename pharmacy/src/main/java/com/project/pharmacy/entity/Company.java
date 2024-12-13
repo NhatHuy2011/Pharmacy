@@ -1,6 +1,5 @@
 package com.project.pharmacy.entity;
-
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -27,6 +26,6 @@ public class Company {
     @Column(nullable = false)
     String origin;
 
-    @OneToMany(mappedBy = "company")
-    Set<Product> products;
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Product> products;
 }

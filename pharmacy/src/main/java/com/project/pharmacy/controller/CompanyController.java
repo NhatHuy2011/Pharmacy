@@ -63,9 +63,9 @@ public class CompanyController {
     }
 
     @DeleteMapping("{id}")
-    public ApiResponse<Objects> deleteCompany(@PathVariable("id") String id) {
+    public ApiResponse<Void> deleteCompany(@PathVariable String id) {
         companyService.deleteCompany(id);
-        return ApiResponse.<Objects>builder()
+        return ApiResponse.<Void>builder()
                 .message("Delete Company Successful")
                 .build();
     }

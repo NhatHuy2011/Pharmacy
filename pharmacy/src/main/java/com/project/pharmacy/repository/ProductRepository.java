@@ -14,14 +14,6 @@ import org.springframework.data.repository.query.Param;
 public interface ProductRepository extends JpaRepository<Product, String> {
     boolean existsByName(String name);
 
-    void deleteAllByCategoryId(String categoryId);
-
-    void deleteAllByCompanyId(String companyId);
-
-    List<Product> findByCategoryId(String categoryId);
-
-    List<Product> findByCompanyId(String companyId);
-
     @Query(value = "Select p from Product p " +
             "JOIN Price pr On p.id = pr.product.id " +
             "Where p.category.id IN :categoryIds " +

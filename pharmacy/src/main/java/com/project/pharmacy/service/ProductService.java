@@ -153,9 +153,7 @@ public class ProductService {
     public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        imageRepository.deleteAllByProductId(product.getId());
-        priceRepository.deleteAllByProductId(id);
-        productRepository.deleteById(product.getId());
+        productRepository.delete(product);
     }
 
     // Role USER
@@ -168,10 +166,10 @@ public class ProductService {
             String url = firstImage != null ? firstImage.getSource() : null;
 
             // Lấy danh sách đơn vị và giá sản phẩm
-            Set<Price> prices = priceRepository.findByProductId(product.getId())
+            List<Price> prices = priceRepository.findByProductId(product.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-            Set<PriceResponse> priceResponses = prices.stream()
+            List<PriceResponse> priceResponses = prices.stream()
                     .map(price -> {
                         return PriceResponse.builder()
                                 .id(price.getId())
@@ -183,7 +181,7 @@ public class ProductService {
                                 .description(price.getDescription())
                                 .build();
                     })
-                    .collect(Collectors.toSet());
+                    .toList();
 
             ProductResponse productResponse = productMapper.toProductResponse(product);
             productResponse.setPrices(priceResponses);
@@ -205,10 +203,10 @@ public class ProductService {
             String url = firstImage != null ? firstImage.getSource() : null;
 
             // Lấy danh sách đơn vị và giá sản phẩm
-            Set<Price> prices = priceRepository.findByProductId(product.getId())
+            List<Price> prices = priceRepository.findByProductId(product.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-            Set<PriceResponse> priceResponses = prices.stream()
+            List<PriceResponse> priceResponses = prices.stream()
                     .map(price -> {
                         return PriceResponse.builder()
                                 .id(price.getId())
@@ -220,7 +218,7 @@ public class ProductService {
                                 .description(price.getDescription())
                                 .build();
                     })
-                    .collect(Collectors.toSet());
+                    .toList();
 
             ProductResponse productResponse = productMapper.toProductResponse(product);
             productResponse.setPrices(priceResponses);
@@ -241,10 +239,10 @@ public class ProductService {
                     String url = firstImage != null ? firstImage.getSource() : null;
 
                     // Lấy danh sách đơn vị và giá sản phẩm
-                    Set<Price> prices = priceRepository.findByProductId(product.getId())
+                    List<Price> prices = priceRepository.findByProductId(product.getId())
                             .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-                    Set<PriceResponse> priceResponses = prices.stream()
+                    List<PriceResponse> priceResponses = prices.stream()
                             .map(price -> {
                                 return PriceResponse.builder()
                                         .id(price.getId())
@@ -256,7 +254,7 @@ public class ProductService {
                                         .description(price.getDescription())
                                         .build();
                             })
-                            .collect(Collectors.toSet());
+                            .toList();
 
                     ProductResponse productResponse = productMapper.toProductResponse(product);
                     productResponse.setPrices(priceResponses);

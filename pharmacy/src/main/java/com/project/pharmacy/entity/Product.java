@@ -62,12 +62,12 @@ public class Product {
     @JoinColumn(name = "company_id")
     Company company;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Image> images;
 
-    @OneToMany(mappedBy = "product")
-    Set<Price> prices;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Price> prices;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<FeedBack> feedBacks;
 }

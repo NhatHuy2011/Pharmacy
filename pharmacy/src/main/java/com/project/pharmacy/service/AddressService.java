@@ -114,15 +114,6 @@ public class AddressService {
             throw new AccessDeniedException("Bạn không có quyền xoá địa chỉ này");
         }
 
-        List<Orders> orders = orderRepository.findAllByAddress(address);
-
-        if (orders != null) {
-            orders.forEach(order -> {
-                orderItemRepository.deleteAllByOrders(order);
-                orderRepository.delete(order);
-            });
-        }
-
         addressRepository.delete(address);
     }
 }

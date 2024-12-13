@@ -40,7 +40,7 @@ public class ProductResponse {
 
     CategoryResponse category;
 
-    Set<PriceResponse> prices;
+    List<PriceResponse> prices;
 
     PriceResponse price;
 

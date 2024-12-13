@@ -1,7 +1,7 @@
 package com.project.pharmacy.entity;
 
-import java.util.Set;
-
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -28,6 +28,6 @@ public class Category {
     @JoinColumn(name = "parent")
     Category parent;
 
-    @OneToMany(mappedBy = "category")
-    Set<Product> products;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Product> products = new ArrayList<>();
 }

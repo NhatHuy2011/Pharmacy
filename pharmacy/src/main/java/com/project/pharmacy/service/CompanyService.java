@@ -1,8 +1,7 @@
 package com.project.pharmacy.service;
 
 import java.io.IOException;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,29 +13,23 @@ import com.project.pharmacy.dto.request.CompanyCreateRequest;
 import com.project.pharmacy.dto.request.CompanyUpdateRequest;
 import com.project.pharmacy.dto.response.CompanyResponse;
 import com.project.pharmacy.entity.Company;
-import com.project.pharmacy.entity.Product;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.CompanyMapper;
 import com.project.pharmacy.repository.CompanyRepository;
-import com.project.pharmacy.repository.ImageRepository;
-import com.project.pharmacy.repository.ProductRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CompanyService {
     CompanyRepository companyRepository;
 
-    ProductRepository productRepository;
-
     CloudinaryService cloudinaryService;
-
-    ImageRepository imageRepository;
 
     CompanyMapper companyMapper;
     // ADMIN and EMPLOYEE
@@ -73,17 +66,9 @@ public class CompanyService {
 
     // Role ADMIN
     // Xoa cong ty
-    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteCompany(String id) {
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
-        List<Product> products = productRepository.findByCompanyId(id);
-        for (Product product : products) {
-            imageRepository.deleteAllByProductId(product.getId());
-        }
-        productRepository.deleteAllByCompanyId(id);
-        companyRepository.deleteById(company.getId());
+        companyRepository.deleteById(id);
     }
 
     // Role USER
