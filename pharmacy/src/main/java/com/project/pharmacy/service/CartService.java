@@ -49,8 +49,7 @@ public class CartService {
         Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-        String url = imageRepository.findFirstByProductId(price.getProduct().getId())
-                .getSource();
+        String url = imageRepository.findFirstByProductId(price.getProduct().getId()).getSource();
 
         Cart cart = user.getCart();
         if (cart == null) {

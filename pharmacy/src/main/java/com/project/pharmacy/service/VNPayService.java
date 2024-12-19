@@ -149,27 +149,27 @@ public class VNPayService {
             orderRepository.save(orders);
         }
         else {
-            user.setPoint(user.getPoint() + orders.getTotalPrice()/1000);
-            if (user.getPoint() >= 8000){
-                user.setLevel(Level.KIMCUONG);
-            }
-            else {
-                if (user.getPoint() >= 6000){
-                    user.setLevel(Level.BACHKIM);
-                }
-                else if (user.getPoint() >= 4000){
-                    user.setLevel(Level.VANG);
-                }
-                else if (user.getPoint() >= 2000) {
-                    user.setLevel(Level.BAC);
-                }
-                else user.setLevel(Level.DONG);
-            }
-            userRepository.save(user);
-
             if(responseCode.equals("00")){
                 orders.setStatus(OrderStatus.SUCCESS);
-            } else {
+                user.setPoint(user.getPoint() + orders.getTotalPrice()/1000);
+                if (user.getPoint() >= 8000){
+                    user.setLevel(Level.KIMCUONG);
+                }
+                else {
+                    if (user.getPoint() >= 6000){
+                        user.setLevel(Level.BACHKIM);
+                    }
+                    else if (user.getPoint() >= 4000){
+                        user.setLevel(Level.VANG);
+                    }
+                    else if (user.getPoint() >= 2000) {
+                        user.setLevel(Level.BAC);
+                    }
+                    else user.setLevel(Level.DONG);
+                }
+                userRepository.save(user);
+            }
+            else {
                 orders.setStatus(OrderStatus.FAILED);
             }
 
