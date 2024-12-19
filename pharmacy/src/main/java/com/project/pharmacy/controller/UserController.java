@@ -96,6 +96,7 @@ public class UserController {
                 .build();
     }
 
+    //Cập nhật Email cho User đã xác thực -> User
     @PutMapping("/update-email")
     public ApiResponse<UserResponse> updateEmail(@RequestBody @Valid UserUpdateEmail request) {
         return ApiResponse.<UserResponse>builder()
@@ -104,6 +105,7 @@ public class UserController {
                 .build();
     }
 
+    //Xác thực Email khi cập nhật Email cho User -> User
     @PutMapping("/verify-email-update")
     public ApiResponse<Void> verifyEmailUpdate(@RequestBody UserVerifiedEmailUpdate request) {
         userService.verifyEmailUpdate(request);
@@ -112,14 +114,16 @@ public class UserController {
                 .build();
     }
 
+    //Gửi mã OTP cho User quên xác thực email -> Guest
     @PutMapping("/forgot-verify-email")
-    public ApiResponse<UserResponse> forgotVerifyEmail() {
+    public ApiResponse<UserResponse> forgotVerifyEmail(@RequestBody ForgorVerifyEmailRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.forgotVerifyEmail())
+                .result(userService.forgotVerifyEmail(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
                 .build();
     }
 
+    //Xác thực Email dành cho User quên xác thực Email -> Guest
     @PutMapping("/verify-email-forgot")
     public ApiResponse<Void> verifyEmailForgot(@RequestBody UserForgotVerifiedEmail request) {
         userService.verifyEmailForgot(request);

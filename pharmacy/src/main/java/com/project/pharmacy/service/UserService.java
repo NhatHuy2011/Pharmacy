@@ -215,6 +215,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //Cập nhật Email cho User
     public UserResponse updateEmail(UserUpdateEmail request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -241,6 +242,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //Xác thực Email khi cập nhật Email cho User
     public void verifyEmailUpdate(UserVerifiedEmailUpdate request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -263,12 +265,15 @@ public class UserService {
         }
     }
 
-    public UserResponse forgotVerifyEmail() {
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
+    //User quên xác thực Email  -> Guest
+    public UserResponse forgotVerifyEmail(ForgorVerifyEmailRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        boolean isMatch = userRepository.existsByUsernameAndEmail(request.getUsername(), request.getEmail());
+        if(!isMatch){
+            throw new AppException(ErrorCode.EMAIL_NOT_MATCH);
+        }
 
         String otp = generateOTP();
         user.setOtpCode(otp);
@@ -286,12 +291,10 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //Xác thực Email dành cho User quên xác thực Email -> Guest
     public void verifyEmailForgot(UserForgotVerifiedEmail request) {
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
             // Kiểm tra thời gian hết hạn OTP

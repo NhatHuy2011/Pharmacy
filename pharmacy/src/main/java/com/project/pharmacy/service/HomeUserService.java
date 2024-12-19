@@ -46,10 +46,9 @@ public class HomeUserService {
         return productRepository.findTop20NewProduct(top20).stream()
                 .map(product -> {
                     Image firstImage = imageRepository.findFirstByProductId(product.getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
+                    String url = firstImage.getSource();
 
-                    List<Price> prices = priceRepository.findByProductId(product.getId())
-                            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+                    List<Price> prices = priceRepository.findByProductId(product.getId());
 
                     List<PriceResponse> priceResponses = prices.stream()
                             .map(price -> {
@@ -90,10 +89,9 @@ public class HomeUserService {
         List<ProductResponse> productResponses = products.stream()
                 .map(product -> {
                     Image firstImage = imageRepository.findFirstByProductId(product.getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
+                    String url = firstImage.getSource();
 
-                    List<Price> prices = priceRepository.findByProductId(product.getId())
-                            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+                    List<Price> prices = priceRepository.findByProductId(product.getId());
 
                     List<PriceResponse> priceResponses = prices.stream()
                             .map(price -> {

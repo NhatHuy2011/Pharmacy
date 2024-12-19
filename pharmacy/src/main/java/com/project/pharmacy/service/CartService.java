@@ -49,11 +49,10 @@ public class CartService {
         Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-        Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
-        String url = firstImage != null ? firstImage.getSource() : null;
+        String url = imageRepository.findFirstByProductId(price.getProduct().getId())
+                .getSource();
 
         Cart cart = user.getCart();
-
         if (cart == null) {
             cart = Cart.builder()
                     .user(user)
@@ -73,7 +72,7 @@ public class CartService {
         cartItem.setCart(cart);
         cartItem.setPrice(price);
         cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
-        cartItem.setAmount(price.getPrice() * request.getQuantity());
+        cartItem.setAmount(cartItem.getAmount() + price.getPrice() * request.getQuantity());
         cartItem.setImage(url);
         cartItemRepository.save(cartItem);
 
@@ -105,7 +104,7 @@ public class CartService {
                             .unitName(cartItem.getPrice().getUnit().getName())
                             .price(cartItem.getPrice().getPrice())
                             .quantity(cartItem.getQuantity())
-                            .amount(cartItem.getQuantity() * cartItem.getPrice().getPrice())
+                            .amount(cartItem.getAmount())
                             .image(cartItem.getImage())
                             .build();
 
@@ -197,10 +196,9 @@ public class CartService {
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
         Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
-        String url = firstImage != null ? firstImage.getSource() : null;
+        String url = firstImage.getSource();
 
         List<CartItemTemporary> cartItems = temporaryCart.getCartItems();
-
         CartItemTemporary cartItemTemporary = cartItems.stream()
                 .filter(item -> item.getPriceId().equals(price.getId()))
                 .findFirst()

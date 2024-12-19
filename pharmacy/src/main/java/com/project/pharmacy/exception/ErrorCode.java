@@ -49,6 +49,9 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND("Đơn hàng không tồn tại", 400, HttpStatus.BAD_REQUEST),
 
+    //Image
+    IMAGE_NOT_FOUND("Image not found", 400, HttpStatus.BAD_REQUEST),
+
     //Address exception
     ADDRESS_EXISTED("Địa chỉ đã tồn tại!", 400, HttpStatus.BAD_REQUEST),
 
@@ -65,7 +68,7 @@ public enum ErrorCode {
     // Login exception
     USER_NOT_EXISTED("Tên đăng nhập không tồn tại", 400, HttpStatus.BAD_REQUEST),
     PASSWORD_INCORRECT("Mật khẩu không chính xác", 400, HttpStatus.BAD_REQUEST),
-    USER_HAS_BEEN_BAN("User has been ban", 403, HttpStatus.UNAUTHORIZED),
+    USER_HAS_BEEN_BAN("User has been banned", 403, HttpStatus.UNAUTHORIZED),
 
     // Logout exception
     UNAUTHENTICATED("Unauthenticated", 400, HttpStatus.BAD_REQUEST),

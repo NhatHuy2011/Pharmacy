@@ -125,8 +125,6 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)); // Check username
 
-        String message = "Đăng nhập thành công";
-
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword()); // Check password
         if (!authenticated)
@@ -136,7 +134,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
 
         if (!user.getIsVerified()) {
-            message = "Email của bạn chưa được xác thực. Vui lòng xác thực email";
+            throw new AppException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         var token = generateToken(user);
@@ -144,7 +142,6 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
-                .message(message)
                 .build();
     }
 

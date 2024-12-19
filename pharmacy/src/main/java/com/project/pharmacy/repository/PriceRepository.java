@@ -15,7 +15,5 @@ import com.project.pharmacy.entity.Unit;
 public interface PriceRepository extends JpaRepository<Price, String> {
     boolean existsByProductAndUnit(Product product, Unit unit);
 
-    Optional<List<Price>> findByProductId(String productId);
-
-    void deleteAllByUnitId(String id);
+    List<Price> findByProductId(String productId);
 }

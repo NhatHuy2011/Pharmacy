@@ -161,13 +161,10 @@ public class ProductService {
     public Page<ProductResponse> getAllProduct(Pageable pageable) {
         return productRepository.findAll(pageable)
                 .map(product -> {
-            // Lấy hình ảnh đầu tiên
             Image firstImage = imageRepository.findFirstByProductId(product.getId());
-            String url = firstImage != null ? firstImage.getSource() : null;
+            String url = firstImage.getSource();
 
-            // Lấy danh sách đơn vị và giá sản phẩm
-            List<Price> prices = priceRepository.findByProductId(product.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+            List<Price> prices = priceRepository.findByProductId(product.getId());
 
             List<PriceResponse> priceResponses = prices.stream()
                     .map(price -> {
@@ -198,13 +195,10 @@ public class ProductService {
 
         return productRepository.findByCategoryIdsAsc(pageable, categoryIds)
                 .map(product -> {
-            // Lấy hình ảnh đầu tiên
             Image firstImage = imageRepository.findFirstByProductId(product.getId());
-            String url = firstImage != null ? firstImage.getSource() : null;
+            String url = firstImage.getSource();
 
-            // Lấy danh sách đơn vị và giá sản phẩm
-            List<Price> prices = priceRepository.findByProductId(product.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+            List<Price> prices = priceRepository.findByProductId(product.getId());
 
             List<PriceResponse> priceResponses = prices.stream()
                     .map(price -> {
@@ -234,13 +228,10 @@ public class ProductService {
 
         return productRepository.findByCategoryIdsDesc(pageable, categoryIds)
                 .map(product -> {
-                    // Lấy hình ảnh đầu tiên
                     Image firstImage = imageRepository.findFirstByProductId(product.getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
+                    String url = firstImage.getSource();
 
-                    // Lấy danh sách đơn vị và giá sản phẩm
-                    List<Price> prices = priceRepository.findByProductId(product.getId())
-                            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+                    List<Price> prices = priceRepository.findByProductId(product.getId());
 
                     List<PriceResponse> priceResponses = prices.stream()
                             .map(price -> {
@@ -288,23 +279,21 @@ public class ProductService {
                 .collect(Collectors.toList());
 
         return priceRepository.findByProductId(product.getId())
-                .map(prices -> prices.stream()
-                        .map(price -> {
-                            ProductResponse productResponse = productMapper.toProductResponse(product);
-                            productResponse.setPrice(PriceResponse.builder()
-                                            .id(price.getId())
-                                            .unit(UnitResponse.builder()
-                                                    .id(price.getUnit().getId())
-                                                    .name(price.getUnit().getName())
-                                                    .build())
-                                            .price(price.getPrice())
-                                            .description(price.getDescription())
-                                            .build());
-                            productResponse.setImages(imageUrls);
-                            return productResponse;
+                .stream()
+                .map(price -> {
+                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    productResponse.setPrice(PriceResponse.builder()
+                                    .id(price.getId())
+                                    .unit(UnitResponse.builder()
+                                            .id(price.getUnit().getId())
+                                            .name(price.getUnit().getName())
+                                            .build())
+                                    .price(price.getPrice())
+                                    .description(price.getDescription())
+                                    .build());
+                    productResponse.setImages(imageUrls);
+                    return productResponse;
                 })
-                .collect(Collectors.toList())
-            )
-            .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+                .toList();
     }
 }

@@ -38,6 +38,7 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticateRequest request) {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(authenticationService.authenticate(request))
+                .message("Đăng nhập thành công!")
                 .build();
     }
 

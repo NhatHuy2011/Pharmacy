@@ -35,7 +35,8 @@ public class SecurityConfig {
         "/order/guest/**",
         "/vnpay/create-payment",
         "/momo/create-payment",
-        "/zalopay/create-payment"
+        "/zalopay/create-payment",
+        "/invoice"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {

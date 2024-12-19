@@ -148,7 +148,7 @@ public class OrderService {
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
-		String url = firstImage != null ? firstImage.getSource() : null;
+		String url = firstImage.getSource();
 
 		Orders orders = Orders.builder()
 				.user(user)
@@ -319,7 +319,7 @@ public class OrderService {
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
 		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
-		String url = firstImage != null ? firstImage.getSource() : null;
+		String url = firstImage.getSource();
 
 		OrderItemTemporary orderItemTemporary = OrderItemTemporary.builder()
 				.productName(price.getProduct().getName())

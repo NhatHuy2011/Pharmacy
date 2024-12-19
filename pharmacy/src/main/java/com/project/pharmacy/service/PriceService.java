@@ -60,8 +60,7 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        List<Price> prices = priceRepository.findByProductId(request.getProductId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+        List<Price> prices = priceRepository.findByProductId(request.getProductId());
 
         for (Price price1 : prices) {
             if (price1.getPrice() == request.getPrice()) {
@@ -89,7 +88,7 @@ public class PriceService {
         return priceRepository.findAll(pageable)
                 .map(price -> {
                     Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
-                    String url = firstImage != null ? firstImage.getSource() : null;
+                    String url = firstImage.getSource();
 
                     ProductResponse productResponse = ProductResponse.builder()
                             .id(price.getProduct().getId())
@@ -119,8 +118,7 @@ public class PriceService {
             throw new AppException(ErrorCode.PRICE_NOT_ZERO);
         }
 
-        List<Price> prices = priceRepository.findByProductId(request.getProductId())
-                .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));;
+        List<Price> prices = priceRepository.findByProductId(request.getProductId());
 
         double priceRatio = (double) request.getPrice() / oldPrice;
 
