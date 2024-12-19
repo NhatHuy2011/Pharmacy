@@ -151,8 +151,7 @@ public class UserService {
     }
 
     public void resetPassword(UserResetPassword request) {
-        User user = userRepository
-                .findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
         if (user.getOtpCode().equalsIgnoreCase(request.getOtp())) {
             if (LocalDateTime.now().isBefore(user.getOtpExpiryTime())) {

@@ -13,7 +13,6 @@ import com.project.pharmacy.entity.Unit;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.UnitMapper;
-import com.project.pharmacy.repository.PriceRepository;
 import com.project.pharmacy.repository.UnitRepository;
 
 import lombok.AccessLevel;
@@ -52,6 +51,9 @@ public class UnitService {
     public UnitResponse updateUnit(UnitUpdateRequest request) {
         Unit unit = unitRepository.findById(request.getId())
                         .orElseThrow(() -> new AppException(ErrorCode.UNIT_NOT_FOUND));
+
+        if (unitRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.UNIT_EXISTED);
 
         unitMapper.updateUnit(unit, request);
         unitRepository.save(unit);

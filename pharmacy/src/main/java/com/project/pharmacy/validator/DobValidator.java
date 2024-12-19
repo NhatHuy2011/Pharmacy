@@ -14,6 +14,13 @@ public class DobValidator implements ConstraintValidator<DobConstraint, LocalDat
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {
         if (Objects.isNull(localDate)) return true;
 
+        if (localDate.isAfter(LocalDate.now())) {
+            constraintValidatorContext.disableDefaultConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Ngày sinh không tồn tại")
+                    .addConstraintViolation();
+            return false;
+        }
+
         long years = ChronoUnit.YEARS.between(localDate, LocalDate.now());
 
         return years >= min;
