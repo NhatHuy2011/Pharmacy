@@ -46,7 +46,6 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
 
     @Query("Select Count(o.id) " +
             "From Orders o " +
-            "Where o.status = 'SUCCESS' AND o.isConfirm = false " +
-            "AND DATE(o.orderDate) = :date")
-    Long totalOrderNotConfirm(@Param("date") LocalDate date);
+            "Where o.isConfirm = false ")
+    Long totalOrderNotConfirm();
 }

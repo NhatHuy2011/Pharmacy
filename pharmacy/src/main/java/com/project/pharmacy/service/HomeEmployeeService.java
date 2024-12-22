@@ -25,6 +25,6 @@ public class HomeEmployeeService {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public Long getTotalOrderNotConfirm(){
-        return orderRepository.totalOrderNotConfirm(LocalDate.now());
+        return orderRepository.totalOrderNotConfirm();
     }
 }

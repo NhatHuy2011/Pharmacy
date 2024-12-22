@@ -7,8 +7,6 @@ import com.project.pharmacy.dto.response.UnitResponse;
 import com.project.pharmacy.entity.Image;
 import com.project.pharmacy.entity.Price;
 import com.project.pharmacy.entity.Product;
-import com.project.pharmacy.exception.AppException;
-import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.ProductMapper;
 import com.project.pharmacy.repository.CompanyRepository;
 import com.project.pharmacy.repository.ImageRepository;
