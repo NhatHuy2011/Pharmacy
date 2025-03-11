@@ -14,6 +14,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartTemporary {
-    List<CartItemTemporary> cartItems = new ArrayList<>();
+    List<CartItemTemporary> cartItemResponses = new ArrayList<>();
     int totalPrice;
 }

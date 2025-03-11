@@ -197,7 +197,7 @@ public class CartService {
         Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
         String url = firstImage.getSource();
 
-        List<CartItemTemporary> cartItems = temporaryCart.getCartItems();
+        List<CartItemTemporary> cartItems = temporaryCart.getCartItemResponses();
         CartItemTemporary cartItemTemporary = cartItems.stream()
                 .filter(item -> item.getPriceId().equals(price.getId()))
                 .findFirst()
@@ -212,7 +212,7 @@ public class CartService {
                     .price(price.getPrice())
                     .quantity(request.getQuantity())
                     .amount(price.getPrice()*request.getQuantity())
-                    .url(url)
+                    .image(url)
                     .build();
             cartItems.add(cartItemTemporary);
         } else {
@@ -230,14 +230,14 @@ public class CartService {
     public void updateCartForGuest(UpdateCartRequest request, HttpSession session) {
         CartTemporary temporaryCart = (CartTemporary) session.getAttribute("Cart");
 
-        if (temporaryCart == null || temporaryCart.getCartItems().isEmpty()) {
+        if (temporaryCart == null || temporaryCart.getCartItemResponses().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
         Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-        CartItemTemporary cartItemTemporary = temporaryCart.getCartItems().stream()
+        CartItemTemporary cartItemTemporary = temporaryCart.getCartItemResponses().stream()
                 .filter(item -> item.getPriceId().equals(request.getPriceId()))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
@@ -246,7 +246,7 @@ public class CartService {
         cartItemTemporary.setQuantity(cartItemTemporary.getQuantity() + request.getQuantity());
 
         if (cartItemTemporary.getQuantity() <= 0) {
-            temporaryCart.getCartItems().remove(cartItemTemporary);
+            temporaryCart.getCartItemResponses().remove(cartItemTemporary);
         }
 
         temporaryCart.setTotalPrice(temporaryCart.getTotalPrice() + price.getPrice() * request.getQuantity());
@@ -261,17 +261,17 @@ public class CartService {
     public void deleteCartItemForGuest(DeleteCartItemRequest request, HttpSession session) {
         CartTemporary cartTemporary = (CartTemporary) session.getAttribute("Cart");
 
-        if (cartTemporary == null || cartTemporary.getCartItems().isEmpty()) {
+        if (cartTemporary == null || cartTemporary.getCartItemResponses().isEmpty()) {
             throw new AppException(ErrorCode.CART_EMPTY);
         }
 
-        CartItemTemporary cartItemTemporary = cartTemporary.getCartItems().stream()
+        CartItemTemporary cartItemTemporary = cartTemporary.getCartItemResponses().stream()
                 .filter(item -> item.getId().equals(request.getCartItemId()))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
         cartTemporary.setTotalPrice(cartTemporary.getTotalPrice() - cartItemTemporary.getAmount());
-        cartTemporary.getCartItems().remove(cartItemTemporary);
+        cartTemporary.getCartItemResponses().remove(cartItemTemporary);
 
         session.setAttribute("Cart", cartTemporary);
     }
@@ -295,7 +295,7 @@ public class CartService {
 
         List<CartItem> cartItemsUser = userCart.getCartItems();
 
-        for (CartItemTemporary guestItem : guestCart.getCartItems()) {
+        for (CartItemTemporary guestItem : guestCart.getCartItemResponses()) {
             Price price = priceRepository.findById(guestItem.getPriceId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -310,7 +310,7 @@ public class CartService {
                         .price(price)
                         .quantity(guestItem.getQuantity())
                         .amount(guestItem.getAmount())
-                        .image(guestItem.getUrl())
+                        .image(guestItem.getImage())
                         .build();
                 cartItemRepository.save(userCartItem);
             } else {

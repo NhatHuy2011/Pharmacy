@@ -236,10 +236,10 @@ public class OrderService {
 	public OrderTemporary createOrderAtCartGuest(CreateOrderRequestAtCartGuest request, HttpSession session){
 		CartTemporary cartTemporary = (CartTemporary) session.getAttribute("Cart");
 
-		if(cartTemporary == null || cartTemporary.getCartItems().isEmpty())
+		if(cartTemporary == null || cartTemporary.getCartItemResponses().isEmpty())
 			throw new AppException(ErrorCode.CART_EMPTY);
 
-		List<OrderItemTemporary> orderItemTemporaries = cartTemporary.getCartItems().stream()
+		List<OrderItemTemporary> orderItemTemporaries = cartTemporary.getCartItemResponses().stream()
 				.map(cartItemTemporary -> {
                     return OrderItemTemporary.builder()
                             .priceId(cartItemTemporary.getPriceId())
@@ -248,7 +248,7 @@ public class OrderService {
                             .quantity(cartItemTemporary.getQuantity())
                             .price(cartItemTemporary.getPrice())
 							.amount(cartItemTemporary.getAmount())
-							.image(cartItemTemporary.getUrl())
+							.image(cartItemTemporary.getImage())
                             .build();
 				})
 				.toList();
@@ -260,7 +260,7 @@ public class OrderService {
 		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(cartTemporary.getTotalPrice());
 
-		cartTemporary.getCartItems().clear();
+		cartTemporary.getCartItemResponses().clear();
 		cartTemporary.setTotalPrice(0);
 
 		//Luu order vao database

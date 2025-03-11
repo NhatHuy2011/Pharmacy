@@ -16,5 +16,5 @@ public class CartItemTemporary {
     int price;
     int quantity;
     int amount;
-    String url;
+    String image;
 }
