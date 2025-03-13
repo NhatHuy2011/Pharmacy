@@ -256,7 +256,7 @@ public class OrderService {
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryCart(request);
 		orderTemporary.setOrderItemTemporaries(orderItemTemporaries);
 		orderTemporary.setOrderDate(LocalDateTime.now());
-		orderTemporary.setOrderStatus(OrderStatus.PENDING);
+		orderTemporary.setStatus(OrderStatus.PENDING);
 		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(cartTemporary.getTotalPrice());
 
@@ -280,7 +280,7 @@ public class OrderService {
 		Orders orders = Orders.builder()
 				.user(null)
 				.orderDate(orderTemporary.getOrderDate())
-				.status(orderTemporary.getOrderStatus())
+				.status(orderTemporary.getStatus())
 				.paymentMethod(orderTemporary.getPaymentMethod())
 				.address(address)
 				.totalPrice(orderTemporary.getTotalPrice())
@@ -334,7 +334,7 @@ public class OrderService {
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryHome(request);
 		orderTemporary.setOrderItemTemporaries(new ArrayList<>());
 		orderTemporary.setOrderDate(LocalDateTime.now());
-		orderTemporary.setOrderStatus(OrderStatus.PENDING);
+		orderTemporary.setStatus(OrderStatus.PENDING);
 		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(price.getPrice());
 		orderTemporary.getOrderItemTemporaries().add(orderItemTemporary);
@@ -355,7 +355,7 @@ public class OrderService {
 		Orders orders = Orders.builder()
 				.user(null)
 				.orderDate(orderTemporary.getOrderDate())
-				.status(orderTemporary.getOrderStatus())
+				.status(orderTemporary.getStatus())
 				.paymentMethod(orderTemporary.getPaymentMethod())
 				.address(address)
 				.totalPrice(orderTemporary.getTotalPrice())

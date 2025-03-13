@@ -29,7 +29,7 @@ public class OrderTemporary {
     List<OrderItemTemporary> orderItemTemporaries;
     LocalDateTime orderDate;
     PaymentMethod paymentMethod;
-    OrderStatus orderStatus;
+    OrderStatus status;
     Boolean isConfirm;
     int totalPrice;
 }

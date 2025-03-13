@@ -36,10 +36,6 @@ public class AddressService {
 
     AddressRepository addressRepository;
 
-    OrderRepository orderRepository;
-
-    OrderItemRepository orderItemRepository;
-
     public AddressResponse createAddress(CreateAddressRequest request) {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
