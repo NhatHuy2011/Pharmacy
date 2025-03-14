@@ -26,7 +26,7 @@ public class OrderTemporary {
     String village;
     String address;
     AddressCategory addressCategory;
-    List<OrderItemTemporary> orderItemTemporaries;
+    List<OrderItemTemporary> orderItemResponses;
     LocalDateTime orderDate;
     PaymentMethod paymentMethod;
     OrderStatus status;

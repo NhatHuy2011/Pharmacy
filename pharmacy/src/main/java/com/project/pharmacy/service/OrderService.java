@@ -254,7 +254,7 @@ public class OrderService {
 				.toList();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryCart(request);
-		orderTemporary.setOrderItemTemporaries(orderItemTemporaries);
+		orderTemporary.setOrderItemResponses(orderItemTemporaries);
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setStatus(OrderStatus.PENDING);
 		orderTemporary.setIsConfirm(false);
@@ -332,12 +332,12 @@ public class OrderService {
 				.build();
 
 		OrderTemporary orderTemporary = ordersMapper.toOrderTemporaryHome(request);
-		orderTemporary.setOrderItemTemporaries(new ArrayList<>());
+		orderTemporary.setOrderItemResponses(new ArrayList<>());
 		orderTemporary.setOrderDate(LocalDateTime.now());
 		orderTemporary.setStatus(OrderStatus.PENDING);
 		orderTemporary.setIsConfirm(false);
 		orderTemporary.setTotalPrice(price.getPrice());
-		orderTemporary.getOrderItemTemporaries().add(orderItemTemporary);
+		orderTemporary.getOrderItemResponses().add(orderItemTemporary);
 
 		//Luu order vao database
 		Address address = Address.builder()
