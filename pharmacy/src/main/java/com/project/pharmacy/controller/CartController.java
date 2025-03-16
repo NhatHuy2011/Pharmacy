@@ -34,15 +34,9 @@ public class CartController {
     @GetMapping
     public ApiResponse<CartResponse> getCartForUser() {
         CartResponse cartResponse = cartService.getCartForUser();
-        if (cartResponse != null) {
-            return ApiResponse.<CartResponse>builder()
-                    .result(cartResponse)
-                    .build();
-        } else {
-            return ApiResponse.<CartResponse>builder()
-                    .message("Giỏ hàng trống")
-                    .build();
-        }
+        return ApiResponse.<CartResponse>builder()
+                .result(cartResponse)
+                .build();
     }
 
     @PutMapping
@@ -72,15 +66,10 @@ public class CartController {
     @GetMapping("/guest")
     public ApiResponse<CartTemporary> getCartForGuest(HttpSession session) {
         CartTemporary cartTemporary = cartService.getCartForGuest(session);
-        if (cartTemporary != null) {
-            return ApiResponse.<CartTemporary>builder()
-                    .result(cartTemporary)
-                    .build();
-        } else {
-            return ApiResponse.<CartTemporary>builder()
-                    .message("Giỏ hàng trống")
-                    .build();
-        }
+        return ApiResponse.<CartTemporary>builder()
+                .result(cartTemporary)
+                .build();
+
     }
 
     @PutMapping("/guest")

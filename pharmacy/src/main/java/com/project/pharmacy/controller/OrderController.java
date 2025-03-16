@@ -47,16 +47,9 @@ public class OrderController {
     @GetMapping("/history")
     public ApiResponse<List<OrderResponse>> getOrderByUser(){
         List<OrderResponse> orderResponses = orderService.getOrderByUser();
-        if (orderResponses != null){
-            return ApiResponse.<List<OrderResponse>>builder()
-                    .result(orderResponses)
-                    .build();
-        }
-        else {
-            return ApiResponse.<List<OrderResponse>>builder()
-                    .message("Bạn chưa có đơn hàng nào đã mua!")
-                    .build();
-        }
+        return ApiResponse.<List<OrderResponse>>builder()
+                .result(orderResponses)
+                .build();
     }
 
     //For Guest

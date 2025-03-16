@@ -274,7 +274,7 @@ public class OrderService {
 				.address(orderTemporary.getAddress())
 				.addressCategory(orderTemporary.getAddressCategory())
 				.build();
-
+		
 		addressRepository.save(address);
 
 		Orders orders = Orders.builder()
