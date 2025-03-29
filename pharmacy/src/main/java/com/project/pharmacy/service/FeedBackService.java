@@ -1,5 +1,6 @@
 package com.project.pharmacy.service;
 
+import ch.qos.logback.classic.Logger;
 import com.project.pharmacy.dto.request.CreateFeedBackRequest;
 import com.project.pharmacy.dto.request.GetFeedBackByProductRequest;
 import com.project.pharmacy.dto.request.UpdateFeedbackRequest;
@@ -12,6 +13,7 @@ import com.project.pharmacy.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,14 +44,12 @@ public class FeedBackService {
         for (Orders orders : user.getOrders()) {
             for (OrderItem orderItem : orders.getOrderItems()) {
                 if (orderItem.getPrice().getId().equals(request.getPriceId())) {
-                    if (orders.getStatus().equals(OrderStatus.PENDING) || orders.getStatus().equals(OrderStatus.FAILED)) {
-                        throw new AppException(ErrorCode.DONT_FEEDBACK);
+                    if (orders.getStatus().equals(OrderStatus.SUCCESS) || orders.getIsConfirm()) {
+                        hasPurchased = true;
+                        break;
                     }
-                    hasPurchased = true;
-                    break;
                 }
             }
-            if (hasPurchased) break;
         }
 
         if (!hasPurchased) {

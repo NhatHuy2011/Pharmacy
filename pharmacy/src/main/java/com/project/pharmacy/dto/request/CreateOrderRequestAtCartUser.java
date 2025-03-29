@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateOrderRequestAtCartUser {
+    String couponId;
     String addressId;
     @NotNull(message = "Vui lòng chọn phương thức thanh toán")
     PaymentMethod paymentMethod;

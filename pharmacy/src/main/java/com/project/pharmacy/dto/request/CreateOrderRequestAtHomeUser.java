@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class CreateOrderRequestAtHomeUser {
+    String couponId;
     String priceId;
     String addressId;
     @NotNull(message = "Vui lòng chọn phương thức thanh toán")

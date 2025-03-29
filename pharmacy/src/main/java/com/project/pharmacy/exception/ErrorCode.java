@@ -1,5 +1,6 @@
 package com.project.pharmacy.exception;
 
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
@@ -49,6 +50,10 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND("Đơn hàng không tồn tại", 400, HttpStatus.BAD_REQUEST),
 
+    //Coupon exception
+    COUPON_NOT_FOUND("Mã giảm giá không tồn tại", 400, HttpStatus.BAD_REQUEST),
+    COUPON_DONT_MATCH_ORDERREQUIRE("Đơn hàng không phù hợp với yêu cầu. Mua thêm: %s để có thể sử dụng mã giảm giá", 400, HttpStatus.BAD_REQUEST),
+
     //Image
     IMAGE_NOT_FOUND("Image not found", 400, HttpStatus.BAD_REQUEST),
 
@@ -95,5 +100,9 @@ public enum ErrorCode {
         this.message = message;
         this.code = code;
         this.statusCode = statusCode;
+    }
+
+    public String getMessage(Object... args) {
+        return String.format(message, args);
     }
 }

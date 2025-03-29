@@ -52,6 +52,9 @@ public class OrderService {
 	AddressRepository addressRepository;
 
 	ImageRepository imageRepository;
+
+	CouponRepository couponRepository;
+
 	//For User
 	@Transactional
 	public OrderResponse createOrderAtCartUser(CreateOrderRequestAtCartUser request){
@@ -75,7 +78,21 @@ public class OrderService {
 				.findFirst()
 				.orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
 
-    	Orders order = Orders.builder()
+		Coupon coupon;
+		int amountCoupon = 0;
+		if (request.getCouponId() != null) {
+			coupon = couponRepository.findById(request.getCouponId())
+					.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
+
+			if(coupon.getOrderRequire() > cart.getTotalPrice()){
+				int amount = coupon.getOrderRequire() - cart.getTotalPrice();
+				throw new AppException(ErrorCode.valueOf(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(amount)));
+			}
+
+			amountCoupon = Math.min((coupon.getPercent() * cart.getTotalPrice()) / 100, coupon.getMax());
+		}
+
+		Orders order = Orders.builder()
     			.user(user)
 				.address(address)
     			.orderDate(LocalDateTime.now())
@@ -83,7 +100,7 @@ public class OrderService {
 				.orderItems(new ArrayList<>())
 				.paymentMethod(request.getPaymentMethod())
 				.isConfirm(false)
-				.totalPrice(cart.getTotalPrice())
+				.totalPrice(cart.getTotalPrice() - amountCoupon)
     			.build();
 		orderRepository.save(order);
 
@@ -150,13 +167,27 @@ public class OrderService {
 		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
 		String url = firstImage.getSource();
 
+		Coupon coupon;
+		int amountCoupon = 0;
+		if (request.getCouponId() != null) {
+			coupon = couponRepository.findById(request.getCouponId())
+					.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
+
+			if(coupon.getOrderRequire() > price.getPrice()){
+				int amount = coupon.getOrderRequire() - price.getPrice();
+				throw new AppException(ErrorCode.valueOf(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(amount)));
+			}
+
+			amountCoupon = Math.min((coupon.getPercent() * price.getPrice()) / 100, coupon.getMax());
+		}
+
 		Orders orders = Orders.builder()
 				.user(user)
 				.address(address)
 				.orderDate(LocalDateTime.now())
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
-				.totalPrice(price.getPrice())
+				.totalPrice(price.getPrice() - amountCoupon)
 				.isConfirm(false)
 				.orderItems(new ArrayList<>())
 				.build();

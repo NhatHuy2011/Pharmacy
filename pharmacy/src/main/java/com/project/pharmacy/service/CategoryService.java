@@ -34,10 +34,6 @@ public class CategoryService {
 
     CloudinaryService cloudinaryService;
 
-    ProductRepository productRepository;
-
-    ImageRepository imageRepository;
-
     CategoryMapper categoryMapper;
     // Role ADMIN
     // Them danh muc
