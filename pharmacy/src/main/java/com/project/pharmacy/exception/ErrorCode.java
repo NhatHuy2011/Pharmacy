@@ -101,8 +101,4 @@ public enum ErrorCode {
         this.code = code;
         this.statusCode = statusCode;
     }
-
-    public String getMessage(Object... args) {
-        return String.format(message, args);
-    }
 }

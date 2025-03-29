@@ -86,7 +86,9 @@ public class OrderService {
 
 			if(coupon.getOrderRequire() > cart.getTotalPrice()){
 				int amount = coupon.getOrderRequire() - cart.getTotalPrice();
-				throw new AppException(ErrorCode.valueOf(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(amount)));
+
+				throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
+						String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
 			}
 
 			amountCoupon = Math.min((coupon.getPercent() * cart.getTotalPrice()) / 100, coupon.getMax());
@@ -146,7 +148,7 @@ public class OrderService {
 		return orderResponse;
     }
 
-	public OrderResponse createOrderAtHomeUser(CreateOrderRequestAtHomeUser request){
+	public OrderResponse createOrderAtHomeUser(CreateOrderRequestAtHomeUser request) throws AppException {
 		var context = SecurityContextHolder.getContext();
 		String name = context.getAuthentication().getName();
 
@@ -173,9 +175,11 @@ public class OrderService {
 			coupon = couponRepository.findById(request.getCouponId())
 					.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
 
-			if(coupon.getOrderRequire() > price.getPrice()){
+			if (coupon.getOrderRequire() > price.getPrice()) {
 				int amount = coupon.getOrderRequire() - price.getPrice();
-				throw new AppException(ErrorCode.valueOf(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(amount)));
+
+				throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
+						String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
 			}
 
 			amountCoupon = Math.min((coupon.getPercent() * price.getPrice()) / 100, coupon.getMax());

@@ -29,10 +29,15 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
+
+        // Sử dụng customMessage nếu có, nếu không thì lấy message mặc định từ ErrorCode
+        apiResponse.setMessage(exception.getCustomMessage() != null
+                ? exception.getCustomMessage()
+                : errorCode.getMessage());
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
+
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidException(MethodArgumentNotValidException exception) {
