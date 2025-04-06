@@ -87,4 +87,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     List<FeedBack> feedBacks;
+
+    @OneToMany(mappedBy = "user")
+    List<WhistList> whistLists;
 }

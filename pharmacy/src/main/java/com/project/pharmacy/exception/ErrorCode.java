@@ -54,6 +54,8 @@ public enum ErrorCode {
     COUPON_NOT_FOUND("Mã giảm giá không tồn tại", 400, HttpStatus.BAD_REQUEST),
     COUPON_DONT_MATCH_ORDERREQUIRE("Đơn hàng không phù hợp với yêu cầu. Mua thêm: %s để có thể sử dụng mã giảm giá", 400, HttpStatus.BAD_REQUEST),
 
+    //WHISTLIST
+    WHISTLIST_NOT_FOUND("Whist list not found", 400, HttpStatus.BAD_REQUEST),
     //Image
     IMAGE_NOT_FOUND("Image not found", 400, HttpStatus.BAD_REQUEST),
 

@@ -26,29 +26,36 @@ public class Product {
     @Column(nullable = false)
     Integer quantity;
 
-    @Column(nullable = false)
+    @Lob
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     String benefits;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     String ingredients;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     String constraindication;
 
     @Column(nullable = false)
     String object_use;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     String instruction;
 
     @Column(nullable = false)
     String preserve;
 
+    @Column
     String description;
 
+    @Column(columnDefinition = "LONGTEXT")
     String note;
 
+    @Column
     LocalDate dateCreation;
 
+    @Column
     LocalDate dateExpiration;
 
     @Column(nullable = false)
@@ -70,4 +77,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<FeedBack> feedBacks;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<WhistList> whistLists;
 }
