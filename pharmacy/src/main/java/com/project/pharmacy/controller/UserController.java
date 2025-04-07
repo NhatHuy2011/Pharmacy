@@ -1,7 +1,10 @@
 package com.project.pharmacy.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
+import com.project.pharmacy.dto.response.*;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -11,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.pharmacy.dto.request.*;
-import com.project.pharmacy.dto.response.ApiResponse;
-import com.project.pharmacy.dto.response.UserResponse;
 import com.project.pharmacy.service.UserService;
 
 import lombok.AccessLevel;
@@ -76,8 +77,6 @@ public class UserController {
                 .build();
     }
 
-
-
     @GetMapping("/bio")
     public ApiResponse<UserResponse> getMyInFo() {
         return ApiResponse.<UserResponse>builder()
@@ -137,6 +136,50 @@ public class UserController {
         userService.updatePassword(request);
         return ApiResponse.<Void>builder()
                 .message("Mật khẩu được tạo mới thành công")
+                .build();
+    }
+
+    @GetMapping("/spending/date")
+    public ApiResponse<List<DaylyStatisticResponse>> spendingHealthByDate(@RequestParam("date") LocalDate date){
+        return ApiResponse.<List<DaylyStatisticResponse>>builder()
+                .result(userService.spendingHealthByDate(date))
+                .build();
+    }
+
+    @GetMapping("/spending/total/date")
+    public ApiResponse<Long> totalSpendingHealthByDate(@RequestParam("date") LocalDate date){
+        return ApiResponse.<Long>builder()
+                .result(userService.totalSpendingHealthByDate(date))
+                .build();
+    }
+
+    @GetMapping("/spending/month")
+    public ApiResponse<List<MonthlyStatisticResponse>> spendingHealthByMonth(@RequestParam("month") int month,
+                                                                             @RequestParam("year") int year){
+        return ApiResponse.<List<MonthlyStatisticResponse>>builder()
+                .result(userService.spendingHealthByMonth(month, year))
+                .build();
+    }
+
+    @GetMapping("/spending/total/month")
+    public ApiResponse<Long> totalSpendingHealthByMonth(@RequestParam("month") int month,
+                                                        @RequestParam("year") int year){
+        return ApiResponse.<Long>builder()
+                .result(userService.totalSpendingHealthByMonth(month, year))
+                .build();
+    }
+
+    @GetMapping("/spending/year")
+    public ApiResponse<List<YearlyStatisticResponse>> spendingHealthByYear(@RequestParam("year") int year){
+        return ApiResponse.<List<YearlyStatisticResponse>>builder()
+                .result(userService.spendingHealthByYear(year))
+                .build();
+    }
+
+    @GetMapping("/spending/total/year")
+    public ApiResponse<Long> totalSpendingHealthByYear(@RequestParam("year") int year){
+        return ApiResponse.<Long>builder()
+                .result(userService.totalSpendingHealthByYear(year))
                 .build();
     }
 

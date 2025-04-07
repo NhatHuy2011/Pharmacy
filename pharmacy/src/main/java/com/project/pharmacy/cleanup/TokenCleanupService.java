@@ -17,7 +17,6 @@ public class TokenCleanupService {
 
     InvalidatedTokenRepository invalidatedTokenRepository;
 
-    // Chạy hàng ngày lúc 00:00 để xóa token đã hết hạn
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanUpExpiredTokens() {
         Date now = new Date(); // Lấy thời gian hiện tại

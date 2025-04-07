@@ -1,6 +1,9 @@
 package com.project.pharmacy.controller;
 
 import com.project.pharmacy.dto.response.ApiResponse;
+import com.project.pharmacy.dto.response.DaylyStatisticResponse;
+import com.project.pharmacy.dto.response.MonthlyStatisticResponse;
+import com.project.pharmacy.dto.response.YearlyStatisticResponse;
 import com.project.pharmacy.service.HomeAdminService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/home/admin")
@@ -41,32 +45,46 @@ public class HomeAdminController {
     }
 
     @GetMapping("/revenue/date")
-    public ApiResponse<Long> getRevenueByDate(@RequestParam("date") LocalDate date){
-        return ApiResponse.<Long>builder()
+    public ApiResponse<List<DaylyStatisticResponse>> getRevenueByDate(@RequestParam("date") LocalDate date){
+        return ApiResponse.<List<DaylyStatisticResponse>>builder()
                 .result(homeAdminService.getRevenueByDate(date))
                 .build();
     }
 
-    @GetMapping("/revenue/month")
-    public ApiResponse<Long> getRevenueByMonth(@RequestParam("month") int month,
-                                               @RequestParam("year") int year){
+    @GetMapping("/revenue/total/date")
+    public ApiResponse<Long> getTotalRevenueByDate(@RequestParam("date") LocalDate date){
         return ApiResponse.<Long>builder()
+                .result(homeAdminService.getTotalRevenueByDate(date))
+                .build();
+    }
+
+    @GetMapping("/revenue/month")
+    public ApiResponse<List<MonthlyStatisticResponse>> getRevenueByMonth(@RequestParam("month") int month,
+                                                                         @RequestParam("year") int year){
+        return ApiResponse.<List<MonthlyStatisticResponse>>builder()
                 .result(homeAdminService.getRevenueByMonth(month, year))
                 .build();
     }
 
-    @GetMapping("/revenue/year")
-    public ApiResponse<Long> getRevenueByMonth(@RequestParam("year") int year){
+    @GetMapping("/revenue/total/month")
+    public ApiResponse<Long> getTotalRevenueByMonth(@RequestParam("month") int month,
+                        @RequestParam("year") int year){
         return ApiResponse.<Long>builder()
+                .result(homeAdminService.getTotalRevenueByMonth(month, year))
+                .build();
+    }
+
+    @GetMapping("/revenue/year")
+    public ApiResponse<List<YearlyStatisticResponse>> getRevenueByYear(@RequestParam("year") int year){
+        return ApiResponse.<List<YearlyStatisticResponse>>builder()
                 .result(homeAdminService.getRevenueByYear(year))
                 .build();
     }
 
-    @GetMapping("/revenue/beetween")
-    public ApiResponse<Long> getRevenueBeetWeen(@RequestParam("startDate") LocalDate startDate,
-                                                @RequestParam("endDate") LocalDate endDate){
+    @GetMapping("/revenue/total/year")
+    public ApiResponse<Long> getTotalRevenueByYear(@RequestParam("year") int year){
         return ApiResponse.<Long>builder()
-                .result(homeAdminService.getRevenueBeetWeenDates(startDate, endDate))
+                .result(homeAdminService.getTotalRevenueByYear(year))
                 .build();
     }
 }

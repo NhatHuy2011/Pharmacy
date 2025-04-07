@@ -1,12 +1,15 @@
 package com.project.pharmacy.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
+import com.project.pharmacy.dto.response.DaylyStatisticResponse;
+import com.project.pharmacy.dto.response.MonthlyStatisticResponse;
+import com.project.pharmacy.dto.response.YearlyStatisticResponse;
 import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.repository.OrderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +48,8 @@ public class UserService {
     UserMapper userMapper;
 
     RoleRepository roleRepository;
+
+    OrderRepository ordersRepository;
 
     EmailService emailService;
 
@@ -328,6 +333,84 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getCheckNewPassword()));
 
         userRepository.save(user);
+    }
+
+    //Chi tieu suc khoe theo ngay
+    public List<DaylyStatisticResponse> spendingHealthByDate(LocalDate date) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.spendingByDate(userId, date);
+    }
+
+    //Tong chi tieu suc khoe theo ngay
+    public Long totalSpendingHealthByDate(LocalDate date){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.totalSpendingByDate(userId, date);
+    }
+
+    //Chi tieu suc khoe theo thang
+    public List<MonthlyStatisticResponse> spendingHealthByMonth(int month, int year) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.spendingByMonth(userId, month, year);
+    }
+
+    //Tong chi tieu suc khoe theo thang
+    public Long totalSpendingHealthByMonth(int month, int year){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.totalSpendingByMonth(userId, month, year);
+    }
+
+    //Chi tieu suc khoe theo nam
+    public List<YearlyStatisticResponse> spendingHealthByYear(int year) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.spendingByYear(userId, year);
+    }
+
+    //Tong chi tieu suc khoe theo nam
+    public Long totalSpendingHealthByYear(int year){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        String userId = user.getId();
+
+        return ordersRepository.totalSpendingByYear(userId, year);
     }
 
     // Role ADMIN
