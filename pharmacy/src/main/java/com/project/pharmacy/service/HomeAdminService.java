@@ -46,12 +46,6 @@ public class HomeAdminService {
         return categoryRepository.getTotalCategory();
     }
 
-    //Doanh thu theo ngay
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<DaylyStatisticResponse> getRevenueByDate(LocalDate date){
-        return orderRepository.revenueByDate(date);
-    }
-
     //Tong doanh thu theo ngay
     @PreAuthorize("hasRole('ADMIN')")
     public Long getTotalRevenueByDate(LocalDate date){

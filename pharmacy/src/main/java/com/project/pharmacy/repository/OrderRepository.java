@@ -24,13 +24,6 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     Page<Orders> findByPaymentMethod(PaymentMethod paymentMethod, Pageable pageable);
 
     //FOR ADMIN
-    @Query("SELECT o.orderDate, o.totalPrice " +
-            " From Orders o " +
-            " Where o.status = 'SUCCESS' " +
-            " And DATE(o.orderDate) = :date " +
-            " GROUP BY o.orderDate, o.totalPrice ")
-    List<DaylyStatisticResponse> revenueByDate(@Param("date") LocalDate date);
-
     @Query("Select Sum(o.totalPrice) " +
             " From Orders o " +
             " Where o.status = 'SUCCESS' " +
@@ -72,7 +65,7 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     Long totalOrderNotConfirm();
 
     //FOR USER
-    @Query("SELECT o.orderDate, o.totalPrice " +
+    @Query("SELECT o.orderDate as time, o.totalPrice as money" +
             " From Orders o " +
             " Where o.status = 'SUCCESS' " +
             " AND o.user.id = :userId " +

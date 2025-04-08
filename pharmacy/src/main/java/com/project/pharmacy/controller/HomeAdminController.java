@@ -44,13 +44,6 @@ public class HomeAdminController {
                 .build();
     }
 
-    @GetMapping("/revenue/date")
-    public ApiResponse<List<DaylyStatisticResponse>> getRevenueByDate(@RequestParam("date") LocalDate date){
-        return ApiResponse.<List<DaylyStatisticResponse>>builder()
-                .result(homeAdminService.getRevenueByDate(date))
-                .build();
-    }
-
     @GetMapping("/revenue/total/date")
     public ApiResponse<Long> getTotalRevenueByDate(@RequestParam("date") LocalDate date){
         return ApiResponse.<Long>builder()
