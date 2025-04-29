@@ -1,14 +1,16 @@
 package com.project.pharmacy.controller;
 
-import com.project.pharmacy.dto.response.ApiResponse;
-import com.project.pharmacy.dto.response.CompanyResponse;
-import com.project.pharmacy.dto.response.ProductResponse;
+import com.project.pharmacy.dto.response.*;
+import com.project.pharmacy.service.CategoryService;
 import com.project.pharmacy.service.HomeUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,24 +22,24 @@ import java.util.List;
 public class HomeUserController {
     HomeUserService homeUserService;
 
-    @GetMapping("/top20")
-    public ApiResponse<List<ProductResponse>> getTop20NewProduct(){
-        return ApiResponse.<List<ProductResponse>>builder()
-                .result(homeUserService.getTop20NewProduct())
-                .build();
-    }
+    CategoryService categoryService;
 
-    @GetMapping("/bestSeller")
-    public ApiResponse<List<ProductResponse>> getBestSeller(){
-        return ApiResponse.<List<ProductResponse>>builder()
-                .result(homeUserService.getTop20ProductBestSeller())
-                .build();
-    }
+    @GetMapping
+    public ApiResponse<HomeResponse> getHome(){
+        List<ProductResponse> newProducts = homeUserService.getTop10NewProduct();
+        List<ProductResponse> topProducts = homeUserService.getTop10ProductBestSeller();
+        List<CompanyResponse> topCompanies = homeUserService.getTop10Company();
+        List<CategoryResponse> categories = categoryService.getRootCategories();
 
-    @GetMapping("/topCompany")
-    public ApiResponse<List<CompanyResponse>> getTopCompany(){
-        return ApiResponse.<List<CompanyResponse>>builder()
-                .result(homeUserService.getTop20Company())
+        HomeResponse homeResponse = HomeResponse.builder()
+                .categories(categories)
+                .newProducts(newProducts)
+                .topProducts(topProducts)
+                .topCompanies(topCompanies)
+                .build();
+
+        return ApiResponse.<HomeResponse>builder()
+                .result(homeResponse)
                 .build();
     }
 }

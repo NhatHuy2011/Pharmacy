@@ -28,8 +28,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
 
     @Query(value = "Select p from Product p " +
-            "ORDER BY p.dateCreation DESC")
-    List<Product> findTop20NewProduct(Pageable pageable);
+            "ORDER BY p.dateCreation DESC " +
+            "LIMIT 10")
+    List<Product> findTop10NewProduct();
 
     @Query(value = "SELECT p1.id AS productId, SUM(o.quantity) AS totalQuantity " +
             "FROM product p1 " +
@@ -38,8 +39,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "JOIN orders o2 ON o.order_id = o2.id " +
             "WHERE o2.status = 'SUCCESS' " +
             "GROUP BY p1.id " +
-            "ORDER BY totalQuantity DESC " , nativeQuery = true)
-    List<ProductBestSellerResponse> findTop20ProductBestSeller(Pageable pageable);
+            "ORDER BY totalQuantity DESC " +
+            "LIMIT 10" , nativeQuery = true)
+    List<ProductBestSellerResponse> findTop10ProductBestSeller();
 
     @Query("Select p From Product p Where p.id IN :ids")
     List<Product> findProductsByIds(@Param("ids") List<String> ids);

@@ -17,6 +17,7 @@ import com.project.pharmacy.dto.response.TopCompanyResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,9 @@ public class HomeUserService {
     ProductMapper productMapper;
 
     CompanyRepository companyRepository;
-    //20 New Product
-    public List<ProductResponse> getTop20NewProduct(){
-        Pageable top20 = PageRequest.of(0, 20);
-        return productRepository.findTop20NewProduct(top20).stream()
+    //10 New Product
+    public List<ProductResponse> getTop10NewProduct(){
+        return productRepository.findTop10NewProduct().stream()
                 .map(product -> {
                     Image firstImage = imageRepository.findFirstByProductId(product.getId());
                     String url = firstImage.getSource();
@@ -62,7 +62,9 @@ public class HomeUserService {
                             })
                             .toList();
 
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    ProductResponse productResponse = new ProductResponse();
+                    productResponse.setId(product.getId());
+                    productResponse.setName(product.getName());
                     productResponse.setImage(url);
                     productResponse.setPrices(priceResponses);
 
@@ -71,15 +73,17 @@ public class HomeUserService {
                 .toList();
     }
 
-    public List<ProductResponse> getTop20ProductBestSeller(){
-        Pageable pageable = PageRequest.of(0, 20);
-        List<ProductBestSellerResponse> top20 = productRepository.findTop20ProductBestSeller(pageable);
+    //Top 10 BestSeller
+    public List<ProductResponse> getTop10ProductBestSeller(){
+        List<ProductBestSellerResponse> top10 = productRepository.findTop10ProductBestSeller();
 
-        List<String> productIds = top20.stream()
+        //Lay danh sach id cua 10 san ban chay nhat
+        List<String> productIds = top10.stream()
                 .map(ProductBestSellerResponse::getProductId)
                 .toList();
 
-        Map<String, Long> productSalesMap = top20.stream()
+        //Dem so luong san pham da ban
+        Map<String, Long> productSalesMap = top10.stream()
                 .collect(Collectors.toMap(ProductBestSellerResponse::getProductId, ProductBestSellerResponse::getTotalQuantity));
 
         List<Product> products = productRepository.findProductsByIds(productIds);
@@ -105,7 +109,9 @@ public class HomeUserService {
                             })
                             .toList();
 
-                    ProductResponse productResponse = productMapper.toProductResponse(product);
+                    ProductResponse productResponse = new ProductResponse();
+                    productResponse.setId(product.getId());
+                    productResponse.setName(product.getName());
                     productResponse.setImage(url);
                     productResponse.setPrices(priceResponses);
 
@@ -118,9 +124,8 @@ public class HomeUserService {
         return productResponses;
     }
 
-    public List<CompanyResponse> getTop20Company() {
-        Pageable pageable = PageRequest.of(0, 20);
-        List<TopCompanyResponse> topCompanies = companyRepository.getTop20Company(pageable);
+    public List<CompanyResponse> getTop10Company() {
+        List<TopCompanyResponse> topCompanies = companyRepository.getTop10Company();
 
         // Map TopCompany sang CompanyResponse
         return topCompanies.stream().map(topCompanyResponse -> {
