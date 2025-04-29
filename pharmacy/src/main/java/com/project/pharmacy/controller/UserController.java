@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.project.pharmacy.dto.response.*;
+import com.project.pharmacy.dto.response.DaylyStatisticResponse;
+import com.project.pharmacy.dto.response.MonthlyStatisticResponse;
+import com.project.pharmacy.dto.response.YearlyStatisticResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;

@@ -1,14 +1,18 @@
 package com.project.pharmacy.service;
 
 import com.project.pharmacy.dto.request.CreateCouponRequest;
+import com.project.pharmacy.dto.request.CreateNotificationRequest;
 import com.project.pharmacy.dto.request.UpdateCouponRequest;
 import com.project.pharmacy.dto.response.CouponResponse;
 import com.project.pharmacy.entity.Coupon;
+import com.project.pharmacy.entity.Notification;
 import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.CouponMapper;
+import com.project.pharmacy.mapper.NotificationMapper;
 import com.project.pharmacy.repository.CouponRepository;
+import com.project.pharmacy.repository.NotificationRepository;
 import com.project.pharmacy.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,12 @@ public class CouponService {
 
     CloudinaryService cloudinaryService;
 
+    NotificationService notificationService;
+
+    NotificationRepository notificationRepository;
+
+    NotificationMapper notificationMapper;
+
     @PreAuthorize("hasRole('EMPLOYEE')")
     public CouponResponse createCoupon(CreateCouponRequest request, MultipartFile file) throws IOException {
         String url = cloudinaryService.uploadImage(file);
@@ -43,6 +53,19 @@ public class CouponService {
         coupon.setCreateDate(LocalDate.now());
 
         couponRepository.save(coupon);
+
+        Notification notification = Notification.builder()
+                .title(coupon.getName())
+                .content(coupon.getDescription())
+                .createDate(coupon.getCreateDate())
+                .level(coupon.getLevelUser())
+                .image(url)
+                .build();
+        notificationRepository.save(notification);
+
+        CreateNotificationRequest notificationRequest = notificationMapper.toNotificationRequest(notification);
+
+        notificationService.sendNotification(notificationRequest);
 
         return couponMapper.toCouponResponse(coupon);
     }

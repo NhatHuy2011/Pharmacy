@@ -16,7 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
 
 @Configuration
@@ -35,7 +34,8 @@ public class SecurityConfig {
         "/vnpay/create-payment",
         "/momo/create-payment",
         "/zalopay/create-payment",
-        "/invoice"
+        "/invoice",
+        "/notifications/send"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
@@ -69,7 +69,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers("/ws/**")
+                .requestMatchers("/ws-notifications/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
                 .permitAll()
@@ -110,10 +110,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Chỉ định rõ các origin được phép (ví dụ: localhost:3000)
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-
-        // Hoặc sử dụng với nhiều origin
-        // config.setAllowedOrigins(List.of("http://localhost:3000", "http://example.com"));
+        config.setAllowedOriginPatterns(List.of("*"));
 
         // Chỉ định các header được phép
         config.addAllowedHeader("*");

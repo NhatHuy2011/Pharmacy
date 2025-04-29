@@ -1,6 +1,6 @@
 package com.project.pharmacy.repository;
 
-import com.project.pharmacy.utils.TopCompany;
+import com.project.pharmacy.dto.response.TopCompanyResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +23,7 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
             "WHERE o2.status = 'SUCCESS' " +
             "GROUP BY c.id, c.name, c.image " +
             "ORDER BY totalQuantity DESC ", nativeQuery = true)
-    List<TopCompany> getTop20Company(Pageable pageable);
+    List<TopCompanyResponse> getTop20Company(Pageable pageable);
 
     @Query(value = "Select count(c.id) as totalCompany " +
             "From company c", nativeQuery = true)

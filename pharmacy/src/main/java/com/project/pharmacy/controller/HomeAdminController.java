@@ -1,7 +1,6 @@
 package com.project.pharmacy.controller;
 
 import com.project.pharmacy.dto.response.ApiResponse;
-import com.project.pharmacy.dto.response.DaylyStatisticResponse;
 import com.project.pharmacy.dto.response.MonthlyStatisticResponse;
 import com.project.pharmacy.dto.response.YearlyStatisticResponse;
 import com.project.pharmacy.service.HomeAdminService;

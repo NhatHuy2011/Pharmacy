@@ -56,6 +56,7 @@ public enum ErrorCode {
 
     //WHISTLIST
     WHISTLIST_NOT_FOUND("Whist list not found", 400, HttpStatus.BAD_REQUEST),
+    WHISTLISTITEM_EXISTED("Sản phẩm đã tồn tại trong danh sách", 400, HttpStatus.BAD_REQUEST),
     //Image
     IMAGE_NOT_FOUND("Image not found", 400, HttpStatus.BAD_REQUEST),
 

@@ -90,4 +90,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     List<WhistList> whistLists;
+
+    @ManyToMany
+    List<Notification> notifications;
 }

@@ -12,8 +12,8 @@ import com.project.pharmacy.repository.CompanyRepository;
 import com.project.pharmacy.repository.ImageRepository;
 import com.project.pharmacy.repository.PriceRepository;
 import com.project.pharmacy.repository.ProductRepository;
-import com.project.pharmacy.utils.ProductBestSeller;
-import com.project.pharmacy.utils.TopCompany;
+import com.project.pharmacy.dto.response.ProductBestSellerResponse;
+import com.project.pharmacy.dto.response.TopCompanyResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -73,14 +73,14 @@ public class HomeUserService {
 
     public List<ProductResponse> getTop20ProductBestSeller(){
         Pageable pageable = PageRequest.of(0, 20);
-        List<ProductBestSeller> top20 = productRepository.findTop20ProductBestSeller(pageable);
+        List<ProductBestSellerResponse> top20 = productRepository.findTop20ProductBestSeller(pageable);
 
         List<String> productIds = top20.stream()
-                .map(ProductBestSeller::getProductId)
+                .map(ProductBestSellerResponse::getProductId)
                 .toList();
 
         Map<String, Long> productSalesMap = top20.stream()
-                .collect(Collectors.toMap(ProductBestSeller::getProductId, ProductBestSeller::getTotalQuantity));
+                .collect(Collectors.toMap(ProductBestSellerResponse::getProductId, ProductBestSellerResponse::getTotalQuantity));
 
         List<Product> products = productRepository.findProductsByIds(productIds);
 
@@ -120,14 +120,14 @@ public class HomeUserService {
 
     public List<CompanyResponse> getTop20Company() {
         Pageable pageable = PageRequest.of(0, 20);
-        List<TopCompany> topCompanies = companyRepository.getTop20Company(pageable);
+        List<TopCompanyResponse> topCompanies = companyRepository.getTop20Company(pageable);
 
         // Map TopCompany sang CompanyResponse
-        return topCompanies.stream().map(topCompany -> {
+        return topCompanies.stream().map(topCompanyResponse -> {
             CompanyResponse response = new CompanyResponse();
-            response.setId(topCompany.getId());
-            response.setName(topCompany.getName());
-            response.setImage(topCompany.getImage());
+            response.setId(topCompanyResponse.getId());
+            response.setName(topCompanyResponse.getName());
+            response.setImage(topCompanyResponse.getImage());
             return response;
         }).collect(Collectors.toList());
     }

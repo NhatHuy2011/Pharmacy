@@ -1,6 +1,5 @@
 package com.project.pharmacy.service;
 
-import com.project.pharmacy.dto.response.DaylyStatisticResponse;
 import com.project.pharmacy.dto.response.MonthlyStatisticResponse;
 import com.project.pharmacy.dto.response.YearlyStatisticResponse;
 import com.project.pharmacy.repository.CategoryRepository;

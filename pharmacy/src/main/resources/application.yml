@@ -5,6 +5,7 @@ server:
     context-path: /api/v1/pharmacy
     session:
       timeout: 2h
+  address: 0.0.0.0
 
 spring:
   datasource:
@@ -68,3 +69,9 @@ zalopay:
   key1: "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn"
   key2: "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"
   create-order: "https://sandbox.zalopay.com.vn/v001/tpe/createorder"
+
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.web.socket.server: TRACE
+

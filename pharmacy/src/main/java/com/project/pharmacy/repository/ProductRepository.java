@@ -2,7 +2,7 @@ package com.project.pharmacy.repository;
 
 import java.util.List;
 
-import com.project.pharmacy.utils.ProductBestSeller;
+import com.project.pharmacy.dto.response.ProductBestSellerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,7 +39,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "WHERE o2.status = 'SUCCESS' " +
             "GROUP BY p1.id " +
             "ORDER BY totalQuantity DESC " , nativeQuery = true)
-    List<ProductBestSeller> findTop20ProductBestSeller(Pageable pageable);
+    List<ProductBestSellerResponse> findTop20ProductBestSeller(Pageable pageable);
 
     @Query("Select p From Product p Where p.id IN :ids")
     List<Product> findProductsByIds(@Param("ids") List<String> ids);

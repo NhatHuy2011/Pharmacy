@@ -38,6 +38,10 @@ public class WhistListService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        if(whistListRepository.existsByUserAndProduct(user, product)){
+            throw new AppException(ErrorCode.WHISTLISTITEM_EXISTED);
+        }
+
         WhistList whistList = WhistList.builder()
                 .user(user)
                 .product(product)
