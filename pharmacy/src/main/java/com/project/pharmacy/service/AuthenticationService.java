@@ -81,7 +81,8 @@ public class AuthenticationService {
     @NonFinal
     protected String GRANT_TYPE = "authorization_code";
 
-    public AuthenticationResponse outboundAuthenticate(String code) {
+    //Outbound authenticate login with google in web
+    public AuthenticationResponse outboundAuthenticateWeb(String code) {
         // ExchangeToken from code
         ExchangeTokenResponse response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
                 .code(code)
@@ -109,9 +110,36 @@ public class AuthenticationService {
                         .firstname(userInfo.getGivenName())
                         .lastname(userInfo.getFamilyName())
                         .status(true)
+                        .isVerified(true)
                         .roles(roles)
                         .build()));
         log.info("User Info: {}", userInfo);
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .build();
+    }
+
+    //Out bound authenticate login with google on android
+    public AuthenticationResponse outboundAuthenticationAndroid(OutboundAuthenticationAndroid request){
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = userRepository
+                .findByUsername(request.getEmail())
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .username(request.getEmail())
+                        .firstname(request.getGivenName())
+                        .lastname(request.getFamilyName())
+                        .image(request.getPhoto())
+                        .status(true)
+                        .isVerified(true)
+                        .roles(roles)
+                        .build()));
 
         var token = generateToken(user);
 

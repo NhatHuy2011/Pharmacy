@@ -20,22 +20,22 @@ import java.util.Map;
 public class VNPayController {
     VNPayService vnPayService;
 
-    @PostMapping("/create-payment")
+    //WEB
+    @PostMapping("/create-payment/web")
     public ApiResponse<String> createPayment(HttpServletRequest req) {
         return ApiResponse.<String>builder()
                 .message("Success")
-                .result(vnPayService.createPaymentVNPay(req))
+                .result(vnPayService.createPaymentVNPayWeb(req))
                 .build();
     }
 
-    @GetMapping("/callback")
+    @GetMapping("/callback/web")
     public ResponseEntity<Void> callback(@RequestParam Map<String, String> params) {
-        // Lấy mã phản hồi và thông tin ticketId từ tham số
         String responseCode = params.get("vnp_ResponseCode");
         String orderId = params.get("vnp_TxnRef");
 
         // Xử lý thanh toán
-        vnPayService.callBack(responseCode, orderId);
+        vnPayService.callBackWeb(responseCode, orderId);
 
         // URL của frontend, kèm theo các tham số động
         String frontendUrl = "http://localhost:3000/paymentCallback";
@@ -52,6 +52,28 @@ public class VNPayController {
         // Redirect người dùng đến frontend với các tham số
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, redirectUrl)
+                .build();
+    }
+
+    //ANDROID
+    @PostMapping("/create-payment/android")
+    public ApiResponse<String> createPaymentAndroid(HttpServletRequest req) {
+        return ApiResponse.<String>builder()
+                .message("Success")
+                .result(vnPayService.createPaymentVNPayAndroid(req))
+                .build();
+    }
+
+    @GetMapping("/callback/android")
+    public ApiResponse<String> callbackAndroid(@RequestParam Map<String, String> params) {
+        String responseCode = params.get("vnp_ResponseCode");
+        String orderId = params.get("vnp_TxnRef");
+
+        // Xử lý thanh toán
+        vnPayService.callBackAndroid(responseCode, orderId);
+
+        return ApiResponse.<String>builder()
+                .result(responseCode)
                 .build();
     }
 }

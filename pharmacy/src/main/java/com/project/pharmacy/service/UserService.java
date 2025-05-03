@@ -61,13 +61,13 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
 
+        if (!request.getPassword().equals(request.getConfirmPassword()))
+            throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
+
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         Set<Role> roles = new HashSet<>();
         roles.add(role);
-
-        if (!request.getPassword().equals(request.getConfirmPassword()))
-            throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
 
         String otpCode = generateOTP();
 

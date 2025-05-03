@@ -2,13 +2,10 @@ package com.project.pharmacy.controller;
 
 import java.text.ParseException;
 
+import com.project.pharmacy.dto.request.*;
 import org.springframework.web.bind.annotation.*;
 
 import com.nimbusds.jose.JOSEException;
-import com.project.pharmacy.dto.request.AuthenticateRequest;
-import com.project.pharmacy.dto.request.InstrospectTokenRequest;
-import com.project.pharmacy.dto.request.LogoutRequest;
-import com.project.pharmacy.dto.request.RefreshRequest;
 import com.project.pharmacy.dto.response.ApiResponse;
 import com.project.pharmacy.dto.response.AuthenticationResponse;
 import com.project.pharmacy.dto.response.IntrospectTokenResponse;
@@ -27,10 +24,17 @@ public class AuthenticationController {
 
     // Role USER
     @PostMapping("/outbound/authentication")
-    public ApiResponse<AuthenticationResponse> outbound(@RequestParam("code") String code) {
+    public ApiResponse<AuthenticationResponse> outboundLoginGoogleWeb(@RequestParam("code") String code) {
 
         return ApiResponse.<AuthenticationResponse>builder()
-                .result(authenticationService.outboundAuthenticate(code))
+                .result(authenticationService.outboundAuthenticateWeb(code))
+                .build();
+    }
+
+    @PostMapping("/outbound/authentication/android")
+    public ApiResponse<AuthenticationResponse> outboundLoginGoogleAndroid(@RequestBody OutboundAuthenticationAndroid request){
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.outboundAuthenticationAndroid(request))
                 .build();
     }
 
