@@ -65,15 +65,26 @@ public class VNPayController {
     }
 
     @GetMapping("/callback/android")
-    public ApiResponse<String> callbackAndroid(@RequestParam Map<String, String> params) {
+    public ResponseEntity<String> callbackAndroid(@RequestParam Map<String, String> params) {
         String responseCode = params.get("vnp_ResponseCode");
         String orderId = params.get("vnp_TxnRef");
 
         // Xử lý thanh toán
         vnPayService.callBackAndroid(responseCode, orderId);
 
-        return ApiResponse.<String>builder()
-                .result(responseCode)
+        String frontendUrl = "http://localhost:3000/paymentCallback";
+        String redirectUrl = frontendUrl + "?";
+        // Thêm tất cả các tham số vào URL redirect
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            redirectUrl += entry.getKey() + "=" + entry.getValue() + "&";
+        }
+
+        // Loại bỏ dấu "&" thừa cuối cùng
+        redirectUrl = redirectUrl.substring(0, redirectUrl.length() - 1);
+
+        // Redirect người dùng đến frontend với các tham số
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION, redirectUrl)
                 .build();
     }
 }
