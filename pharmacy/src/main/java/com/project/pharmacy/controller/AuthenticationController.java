@@ -23,7 +23,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     // Role USER
-    @PostMapping("/outbound/authentication")
+    @PostMapping("/outbound/authentication/web")
     public ApiResponse<AuthenticationResponse> outboundLoginGoogleWeb(@RequestParam("code") String code) {
 
         return ApiResponse.<AuthenticationResponse>builder()
