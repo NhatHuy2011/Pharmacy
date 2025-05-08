@@ -1,0 +1,84 @@
+#Cổng kết nối
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1/pharmacy
+    session:
+      timeout: 2h
+  address: 0.0.0.0
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/pharmacy"
+    username: root
+    password: kieuduyen20112000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: pharmacywebsite4@gmail.com
+    password: lzod fxlq depg tovs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+outbound:
+  identity:
+    client-id: "603472531465-ek0j94r5m5njlcvpdf47qgnfuv6o9muq.apps.googleusercontent.com"
+    client-secret: "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"
+    redirect-uri: "http://localhost:3000/authenticate"
+
+jwt:
+  signerKey: "0HOHKN7jKVL8N7isueYCYmNqqytQj/rrjnQOzD4R971R1u6357OvxgJ5u/MFF8/u"
+  valid-duration: 3600 #in seconds
+  refreshable-duration: 36000 #in seconds
+
+vnpay:
+  vnp_TmnCode: "FZYZOQ65"
+  secretKey: "LDRUI8OT0ADR4NS7CA7SCNOT3TME7O2P"
+  vnp_Version: "2.1.0"
+  vnp_Command: "pay"
+  vnp_PayUrl: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+  vnp_ReturnUrlWeb: "http://localhost:8080/api/v1/pharmacy/vnpay/callback/web"
+  vnp_ReturnUrlAndroid: "http://10.0.2.2:8080/api/v1/pharmacy/vnpay/callback/android"
+
+momo:
+  partnerCode: "MOMO"
+  accessKey: "F8BBA842ECF85"
+  secretKey: "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+  create-order: "https://test-payment.momo.vn/gw_payment/transactionProcessor"
+  returnUrl: "http://localhost:8080/api/v1/pharmacy/momo/callback"
+  notifyUrl: "http://localhost:8080/api/v1/pharmacy/momo/callback"
+  ipnUrl: "http://localhost:8080/api/v1/pharmacy/momo/callback"
+  requestType: "captureMoMoWallet"
+
+zalopay:
+  app_id: "2554"
+  app_user: "ZaloPayDemo"
+  key1: "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn"
+  key2: "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"
+  create-order: "https://sandbox.zalopay.com.vn/v001/tpe/createorder"
+
+ghn:
+  token: 327594a5-2a96-11f0-9b81-222185cb68c8
+  shop_id: 196513
+  client_id: 2509857
+  api: "https://dev-online-gateway.ghn.vn/shiip/public-api"
+
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.web.socket.server: TRACE
+
