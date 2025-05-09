@@ -1,11 +1,13 @@
 package com.project.pharmacy.service;
 
 import com.project.pharmacy.dto.request.delivery.CalculateDeliveryFeeRequest;
+import com.project.pharmacy.dto.request.delivery.CalculateExpectedDeliveryTimeRequest;
 import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartGuest;
 import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartUser;
 import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeGuest;
 import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeUser;
 import com.project.pharmacy.dto.response.delivery.CalculateDeliveryOrderFeeResponse;
+import com.project.pharmacy.dto.response.delivery.CalcuteExpectedDeliveryTimeResponse;
 import com.project.pharmacy.dto.response.delivery.DeliveryResponse;
 import com.project.pharmacy.dto.response.entity.OrderItemResponse;
 import com.project.pharmacy.dto.response.entity.OrderResponse;
@@ -15,11 +17,14 @@ import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.OrdersMapper;
 import com.project.pharmacy.repository.*;
+import com.project.pharmacy.repository.httpclient.DeliveryClient;
 import com.project.pharmacy.service.delivery.DeliveryService;
 import com.project.pharmacy.utils.CartTemporary;
 import jakarta.servlet.http.HttpSession;
+import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +44,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderService {
-	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 	OrderRepository orderRepository;
 
 	OrderItemRepository orderItemRepository;
@@ -61,6 +65,16 @@ public class OrderService {
 	CouponRepository couponRepository;
 
 	DeliveryService deliveryService;
+
+	DeliveryClient deliveryClient;
+
+	@NonFinal
+	@Value("${ghn.district_id}")
+	int districtId;
+
+	@NonFinal
+	@Value("${ghn.ward_code}")
+	String wardCode;
 
 	//For User
 	//Cart User
@@ -112,6 +126,8 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.orderItems(new ArrayList<>())
 				.paymentMethod(request.getPaymentMethod())
+				.totalPrice(cart.getTotalPrice())
+				.coupon(amountCoupon)
 				.isConfirm(false)
     			.build();
 
@@ -131,8 +147,24 @@ public class OrderService {
 		//Tính phí giao hàng
 		DeliveryResponse<CalculateDeliveryOrderFeeResponse> feeResponse = deliveryService.calculateFeeDeliveryOrder(feeRequest);
 
-		//Lưu lại giá trị đơn hàng
-		order.setTotalPrice(cart.getTotalPrice() - amountCoupon + feeResponse.getData().getTotal());
+		order.setDeliveryTotal(feeResponse.getData().getTotal());
+		order.setServiceFee(feeResponse.getData().getServiceFee());
+		order.setInsuranceFee(feeResponse.getData().getInsuranceFee());
+		order.setNewTotalPrice(cart.getTotalPrice() - amountCoupon + feeResponse.getData().getTotal());
+
+		//Tạo request để tính thời gian giao hàng
+		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
+				.from_district_id(districtId)
+				.from_ward_code(wardCode)
+				.to_district_id(address.getDistrict())
+				.to_ward_code(address.getVillage())
+				.service_id(request.getService_id())
+				.build();
+
+		//Tính thời gian nhận hàng
+		DeliveryResponse<CalcuteExpectedDeliveryTimeResponse> deliveryTimeResponse = deliveryClient.getLeadTime(deliveryTimeRequest);
+
+		order.setLeadTime(deliveryTimeResponse.getData().getLeadtime());
 		orderRepository.save(order);
 
 		//Lưu lại orderitem
@@ -170,12 +202,6 @@ public class OrderService {
 		OrderResponse orderResponse = ordersMapper.toOrderResponse(order);
 		orderResponse.setUserId(order.getUser().getId());
 		orderResponse.setOrderItemResponses(orderItemResponses);
-		orderResponse.setTotalPrice(cart.getTotalPrice());
-		orderResponse.setCoupon(amountCoupon);
-		orderResponse.setServiceFee(feeResponse.getData().getServiceFee());
-		orderResponse.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		orderResponse.setDeliveryTotal(feeResponse.getData().getTotal());
-		orderResponse.setNewTotalPrice(order.getTotalPrice());
 
 		//Xoá giỏ hàng
 		cartItemRepository.deleteAll(cart.getCartItems());
@@ -235,6 +261,8 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
 				.isConfirm(false)
+				.coupon(amountCoupon)
+				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
 				.build();
 
@@ -254,8 +282,24 @@ public class OrderService {
 		//Tính phí giao hàng
 		DeliveryResponse<CalculateDeliveryOrderFeeResponse> feeResponse = deliveryService.calculateFeeDeliveryOrder(feeRequest);
 
-		//Lưu lại giá trị đơn hàng
-		orders.setTotalPrice(price.getPrice() - amountCoupon + feeResponse.getData().getTotal());
+		orders.setDeliveryTotal(feeResponse.getData().getTotal());
+		orders.setServiceFee(feeResponse.getData().getServiceFee());
+		orders.setInsuranceFee(feeResponse.getData().getInsuranceFee());
+		orders.setNewTotalPrice(price.getPrice() - amountCoupon + feeResponse.getData().getTotal());
+
+		//Tạo request để tính thời gian giao hàng
+		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
+				.from_district_id(districtId)
+				.from_ward_code(wardCode)
+				.to_district_id(address.getDistrict())
+				.to_ward_code(address.getVillage())
+				.service_id(request.getService_id())
+				.build();
+
+		//Tính thời gian nhận hàng
+		DeliveryResponse<CalcuteExpectedDeliveryTimeResponse> deliveryTimeResponse = deliveryClient.getLeadTime(deliveryTimeRequest);
+
+		orders.setLeadTime(deliveryTimeResponse.getData().getLeadtime());
 		orderRepository.save(orders);
 
 		OrderItem orderItem = OrderItem.builder()
@@ -288,12 +332,6 @@ public class OrderService {
 		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
 		orderResponse.setUserId(orders.getUser().getId());
 		orderResponse.setOrderItemResponses(orderItemResponse);
-		orderResponse.setTotalPrice(price.getPrice());
-		orderResponse.setCoupon(amountCoupon);
-		orderResponse.setServiceFee(feeResponse.getData().getServiceFee());
-		orderResponse.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		orderResponse.setDeliveryTotal(feeResponse.getData().getTotal());
-		orderResponse.setNewTotalPrice(orders.getTotalPrice());
 
 		return orderResponse;
 	}
@@ -363,6 +401,7 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
 				.address(address)
+				.totalPrice(cartTemporary.getTotalPrice())
 				.isConfirm(false)
 				.build();
 
@@ -382,8 +421,24 @@ public class OrderService {
 		//Tính phí giao hàng
 		DeliveryResponse<CalculateDeliveryOrderFeeResponse> feeResponse = deliveryService.calculateFeeDeliveryOrder(feeRequest);
 
-		//Lưu lại giá trị đơn hàng
-		orders.setTotalPrice(cartTemporary.getTotalPrice() + feeResponse.getData().getTotal());
+		orders.setDeliveryTotal(feeResponse.getData().getTotal());
+		orders.setServiceFee(feeResponse.getData().getServiceFee());
+		orders.setInsuranceFee(feeResponse.getData().getInsuranceFee());
+		orders.setNewTotalPrice(cartTemporary.getTotalPrice() + feeResponse.getData().getTotal());
+
+		//Tạo request để tính thời gian giao hàng
+		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
+				.from_district_id(districtId)
+				.from_ward_code(wardCode)
+				.to_district_id(address.getDistrict())
+				.to_ward_code(address.getVillage())
+				.service_id(request.getService_id())
+				.build();
+
+		//Tính thời gian nhận hàng
+		DeliveryResponse<CalcuteExpectedDeliveryTimeResponse> deliveryTimeResponse = deliveryClient.getLeadTime(deliveryTimeRequest);
+		orders.setLeadTime(deliveryTimeResponse.getData().getLeadtime());
+
 		orderRepository.save(orders);
 
 		//Tạo orderitem
@@ -422,11 +477,6 @@ public class OrderService {
 
 		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
 		orderResponse.setOrderItemResponses(orderItemResponses);
-		orderResponse.setTotalPrice(cartTemporary.getTotalPrice());
-		orderResponse.setServiceFee(feeResponse.getData().getServiceFee());
-		orderResponse.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		orderResponse.setDeliveryTotal(feeResponse.getData().getTotal());
-		orderResponse.setNewTotalPrice(orders.getTotalPrice());
 
 		//Xoá giỏ hàng
 		cartTemporary.getCartItemResponses().clear();
@@ -464,6 +514,7 @@ public class OrderService {
 				.paymentMethod(request.getPaymentMethod())
 				.address(address)
 				.isConfirm(false)
+				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
 				.build();
 
@@ -482,9 +533,24 @@ public class OrderService {
 
 		//Tính phí giao hàng
 		DeliveryResponse<CalculateDeliveryOrderFeeResponse> feeResponse = deliveryService.calculateFeeDeliveryOrder(feeRequest);
+		orders.setDeliveryTotal(feeResponse.getData().getTotal());
+		orders.setServiceFee(feeResponse.getData().getServiceFee());
+		orders.setInsuranceFee(feeResponse.getData().getInsuranceFee());
+		orders.setNewTotalPrice(price.getPrice() + feeResponse.getData().getTotal());
 
-		//Lưu lại giá trị đơn hàng
-		orders.setTotalPrice(price.getPrice()  + feeResponse.getData().getTotal());
+		//Tạo request để tính thời gian giao hàng
+		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
+				.from_district_id(districtId)
+				.from_ward_code(wardCode)
+				.to_district_id(address.getDistrict())
+				.to_ward_code(address.getVillage())
+				.service_id(request.getService_id())
+				.build();
+
+		//Tính thời gian nhận hàng
+		DeliveryResponse<CalcuteExpectedDeliveryTimeResponse> deliveryTimeResponse = deliveryClient.getLeadTime(deliveryTimeRequest);
+		orders.setLeadTime(deliveryTimeResponse.getData().getLeadtime());
+
 		orderRepository.save(orders);
 
 		//Tạo orderitem
@@ -517,11 +583,6 @@ public class OrderService {
 
 		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
 		orderResponse.setOrderItemResponses(orderItemResponse);
-		orderResponse.setTotalPrice(price.getPrice());
-		orderResponse.setServiceFee(feeResponse.getData().getServiceFee());
-		orderResponse.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		orderResponse.setDeliveryTotal(feeResponse.getData().getTotal());
-		orderResponse.setNewTotalPrice(orders.getTotalPrice());
 
 		return orderResponse;
 	}

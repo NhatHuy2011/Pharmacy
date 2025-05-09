@@ -1,10 +1,13 @@
 package com.project.pharmacy.exception;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
@@ -71,4 +74,28 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ApiResponse> handleHttpClientError(HttpClientErrorException ex) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(ex.getStatusCode().value());
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(ex.getResponseBodyAsString());
+
+            String rawMessage = jsonNode.has("message") ? jsonNode.get("message").asText() : "Lỗi không xác định từ GHN";
+            String message = rawMessage.contains("-")
+                    ? rawMessage.substring(rawMessage.indexOf("-") + 1).trim()
+                    : rawMessage;
+
+            apiResponse.setMessage(message);
+        } catch (Exception e) {
+            apiResponse.setMessage("Lỗi GHN không thể phân tích");
+        }
+
+        return ResponseEntity.status(ex.getStatusCode()).body(apiResponse);
+    }
+
+
 }

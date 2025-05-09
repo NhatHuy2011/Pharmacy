@@ -76,6 +76,8 @@ ghn:
   shop_id: 196513
   client_id: 2509857
   api: "https://dev-online-gateway.ghn.vn/shiip/public-api"
+  district_id: 1463
+  ward_code: "21805"
 
 logging:
   level:

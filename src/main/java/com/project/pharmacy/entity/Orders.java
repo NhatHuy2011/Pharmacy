@@ -51,4 +51,22 @@ public class Orders {
     @Enumerated(EnumType.STRING)
     @Column(name = "paymentMethod", columnDefinition = "ENUM('CASH', 'VNPAY', 'MOMO', 'ZALOPAY') DEFAULT 'CASH'")
     PaymentMethod paymentMethod;
+
+    @Column
+    int deliveryTotal;
+
+    @Column
+    int serviceFee;
+
+    @Column
+    int insuranceFee;
+
+    @Column
+    int coupon;
+
+    @Column
+    int newTotalPrice;
+
+    @Column
+    Long leadTime;
 }

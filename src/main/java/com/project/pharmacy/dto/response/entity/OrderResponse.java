@@ -30,4 +30,5 @@ public class OrderResponse {
     int insuranceFee;
     int coupon;
     int newTotalPrice;
+    Long leadTime;
 }

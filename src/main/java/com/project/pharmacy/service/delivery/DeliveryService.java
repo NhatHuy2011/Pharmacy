@@ -41,6 +41,10 @@ public class DeliveryService {
     @Value("${ghn.api}")
     String api;
 
+    @NonFinal
+    @Value("${ghn.district_id}")
+    int districtId;
+
     RestTemplate restTemplate = new RestTemplate();
 
     public DeliveryResponse<List<AvailableServiceResponse>> getAvailableService(GetAvailableServiceRequest request){
@@ -49,7 +53,7 @@ public class DeliveryService {
         headers.set("Token", token);
 
         Map<String, Integer> body = new HashMap<>();
-        body.put("from_district", 1463);
+        body.put("from_district", districtId);
         body.put("to_district", request.getTo_district());
         body.put("shop_id", shopId);
 
@@ -80,11 +84,11 @@ public class DeliveryService {
         body.put("insurance_value", request.getInsurance_value());
         body.put("to_ward_code", request.getTo_ward_code());
         body.put("to_district_id", request.getTo_district_id());
-        body.put("from_district", 1463);
+        body.put("from_district", districtId);
         body.put("weight", 1000);
-        body.put("height", 200);
-        body.put("lenght", 200);
-        body.put("width", 200);
+        body.put("height", 20);
+        body.put("lenght", 30);
+        body.put("width", 40);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
