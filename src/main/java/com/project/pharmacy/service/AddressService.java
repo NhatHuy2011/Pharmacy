@@ -3,6 +3,11 @@ package com.project.pharmacy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.project.pharmacy.dto.request.delivery.GetAddressDetailRequest;
+import com.project.pharmacy.dto.request.delivery.GetDistrictRequest;
+import com.project.pharmacy.dto.response.delivery.*;
+import com.project.pharmacy.repository.httpclient.DeliveryClient;
+import com.project.pharmacy.service.delivery.DeliveryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +37,8 @@ public class AddressService {
     UserRepository userRepository;
 
     AddressRepository addressRepository;
+
+    DeliveryClient deliveryClient;
 
     public AddressResponse createAddress(CreateAddressRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -108,5 +115,39 @@ public class AddressService {
         }
 
         addressRepository.delete(address);
+    }
+
+    public AddressDetailResponse getAddressDetail(GetAddressDetailRequest request){
+        //Tra cứu tỉnh
+        DeliveryResponse<List<ProvinceGHNResponse>> provinces = deliveryClient.getListProvince();
+        ProvinceGHNResponse province = provinces.getData().stream()
+                .filter(item -> item.getId() == request.getProvinceId())
+                .findFirst()
+                .orElseThrow();
+
+        //Tra cứu huyện
+        GetDistrictRequest getDistrict = GetDistrictRequest.builder()
+                .province_id(request.getProvinceId())
+                .build();
+        DeliveryResponse<List<DistrictGHNReponse>> districts = deliveryClient.getListDistrict(getDistrict);
+        DistrictGHNReponse district = districts.getData().stream()
+                .filter(item -> item.getId() == request.getDistrictId())
+                .findFirst()
+                .orElseThrow();
+
+        //Tra cứu phường
+        DeliveryResponse<List<WardResponse>> wards = deliveryClient.getListWard(request.getDistrictId());
+        WardResponse ward = wards.getData().stream()
+                .filter(item -> item.getId().equals(request.getWardCode()))
+                .findFirst()
+                .orElseThrow();
+
+        AddressDetailResponse response = AddressDetailResponse.builder()
+                .province(province)
+                .district(district)
+                .ward(ward)
+                .build();
+
+        return response;
     }
 }

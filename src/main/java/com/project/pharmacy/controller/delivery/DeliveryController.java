@@ -34,7 +34,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/ward")
-    DeliveryResponse<List<WardResponse>> getListWard(@RequestParam String districtId){
+    DeliveryResponse<List<WardResponse>> getListWard(@RequestParam int districtId){
         return deliveryClient.getListWard(districtId);
     }
 

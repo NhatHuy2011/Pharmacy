@@ -19,7 +19,6 @@ import java.util.List;
         configuration = FeignHeaderDeliveryInterceptor.class
 )
 public interface DeliveryClient {
-    //GET ADDRESS
     @GetMapping(value = "/master-data/province", produces = MediaType.APPLICATION_JSON_VALUE)
     DeliveryResponse<List<ProvinceGHNResponse>> getListProvince();
 
@@ -27,11 +26,7 @@ public interface DeliveryClient {
     DeliveryResponse<List<DistrictGHNReponse>> getListDistrict(@RequestBody GetDistrictRequest request);
 
     @GetMapping(value = "/master-data/ward", produces = MediaType.APPLICATION_JSON_VALUE)
-    DeliveryResponse<List<WardResponse>> getListWard(@RequestParam String district_id);
-
-    //GET SERVICE
-    @PostMapping(value = "/v2/shipping-order/available-services", produces = MediaType.APPLICATION_JSON_VALUE)
-    DeliveryResponse<AvailableServiceResponse> getAvailableService(@RequestBody GetAvailableServiceRequest request);
+    DeliveryResponse<List<WardResponse>> getListWard(@RequestParam int district_id);
 
     @PostMapping(value = "/v2/shipping-order/leadtime", produces = MediaType.APPLICATION_JSON_VALUE)
     DeliveryResponse<CalcuteExpectedDeliveryTimeResponse> getLeadTime(@RequestBody CalculateExpectedDeliveryTimeRequest request);

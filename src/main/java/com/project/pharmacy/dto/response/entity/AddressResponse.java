@@ -16,7 +16,7 @@ public class AddressResponse {
     int phone;
     int province;
     int district;
-    int village;
+    String village;
     String address;
     String addressCategory;
     Boolean addressDefault;

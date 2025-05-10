@@ -52,7 +52,8 @@ public class SecurityConfig {
             "/order/**",
             "/feedback/**",
             "/home/**",
-            "/delivery/**"
+            "/delivery/**",
+            "/address/detail"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {

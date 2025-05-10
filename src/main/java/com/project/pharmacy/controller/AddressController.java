@@ -2,6 +2,8 @@ package com.project.pharmacy.controller;
 
 import java.util.List;
 
+import com.project.pharmacy.dto.request.delivery.GetAddressDetailRequest;
+import com.project.pharmacy.dto.response.delivery.AddressDetailResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +51,13 @@ public class AddressController {
         addressService.deleteAddress(id);
         return ApiResponse.<Void>builder()
                 .message("Delete address successful")
+                .build();
+    }
+
+    @GetMapping("/detail")
+    public ApiResponse<AddressDetailResponse> getAddressDetail(@RequestBody GetAddressDetailRequest request){
+        return ApiResponse.<AddressDetailResponse>builder()
+                .result(addressService.getAddressDetail(request))
                 .build();
     }
 }

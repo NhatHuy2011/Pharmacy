@@ -1,21 +1,20 @@
 package com.project.pharmacy.dto.response.delivery;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class WardResponse {
-    @JsonProperty("WardCode")
-    String id;
+@Builder
+public class AddressDetailResponse {
+    ProvinceGHNResponse province;
 
-    @JsonProperty("WardName")
-    String name;
+    DistrictGHNReponse district;
+
+    WardResponse ward;
 }
