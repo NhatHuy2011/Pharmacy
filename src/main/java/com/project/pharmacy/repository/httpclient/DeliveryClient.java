@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @FeignClient(name = "delivery-client",
-        url = "https://dev-online-gateway.ghn.vn/shiip/public-api",
+        url = "https://online-gateway.ghn.vn/shiip/public-api",
         configuration = FeignHeaderDeliveryInterceptor.class
 )
 public interface DeliveryClient {
