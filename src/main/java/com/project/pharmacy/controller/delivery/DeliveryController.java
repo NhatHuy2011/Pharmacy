@@ -29,7 +29,10 @@ public class DeliveryController {
     }
 
     @GetMapping("/district")
-    DeliveryResponse<List<DistrictGHNReponse>> getDistrict(@RequestBody GetDistrictRequest request){
+    DeliveryResponse<List<DistrictGHNReponse>> getDistrict(@RequestParam int provinceId){
+        GetDistrictRequest request = GetDistrictRequest.builder()
+                .province_id(provinceId)
+                .build();
         return deliveryClient.getListDistrict(request);
     }
 
