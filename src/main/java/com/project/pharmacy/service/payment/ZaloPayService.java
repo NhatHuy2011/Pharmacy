@@ -61,6 +61,8 @@ public class ZaloPayService {
 
     OrderRepository orderRepository;
 
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
     private String getCurrentTimeString(String format) {
 
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
@@ -121,19 +123,6 @@ public class ZaloPayService {
         return finalResult;
     }
 
-    private int getAmount(String orderId){
-        Orders orders = orderRepository.findById(orderId).stream()
-                .filter(orders1 -> orders1.getId().equals(orderId)
-                        && orders1.getPaymentMethod().equals(PaymentMethod.ZALOPAY)
-                        && orders1.getStatus().equals(OrderStatus.PENDING))
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-
-        return orders.getTotalPrice();
-    }
-
-    private Logger logger = Logger.getLogger(this.getClass().getName());
-
     public Object doCallBack(JSONObject result, String jsonStr) throws JSONException, NoSuchAlgorithmException, InvalidKeyException {
 
         Mac HmacSHA256 = Mac.getInstance("HmacSHA256");
@@ -167,5 +156,16 @@ public class ZaloPayService {
         }
 
         return result;
+    }
+
+    private int getAmount(String orderId){
+        Orders orders = orderRepository.findById(orderId).stream()
+                .filter(orders1 -> orders1.getId().equals(orderId)
+                        && orders1.getPaymentMethod().equals(PaymentMethod.ZALOPAY)
+                        && orders1.getStatus().equals(OrderStatus.PENDING))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        return orders.getNewTotalPrice();
     }
 }

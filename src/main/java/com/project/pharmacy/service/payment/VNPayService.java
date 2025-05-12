@@ -289,6 +289,6 @@ public class VNPayService {
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
-        return orders.getTotalPrice();
+        return orders.getNewTotalPrice();
     }
 }

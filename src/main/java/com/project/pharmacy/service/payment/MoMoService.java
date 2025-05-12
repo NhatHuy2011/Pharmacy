@@ -118,17 +118,6 @@ public class MoMoService {
         return result;
     }
 
-    private int getAmount(String orderId){
-        Orders orders = orderRepository.findById(orderId).stream()
-                .filter(orders1 -> orders1.getId().equals(orderId)
-                        && orders1.getPaymentMethod().equals(PaymentMethod.MOMO)
-                        && orders1.getStatus().equals(OrderStatus.PENDING))
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-
-        return orders.getTotalPrice();
-    }
-
     public void callBack(int code, String orderId){
         Orders orders = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
@@ -170,5 +159,16 @@ public class MoMoService {
             }
             orderRepository.save(orders);
         }
+    }
+
+    private int getAmount(String orderId){
+        Orders orders = orderRepository.findById(orderId).stream()
+                .filter(orders1 -> orders1.getId().equals(orderId)
+                        && orders1.getPaymentMethod().equals(PaymentMethod.MOMO)
+                        && orders1.getStatus().equals(OrderStatus.PENDING))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        return orders.getNewTotalPrice();
     }
 }

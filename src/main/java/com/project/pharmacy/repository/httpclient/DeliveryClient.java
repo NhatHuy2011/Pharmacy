@@ -2,7 +2,6 @@ package com.project.pharmacy.repository.httpclient;
 
 import com.project.pharmacy.configuration.FeignHeaderDeliveryInterceptor;
 import com.project.pharmacy.dto.request.delivery.CalculateExpectedDeliveryTimeRequest;
-import com.project.pharmacy.dto.request.delivery.GetAvailableServiceRequest;
 import com.project.pharmacy.dto.request.delivery.GetDistrictRequest;
 import com.project.pharmacy.dto.response.delivery.*;
 import org.springframework.cloud.openfeign.FeignClient;
