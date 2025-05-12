@@ -59,8 +59,6 @@ public class MoMoService {
     @Value("${momo.requestType}")
     protected String requestType;
 
-    UserRepository userRepository;
-
     OrderRepository orderRepository;
 
     public Map<String, Object> createPaymentMoMo(String orderId) throws IOException {
@@ -116,49 +114,6 @@ public class MoMoService {
         }
 
         return result;
-    }
-
-    public void callBack(int code, String orderId){
-        Orders orders = orderRepository.findById(orderId)
-                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-
-        User user = orders.getUser();
-
-        if (user == null){
-            if(code == 0){
-                orders.setStatus(OrderStatus.SUCCESS);
-            } else {
-                orders.setStatus(OrderStatus.FAILED);
-            }
-
-            orderRepository.save(orders);
-        }
-        else {
-            if(code == 0){
-                orders.setStatus(OrderStatus.SUCCESS);
-                user.setPoint(user.getPoint() + orders.getTotalPrice()/1000);
-                if (user.getPoint() >= 8000){
-                    user.setLevel(Level.KIMCUONG);
-                }
-                else {
-                    if (user.getPoint() >= 6000){
-                        user.setLevel(Level.BACHKIM);
-                    }
-                    else if (user.getPoint() >= 4000){
-                        user.setLevel(Level.VANG);
-                    }
-                    else if (user.getPoint() >= 2000) {
-                        user.setLevel(Level.BAC);
-                    }
-                    else user.setLevel(Level.DONG);
-                }
-                userRepository.save(user);
-            }
-             else {
-                orders.setStatus(OrderStatus.FAILED);
-            }
-            orderRepository.save(orders);
-        }
     }
 
     private int getAmount(String orderId){

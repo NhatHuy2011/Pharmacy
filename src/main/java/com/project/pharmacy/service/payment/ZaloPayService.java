@@ -59,12 +59,15 @@ public class ZaloPayService {
     @Value("${zalopay.create-order}")
     protected String createOrder;
 
+    @NonFinal
+    @Value("${zalopay.callback_url}")
+    protected String callbackUrl;
+
     OrderRepository orderRepository;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private String getCurrentTimeString(String format) {
-
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
         SimpleDateFormat fmt = new SimpleDateFormat(format);
         fmt.setCalendar(cal);
@@ -84,8 +87,8 @@ public class ZaloPayService {
             put("description", "Pharmacy - Payment for order: " + orderId);
             put("bankcode", "");
             put("item", "[]");
-            put("embeddata", "{}");
-            put("callback_url", "https://e1e1-171-248-172-160.ngrok-free.app/api/v1/pharmacy/zalopay/callback");
+            put("embeddata", "{\"redirecturl\": \"http://localhost:3000/paymentCallback\"}");
+            put("callback_url", callbackUrl);
         }};
 
         String data = order.get("appid") +"|"+ order.get("apptransid") +"|"+ order.get("appuser") +"|"+ order.get("amount")
@@ -121,41 +124,6 @@ public class ZaloPayService {
         }
 
         return finalResult;
-    }
-
-    public Object doCallBack(JSONObject result, String jsonStr) throws JSONException, NoSuchAlgorithmException, InvalidKeyException {
-
-        Mac HmacSHA256 = Mac.getInstance("HmacSHA256");
-        HmacSHA256.init(new SecretKeySpec(key2.getBytes(), "HmacSHA256"));
-
-        try {
-            JSONObject cbdata = new JSONObject(jsonStr);
-            String dataStr = cbdata.getString("data");
-            String reqMac = cbdata.getString("mac");
-
-            byte[] hashBytes = HmacSHA256.doFinal(dataStr.getBytes());
-            String mac = DatatypeConverter.printHexBinary(hashBytes).toLowerCase();
-
-            // check if the callback is valid (from ZaloPay server)
-            if (!reqMac.equals(mac)) {
-                // callback is invalid
-                result.put("returncode", -1);
-                result.put("returnmessage", "mac not equal");
-            } else {
-                // payment success
-                // merchant update status for order's status
-                JSONObject data = new JSONObject(dataStr);
-                logger.info("update order's status = success where app_trans_id = " + data.getString("app_trans_id"));
-
-                result.put("return_code", 1);
-                result.put("return_message", "success");
-            }
-        } catch (Exception ex) {
-            result.put("return_code", 0); // callback again (up to 3 times)
-            result.put("return_message", ex.getMessage());
-        }
-
-        return result;
     }
 
     private int getAmount(String orderId){

@@ -34,6 +34,7 @@ public class SecurityConfig {
         "/vnpay/create-payment/**",
         "/momo/create-payment",
         "/zalopay/create-payment",
+        "/callback",
         "/invoice",
         "/notifications/send",
         "/delivery/**"
@@ -46,9 +47,6 @@ public class SecurityConfig {
             "/price",
             "/company",
             "/cart/guest",
-            "/vnpay/callback/**",
-            "/momo/callback",
-            "/zalopay/callback",
             "/order/**",
             "/feedback/**",
             "/home/**",

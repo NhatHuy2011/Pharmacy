@@ -67,6 +67,9 @@ public enum ErrorCode {
     //Delivery exception
     DELIVERY_SERVICE_NOT_AVAILABLE("Khu vực không hỗ trợ giao hàng", 400, HttpStatus.BAD_REQUEST),
 
+    //Payment
+    PAYMENT_ERRROR("Thanh toán thất bại", 400, HttpStatus.BAD_REQUEST),
+
     //Feedback exception
     FEEDBACK_NOT_FOUND("Feedback not found!", 400, HttpStatus.BAD_REQUEST),
     DONT_FEEDBACK("Bạn vui lòng mua hàng để thực hiện đánh giá sản phẩm!", 400, HttpStatus.BAD_REQUEST),

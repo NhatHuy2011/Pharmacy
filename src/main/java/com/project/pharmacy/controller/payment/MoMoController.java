@@ -28,33 +28,4 @@ public class MoMoController {
                 .result(moMoService.createPaymentMoMo(orderId))
                 .build();
     }
-
-    @GetMapping("/callback")
-    public ResponseEntity<Void> callback(@RequestParam Map<String, String> params) {
-        // Lấy mã phản hồi và thông tin orderId từ tham số
-        String errorCode = params.get("errorCode");
-        String orderId = params.get("orderId");
-
-        // Xử lý thanh toán
-        moMoService.callBack(Integer.parseInt(errorCode), orderId);
-
-        // URL của frontend
-        String frontendUrl = "http://localhost:3000/paymentCallback";
-        StringBuilder redirectUrl = new StringBuilder(frontendUrl + "?");
-
-        // Encode các tham số để đảm bảo không có ký tự Unicode bất hợp lệ
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            String encodedKey = URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8);
-            String encodedValue = URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8);
-            redirectUrl.append(encodedKey).append("=").append(encodedValue).append("&");
-        }
-
-        // Loại bỏ dấu "&" thừa cuối cùng
-        redirectUrl.setLength(redirectUrl.length() - 1);
-
-        // Redirect người dùng đến frontend với các tham số
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, redirectUrl.toString())
-                .build();
-    }
 }

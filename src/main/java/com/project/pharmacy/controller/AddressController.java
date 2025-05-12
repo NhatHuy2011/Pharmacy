@@ -55,7 +55,13 @@ public class AddressController {
     }
 
     @GetMapping("/detail")
-    public ApiResponse<AddressDetailResponse> getAddressDetail(@RequestBody GetAddressDetailRequest request){
+    public ApiResponse<AddressDetailResponse> getAddressDetail(@RequestParam("provinceId") int provinceId,
+                                                               @RequestParam("districtId") int districtId,
+                                                               @RequestParam("wardCode") String wardCode){
+        GetAddressDetailRequest request = new GetAddressDetailRequest();
+        request.setProvinceId(provinceId);
+        request.setDistrictId(districtId);
+        request.setWardCode(wardCode);
         return ApiResponse.<AddressDetailResponse>builder()
                 .result(addressService.getAddressDetail(request))
                 .build();
