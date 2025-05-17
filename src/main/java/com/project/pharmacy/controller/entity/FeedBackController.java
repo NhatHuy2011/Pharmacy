@@ -1,10 +1,10 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import com.project.pharmacy.dto.request.feedback.CreateFeedBackRequest;
 import com.project.pharmacy.dto.request.feedback.UpdateFeedbackRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.FeedBackResponse;
-import com.project.pharmacy.service.FeedBackService;
+import com.project.pharmacy.service.entity.FeedBackService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

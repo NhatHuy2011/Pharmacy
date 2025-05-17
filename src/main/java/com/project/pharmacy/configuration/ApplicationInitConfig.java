@@ -34,6 +34,7 @@ public class ApplicationInitConfig {
             createRoleIfNotExists("ADMIN", "Role for Admin", roleRepository);
             createRoleIfNotExists("EMPLOYEE", "Role for Employee", roleRepository);
             createRoleIfNotExists("DOCTOR", "Role for Doctor", roleRepository);
+            createRoleIfNotExists("NURSE", "Role for Nurse", roleRepository);
             createRoleIfNotExists("USER", "Role for User", roleRepository);
 
             if (userRepository.findByUsername("admin").isEmpty()) {

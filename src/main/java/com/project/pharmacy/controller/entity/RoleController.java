@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.RoleResponse;
-import com.project.pharmacy.service.RoleService;
+import com.project.pharmacy.service.entity.RoleService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

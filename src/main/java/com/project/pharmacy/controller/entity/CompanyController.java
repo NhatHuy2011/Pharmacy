@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import com.project.pharmacy.dto.request.company.CompanyCreateRequest;
 import com.project.pharmacy.dto.request.company.CompanyUpdateRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.CompanyResponse;
-import com.project.pharmacy.service.CompanyService;
+import com.project.pharmacy.service.entity.CompanyService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

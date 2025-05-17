@@ -40,7 +40,7 @@ public class User {
     String sex;
 
     @Column
-    Integer phone_number;
+    String phoneNumber;
 
     @Column
     String email;

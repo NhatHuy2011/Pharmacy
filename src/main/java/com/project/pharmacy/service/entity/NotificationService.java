@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.pharmacy.configuration.WebsocketHandler;

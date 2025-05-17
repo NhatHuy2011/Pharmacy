@@ -1,9 +1,9 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import com.project.pharmacy.dto.request.whistlist.AddToWhistListRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.WhistListResponse;
-import com.project.pharmacy.service.WhistListService;
+import com.project.pharmacy.service.entity.WhistListService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -5,7 +5,7 @@ import com.project.pharmacy.dto.response.entity.CategoryResponse;
 import com.project.pharmacy.dto.response.entity.CompanyResponse;
 import com.project.pharmacy.dto.response.entity.ProductResponse;
 import com.project.pharmacy.dto.response.home.HomeResponse;
-import com.project.pharmacy.service.CategoryService;
+import com.project.pharmacy.service.entity.CategoryService;
 import com.project.pharmacy.service.home.HomeUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

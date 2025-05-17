@@ -40,6 +40,7 @@ public enum ErrorCode {
     EMAIL_NOT_MATCH("Email không trùng khớp", 400, HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED("Địa chỉ email đã được sử dụng", 400, HttpStatus.BAD_REQUEST),
     EMAIL_NOT_VERIFIED("Email chưa được xác thực. Vui lòng xác thực email!", 400, HttpStatus.BAD_REQUEST),
+    PHONE_EXISTED("Số điện thoại đã tồn tại", 400, HttpStatus.BAD_REQUEST),
 
     // Cart and cart item Exception
     CART_EMPTY("Giỏ hàng trống!", 400, HttpStatus.BAD_REQUEST),

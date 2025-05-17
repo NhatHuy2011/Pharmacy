@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -71,6 +71,10 @@ public class UserService {
 
         if (!request.getPassword().equals(request.getConfirmPassword()))
             throw new AppException(ErrorCode.PASSWORD_RE_ENTERING_INCORRECT);
+
+        if(userRepository.existsByPhoneNumber(request.getPhoneNumber())){
+            throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
 
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
@@ -215,6 +219,9 @@ public class UserService {
 
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber()))
+            throw new AppException(ErrorCode.PHONE_EXISTED);
 
         if (file != null && !file.isEmpty()) {
             String urlImage = cloudinaryService.uploadImage(file);
@@ -467,6 +474,28 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse createNurse(CreateEmployeeRequest request){
+        if (userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
+        Role role = roleRepository.findByName("NURSE")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode("12345678"))
+                .roles(roles)
+                .isVerified(true)
+                .status(true)
+                .build();
+
+        userRepository.save(user);
+
+        return userMapper.toUserResponse(user);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> getAllEmployee(Pageable pageable) {
         Role role = roleRepository.findByName("EMPLOYEE")
@@ -474,5 +503,20 @@ public class UserService {
 
         return userRepository.findAllByRoles(pageable, role)
                 .map(userMapper::toUserResponse);
+    }
+
+    @PreAuthorize("hasRole('NURSE')")
+    public UserResponse getInfoUserByPhone(String phone){
+        User user = userRepository.findByPhoneNumber(phone)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        UserResponse userResponse = UserResponse.builder()
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
+
+        return userResponse;
     }
 }

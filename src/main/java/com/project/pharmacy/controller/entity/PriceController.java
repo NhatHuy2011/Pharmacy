@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ import com.project.pharmacy.dto.request.price.PriceCreateRequest;
 import com.project.pharmacy.dto.request.price.PriceUpdateRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.PriceResponse;
-import com.project.pharmacy.service.PriceService;
+import com.project.pharmacy.service.entity.PriceService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

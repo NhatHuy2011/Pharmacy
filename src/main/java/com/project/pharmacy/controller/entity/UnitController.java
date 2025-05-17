@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ import com.project.pharmacy.dto.request.unit.UnitCreateRequest;
 import com.project.pharmacy.dto.request.unit.UnitUpdateRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.UnitResponse;
-import com.project.pharmacy.service.UnitService;
+import com.project.pharmacy.service.entity.UnitService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

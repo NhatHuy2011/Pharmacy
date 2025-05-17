@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import com.project.pharmacy.dto.request.whistlist.AddToWhistListRequest;
 import com.project.pharmacy.dto.response.entity.WhistListResponse;

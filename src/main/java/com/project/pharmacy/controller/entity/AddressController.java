@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import com.project.pharmacy.dto.request.address.CreateAddressRequest;
 import com.project.pharmacy.dto.request.address.UpdateAddressRequest;
 import com.project.pharmacy.dto.response.entity.AddressResponse;
 import com.project.pharmacy.dto.response.common.ApiResponse;
-import com.project.pharmacy.service.AddressService;
+import com.project.pharmacy.service.entity.AddressService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

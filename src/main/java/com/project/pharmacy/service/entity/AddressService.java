@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,7 +7,6 @@ import com.project.pharmacy.dto.request.delivery.GetAddressDetailRequest;
 import com.project.pharmacy.dto.request.delivery.GetDistrictRequest;
 import com.project.pharmacy.dto.response.delivery.*;
 import com.project.pharmacy.repository.httpclient.DeliveryClient;
-import com.project.pharmacy.service.delivery.DeliveryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

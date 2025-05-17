@@ -27,7 +27,7 @@ public class UserResponse {
     LocalDate dob;
 
     String sex;
-    Integer phone_number;
+    String phoneNumber;
     String email;
     String image;
     int point;

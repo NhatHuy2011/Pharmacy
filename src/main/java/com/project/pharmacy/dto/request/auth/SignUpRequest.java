@@ -26,7 +26,10 @@ public class SignUpRequest {
 
     String confirmPassword;
 
+    @NotNull(message = "Vui lòng nhập tên của bạn")
     String firstname;
+
+    @NotNull(message = "Vui lòng nhập họ của bạn")
     String lastname;
 
     @DobConstraint(min = 18, message = "Bạn phải đủ 18 tuổi để sử dụng trang web")
@@ -34,7 +37,9 @@ public class SignUpRequest {
     LocalDate dob;
 
     String sex;
-    Integer phone_number;
+
+    @NotNull(message = "Vui lòng nhập số điện thoại")
+    String phoneNumber;
 
     @NotNull(message = "Vui lòng điền email")
     @EmailConstraint(message = "Email không đúng định dạng")

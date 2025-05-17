@@ -23,5 +23,5 @@ public class UserUpdateBio {
     LocalDate dob;
 
     String sex;
-    int phone_number;
+    String phoneNumber;
 }

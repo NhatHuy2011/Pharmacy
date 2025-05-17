@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.pharmacy.service.UserService;
+import com.project.pharmacy.service.entity.UserService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -227,6 +227,13 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/nurse")
+    public ApiResponse<UserResponse> createNurse(@RequestBody @Valid CreateEmployeeRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createNurse(request))
+                .build();
+    }
+
     @GetMapping("/employee")
     public ApiResponse<Page<UserResponse>> getAllEmployee(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -234,6 +241,14 @@ public class UserController {
         Page<UserResponse> userResponses = userService.getAllEmployee(pageable);
         return ApiResponse.<Page<UserResponse>>builder()
                 .result(userResponses)
+                .build();
+    }
+
+    //ROLE NURSE
+    @GetMapping("/order/shop")
+    public ApiResponse<UserResponse> getInfoUserByPhone(@RequestParam String phone){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getInfoUserByPhone(phone))
                 .build();
     }
 }

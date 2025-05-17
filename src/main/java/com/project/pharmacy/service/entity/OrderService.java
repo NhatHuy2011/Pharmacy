@@ -1,11 +1,8 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import com.project.pharmacy.dto.request.delivery.CalculateDeliveryFeeRequest;
 import com.project.pharmacy.dto.request.delivery.CalculateExpectedDeliveryTimeRequest;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartGuest;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartUser;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeGuest;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeUser;
+import com.project.pharmacy.dto.request.order.*;
 import com.project.pharmacy.dto.response.delivery.CalculateDeliveryOrderFeeResponse;
 import com.project.pharmacy.dto.response.delivery.CalcuteExpectedDeliveryTimeResponse;
 import com.project.pharmacy.dto.response.delivery.DeliveryResponse;
@@ -22,13 +19,12 @@ import com.project.pharmacy.service.delivery.DeliveryService;
 import com.project.pharmacy.utils.CartTemporary;
 import jakarta.servlet.http.HttpSession;
 import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import com.project.pharmacy.entity.*;
 import lombok.AccessLevel;
@@ -683,6 +679,80 @@ public class OrderService {
 		orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
 
 		return orderResponse;
+	}
+
+	//FOR NURSE
+	@PreAuthorize("hasRole('NURSE')")
+	public OrderResponse createOrderAtShop(CreateOrderAtShopRequest request){
+		User user = userRepository.findByPhoneNumber(request.getPhone())
+				.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+		Orders orders = Orders.builder()
+				.user(user)
+				.address(null)
+				.orderDate(LocalDateTime.now())
+				.status(OrderStatus.PENDING)
+				.paymentMethod(request.getPaymentMethod())
+				.isConfirm(true)
+				.build();
+		orderRepository.save(orders);
+		
+		List<OrderItem> orderItems = new ArrayList<>();
+		int totalPrice = 0;
+		for(PriceDTO priceDTO : request.getListPrices()){
+			Price price = priceRepository.findById(priceDTO.getId())
+					.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
+			totalPrice += price.getPrice()*priceDTO.getQuantity();
+			OrderItem orderItem = OrderItem.builder()
+					.orders(orders)
+					.price(price)
+					.quantity(priceDTO.getQuantity())
+					.amount(price.getPrice()*priceDTO.getQuantity())
+					.image(price.getProduct().getImages().stream().findFirst()
+							.map(Image::getSource)
+							.orElse(null))
+					.build();
+			orderItemRepository.save(orderItem);
+			orderItems.add(orderItem);
+		}
+
+		orders.setTotalPrice(totalPrice);
+		orderRepository.save(orders);
+
+		List<OrderItemResponse> orderItemResponses = orderItems.stream()
+				.map(orderItem -> {
+					return OrderItemResponse.builder()
+							.id(orderItem.getId())
+							.productId(orderItem.getPrice().getProduct().getId())
+							.productName(orderItem.getPrice().getProduct().getName())
+							.unitName(orderItem.getPrice().getUnit().getName())
+							.priceId(orderItem.getPrice().getId())
+							.quantity(orderItem.getQuantity())
+							.price(orderItem.getPrice().getPrice())
+							.amount(orderItem.getAmount())
+							.image(orderItem.getImage())
+							.build();
+				})
+				.toList();
+		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+		orderResponse.setUserId(user.getId());
+		orderResponse.setOrderItemResponses(orderItemResponses);
+
+		return orderResponse;
+	}
+
+	@PreAuthorize("hasRole('NURSE')")
+	public String confirmOrdersForNurse(ConfirmOrderForNurse request){
+		Orders orders = orderRepository.findById(request.getOrderId())
+				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+		if(request.isConfirm()){
+			orders.setStatus(OrderStatus.SUCCESS);
+			orderRepository.save(orders);
+			return "Cập nhật đơn hàng thành công";
+		} else{
+			orderRepository.deleteById(request.getOrderId());
+			return "Xoá đơn hàng thành công";
+		}
 	}
 }
 

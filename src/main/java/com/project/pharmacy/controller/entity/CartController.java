@@ -1,4 +1,4 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -9,7 +9,7 @@ import com.project.pharmacy.dto.request.cart.DeleteCartItemRequest;
 import com.project.pharmacy.dto.request.cart.UpdateCartRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.CartResponse;
-import com.project.pharmacy.service.CartService;
+import com.project.pharmacy.service.entity.CartService;
 import com.project.pharmacy.utils.CartTemporary;
 
 import lombok.AccessLevel;

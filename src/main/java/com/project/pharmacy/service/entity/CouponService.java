@@ -1,4 +1,4 @@
-package com.project.pharmacy.service;
+package com.project.pharmacy.service.entity;
 
 import com.project.pharmacy.dto.request.coupon.CreateCouponRequest;
 import com.project.pharmacy.dto.request.notification.CreateNotificationRequest;

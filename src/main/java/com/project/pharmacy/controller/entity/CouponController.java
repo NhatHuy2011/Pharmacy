@@ -1,10 +1,10 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
 import com.project.pharmacy.dto.request.coupon.CreateCouponRequest;
 import com.project.pharmacy.dto.request.coupon.UpdateCouponRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.CouponResponse;
-import com.project.pharmacy.service.CouponService;
+import com.project.pharmacy.service.entity.CouponService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

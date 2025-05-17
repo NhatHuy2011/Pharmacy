@@ -1,12 +1,9 @@
-package com.project.pharmacy.controller;
+package com.project.pharmacy.controller.entity;
 
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartGuest;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtCartUser;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeGuest;
-import com.project.pharmacy.dto.request.order.CreateOrderRequestAtHomeUser;
+import com.project.pharmacy.dto.request.order.*;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.OrderResponse;
-import com.project.pharmacy.service.OrderService;
+import com.project.pharmacy.service.entity.OrderService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -108,7 +105,22 @@ public class OrderController {
                 .message("Cập nhật đơn hàng thành công")
                 .build();
     }
-    
+
+    //FOR NURSE
+    @PostMapping("/nurse")
+    public ApiResponse<OrderResponse> createOrderAtShop(@RequestBody CreateOrderAtShopRequest request){
+        return ApiResponse.<OrderResponse>builder()
+                .result(orderService.createOrderAtShop(request))
+                .build();
+    }
+
+    @PutMapping("/nurse")
+    public ApiResponse<Void> confirmOrderForNurse(@RequestBody ConfirmOrderForNurse request){
+        return ApiResponse.<Void>builder()
+                .message(orderService.confirmOrdersForNurse(request))
+                .build();
+    }
+
     //Public
     @GetMapping("{id}")
     public ApiResponse<OrderResponse> getOrderDetails(@PathVariable String id) {
