@@ -716,7 +716,7 @@ public class OrderService {
 			orderItems.add(orderItem);
 		}
 
-		orders.setTotalPrice(totalPrice);
+		orders.setNewTotalPrice(totalPrice);
 		orderRepository.save(orders);
 
 		List<OrderItemResponse> orderItemResponses = orderItems.stream()
