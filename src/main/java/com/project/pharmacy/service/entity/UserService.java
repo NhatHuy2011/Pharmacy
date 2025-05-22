@@ -220,7 +220,7 @@ public class UserService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (userRepository.existsByPhoneNumber(request.getPhoneNumber()))
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber()) && request.getPhoneNumber() != null)
             throw new AppException(ErrorCode.PHONE_EXISTED);
 
         if (file != null && !file.isEmpty()) {

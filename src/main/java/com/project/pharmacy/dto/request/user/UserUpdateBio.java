@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateBio {
     String id;
-    String fisrtname;
+    String firstname;
     String lastname;
 
     @DobConstraint(min = 18, message = "Bạn phải đủ 18 tuổi để sử dụng trang web")
