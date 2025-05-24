@@ -3,7 +3,10 @@ package com.project.pharmacy.configuration;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.project.pharmacy.entity.Employee;
 import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.exception.AppException;
+import com.project.pharmacy.exception.ErrorCode;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,16 +41,15 @@ public class ApplicationInitConfig {
             createRoleIfNotExists("USER", "Role for User", roleRepository);
 
             if (userRepository.findByUsername("admin").isEmpty()) {
-                Set<Role> roles = new HashSet<>();
-                roles.add(roleRepository.findByName("ADMIN").orElseThrow());
-                User user = User.builder()
-                        .username("admin")
-                        .password(passwordEncoder.encode("admin"))
-                        .status(true)
-                        .isVerified(true)
-                        .roles(roles)
-                        .level(Level.KIMCUONG)
-                        .build();
+                Role role = roleRepository.findByName("ADMIN")
+                        .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+                User user = new User();
+                user.setUsername("admin");
+                user.setPassword(passwordEncoder.encode("admin"));
+                user.setStatus(true);
+                user.setIsVerified(true);
+                user.setRole(role);
                 userRepository.save(user);
             }
         };

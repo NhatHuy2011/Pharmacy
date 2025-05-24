@@ -17,36 +17,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class User extends AccountBase{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(nullable = false)
-    String username;
-
-    String password;
-
-    @Column
-    String firstname;
-
-    @Column
-    String lastname;
-
-    @Column
-    LocalDate dob;
-
-    @Column
-    String sex;
-
-    @Column
-    String phoneNumber;
-
     @Column
     String email;
-
-    @Column
-    String image;
 
     @OneToMany(mappedBy = "user")
     List<Address> addresses;
@@ -57,16 +34,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "level", columnDefinition = "ENUM('DONG', 'BAC', 'VANG', 'BACHKIM', 'KIMCUONG') DEFAULT 'DONG'")
     Level level;
-
-    @Column
-    Boolean status;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<Role> roles;
 
     @Column
     String otpCode;

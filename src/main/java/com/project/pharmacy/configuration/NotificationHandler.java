@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class WebsocketHandler extends TextWebSocketHandler {
+public class NotificationHandler extends TextWebSocketHandler {
 
     private final Set<WebSocketSession> sessions = new HashSet<>();
 

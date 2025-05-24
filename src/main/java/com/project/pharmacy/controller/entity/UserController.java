@@ -220,30 +220,6 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/employee")
-    public ApiResponse<UserResponse> createEmployee(@RequestBody @Valid CreateEmployeeRequest request){
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.createEmployee(request))
-                .build();
-    }
-
-    @PostMapping("/nurse")
-    public ApiResponse<UserResponse> createNurse(@RequestBody @Valid CreateEmployeeRequest request){
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.createNurse(request))
-                .build();
-    }
-
-    @GetMapping("/employee")
-    public ApiResponse<Page<UserResponse>> getAllEmployee(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserResponse> userResponses = userService.getAllEmployee(pageable);
-        return ApiResponse.<Page<UserResponse>>builder()
-                .result(userResponses)
-                .build();
-    }
-
     //ROLE NURSE
     @GetMapping("/order/shop")
     public ApiResponse<UserResponse> getInfoUserByPhone(@RequestParam String phone){

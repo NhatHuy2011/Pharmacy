@@ -42,6 +42,11 @@ public enum ErrorCode {
     EMAIL_NOT_VERIFIED("Email chưa được xác thực. Vui lòng xác thực email!", 400, HttpStatus.BAD_REQUEST),
     PHONE_EXISTED("Số điện thoại đã tồn tại", 400, HttpStatus.BAD_REQUEST),
 
+    //Employee
+    EMPLOYEE_EXISTED("Employee existed", 400, HttpStatus.BAD_REQUEST),
+    EMPLOYEE_NOT_FOUND("Employee not found", 400, HttpStatus.BAD_REQUEST),
+    MISS_IMAGE("Vui lòng điền ảnh nhân viên", 400, HttpStatus.BAD_REQUEST),
+
     // Cart and cart item Exception
     CART_EMPTY("Giỏ hàng trống!", 400, HttpStatus.BAD_REQUEST),
     CART_ITEM_NOT_FOUND("Cart item not found!", 400, HttpStatus.BAD_REQUEST),

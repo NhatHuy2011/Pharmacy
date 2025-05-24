@@ -1,30 +1,30 @@
 package com.project.pharmacy.entity;
 
-import java.util.Set;
-
 import jakarta.persistence.*;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Data
-@Builder
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Role {
+@Builder
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    String name;
+    @Column
+    String content;
 
-    String description;
+    @Column
+    LocalDateTime time;
 
-    @OneToMany(mappedBy = "role")
-    Set<User> users;
-
-    @OneToMany(mappedBy = "role")
-    Set<Employee> employees;
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id")
+    ChatRoom chatRoom;
 }

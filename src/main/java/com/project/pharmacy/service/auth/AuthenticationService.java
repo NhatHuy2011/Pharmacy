@@ -11,6 +11,8 @@ import com.project.pharmacy.dto.request.auth.SignOutRequest;
 import com.project.pharmacy.dto.request.auth.RefreshTokenRequest;
 import com.project.pharmacy.dto.request.oauth.ExchangeTokenRequest;
 import com.project.pharmacy.dto.request.oauth.OutboundAuthenticationAndroid;
+import com.project.pharmacy.entity.*;
+import com.project.pharmacy.repository.EmployeeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,9 +30,6 @@ import com.project.pharmacy.dto.response.auth.AuthenticationResponse;
 import com.project.pharmacy.dto.response.oauth.ExchangeTokenResponse;
 import com.project.pharmacy.dto.response.auth.IntrospectTokenResponse;
 import com.project.pharmacy.dto.response.oauth.OutboundUserResponse;
-import com.project.pharmacy.entity.InvalidatedToken;
-import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.InvalidatedTokenRepository;
@@ -50,6 +49,8 @@ import lombok.experimental.NonFinal;
 public class AuthenticationService {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
     UserRepository userRepository;
+
+    EmployeeRepository employeeRepository;
 
     InvalidatedTokenRepository invalidatedTokenRepository;
 
@@ -105,19 +106,20 @@ public class AuthenticationService {
         // On board User
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
 
         User user = userRepository
                 .findByUsername(userInfo.getEmail())
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .username(userInfo.getEmail())
-                        .firstname(userInfo.getGivenName())
-                        .lastname(userInfo.getFamilyName())
-                        .status(true)
-                        .isVerified(true)
-                        .roles(roles)
-                        .build()));
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUsername(userInfo.getEmail());
+                    newUser.setFirstname(userInfo.getGivenName());
+                    newUser.setLastname(userInfo.getFamilyName());
+                    newUser.setImage(userInfo.getPicture());
+                    newUser.setStatus(true);
+                    newUser.setIsVerified(true);
+                    newUser.setRole(role);
+                    return userRepository.save(newUser);
+                });
         log.info("User Info: {}", userInfo);
 
         var token = generateToken(user);
@@ -128,23 +130,24 @@ public class AuthenticationService {
     }
 
     //Out bound authenticate login with google on android
-    public AuthenticationResponse outboundAuthenticationAndroid(OutboundAuthenticationAndroid request){
+    public AuthenticationResponse outboundAuthenticationAndroid(OutboundAuthenticationAndroid request) {
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
 
+        // Tìm user theo username/email
         User user = userRepository
                 .findByUsername(request.getEmail())
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .username(request.getEmail())
-                        .firstname(request.getGivenName())
-                        .lastname(request.getFamilyName())
-                        .image(request.getPhoto())
-                        .status(true)
-                        .isVerified(true)
-                        .roles(roles)
-                        .build()));
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUsername(request.getEmail());
+                    newUser.setFirstname(request.getGivenName());
+                    newUser.setLastname(request.getFamilyName());
+                    newUser.setImage(request.getPhoto());
+                    newUser.setStatus(true);
+                    newUser.setIsVerified(true);
+                    newUser.setRole(role);
+                    return userRepository.save(newUser);
+                });
 
         var token = generateToken(user);
 
@@ -154,23 +157,37 @@ public class AuthenticationService {
     }
 
     // Log-in
-    public AuthenticationResponse authenticate(SignInRequest request) { // login
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)); // Check username
+    public AuthenticationResponse authenticate(SignInRequest request) {
+        AccountBase account = userRepository.findByUsername(request.getUsername())
+                .map(user -> (AccountBase) user)
+                .orElseGet(() -> employeeRepository.findByUsername(request.getUsername())
+                        .map(emp -> (AccountBase) emp)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))
+                );
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword()); // Check password
-        if (!authenticated)
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
+        if (!authenticated) {
             throw new AppException(ErrorCode.PASSWORD_INCORRECT);
-
-        if (!user.getStatus())
-            throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
-
-        if (!user.getIsVerified()) {
-            throw new AppException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
-        var token = generateToken(user);
+        if (account instanceof User) {
+            User user = (User) account;
+            if (!user.getStatus()) {
+                throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
+            }
+            if (!user.getIsVerified()) {
+                throw new AppException(ErrorCode.EMAIL_NOT_VERIFIED);
+            }
+        } else if (account instanceof Employee) {
+            Employee employee = (Employee) account;
+            if (Boolean.FALSE.equals(employee.getStatus())) {
+                throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
+            }
+            // Nếu muốn kiểm tra `isVerified` cho Employee thì cần thêm field
+        }
+
+        var token = generateToken(account);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -178,18 +195,18 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(User user) { // 1 TOKEN Gom: Header, Payload, Signature
+    private String generateToken(AccountBase account) { // 1 TOKEN Gom: Header, Payload, Signature
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512); // Header(Chua thuat toan dung de ki cho Signature)
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder() // Tao Data cho Payload - Data trong Payload goi la Claim
-                .subject(user.getUsername()) // Dai dien cho user dang dang nhap
+                .subject(account.getUsername()) // Dai dien cho user dang dang nhap
                 .issuer("pharmacy.com") // Xac dinh token duoc issue tu ai, thuong se dung domain cua service
                 .issueTime(new Date()) // Thoi diem tao ra token
                 .expirationTime(new Date(Instant.now()
                         .plus(VALID_DURATION, ChronoUnit.SECONDS)
                         .toEpochMilli())) // Token het han sau 1 gio
                 .jwtID(UUID.randomUUID().toString())
-                .claim("scope", buildScope(user))
+                .claim("scope", buildScope(account))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject()); // Payload(Chua thong tin Token goi di nhu username, role)
@@ -207,17 +224,16 @@ public class AuthenticationService {
         }
     }
 
-    private String buildScope(User user) { // Lay ra role cua user de cho vao scope trong token
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        log.info("User roles: " + user.getRoles());
+    private String buildScope(AccountBase account) {
+        Role role = account.getRole();
 
-        if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(role -> {
-                stringJoiner.add("ROLE_" + role.getName());
-            });
+        if (role != null) {
+            log.info("Role: " + role.getName());
+            return "ROLE_" + role.getName();
+        } else {
+            log.warn("No role assigned");
+            return "";
         }
-
-        return stringJoiner.toString();
     }
 
     // Introspect Token

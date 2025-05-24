@@ -78,16 +78,21 @@ public class UserService {
 
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
 
         String otpCode = generateOTP();
 
-        User user = userMapper.toUser(request);
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setFirstname(request.getFirstname());
+        user.setLastname(request.getLastname());
+        user.setDob(request.getDob());
+        user.setSex(request.getSex());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setStatus(false);
         user.setIsVerified(false);
-        user.setRoles(roles);
+        user.setRole(role);
         user.setLevel(Level.DONG);
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
@@ -220,15 +225,22 @@ public class UserService {
         User user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (userRepository.existsByPhoneNumber(request.getPhoneNumber()) && request.getPhoneNumber() != null)
+        if (!request.getPhoneNumber().equals(user.getPhoneNumber()) &&
+            userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
+
+        user.setFirstname(request.getFirstname());
+        user.setLastname(request.getLastname());
+        user.setDob(request.getDob());
+        user.setSex(request.getSex());
+        user.setPhoneNumber(request.getPhoneNumber());
 
         if (file != null && !file.isEmpty()) {
             String urlImage = cloudinaryService.uploadImage(file);
             user.setImage(urlImage);
         }
 
-        userMapper.updateBio(user, request);
         userRepository.save(user);
 
         return userMapper.toUserResponse(user);
@@ -428,7 +440,7 @@ public class UserService {
         return ordersRepository.totalSpendingByYear(userId, year);
     }
 
-    // Role ADMIN
+    //For ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> getAllUser(Pageable pageable) {
         return userRepository.findAll(pageable)
@@ -451,60 +463,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse createEmployee(CreateEmployeeRequest request){
-        if (userRepository.existsByUsername(request.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
-
-        Role role = roleRepository.findByName("EMPLOYEE")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode("12345678"))
-                .roles(roles)
-                .isVerified(true)
-                .status(true)
-                .build();
-
-        userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    public UserResponse createNurse(CreateEmployeeRequest request){
-        if (userRepository.existsByUsername(request.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
-
-        Role role = roleRepository.findByName("NURSE")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode("12345678"))
-                .roles(roles)
-                .isVerified(true)
-                .status(true)
-                .build();
-
-        userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<UserResponse> getAllEmployee(Pageable pageable) {
-        Role role = roleRepository.findByName("EMPLOYEE")
-                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
-
-        return userRepository.findAllByRoles(pageable, role)
-                .map(userMapper::toUserResponse);
-    }
-
+    //For NURSE
     @PreAuthorize("hasRole('NURSE')")
     public UserResponse getInfoUserByPhone(String phone){
         User user = userRepository.findByPhoneNumber(phone)

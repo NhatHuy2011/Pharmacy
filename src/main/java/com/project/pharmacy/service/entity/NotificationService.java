@@ -1,7 +1,7 @@
 package com.project.pharmacy.service.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.pharmacy.configuration.WebsocketHandler;
+import com.project.pharmacy.configuration.NotificationHandler;
 import com.project.pharmacy.dto.request.notification.CreateNotificationRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationService {
-    WebsocketHandler websocketHandler;
+    NotificationHandler notificationHandler;
 
     public void sendNotification(CreateNotificationRequest request) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -27,7 +27,7 @@ public class NotificationService {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         String payload = objectMapper.writeValueAsString(request);
-        for (WebSocketSession session : websocketHandler.getConnections()) {
+        for (WebSocketSession session : notificationHandler.getConnections()) {
             session.sendMessage(new TextMessage(payload));
         }
     }

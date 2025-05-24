@@ -34,7 +34,7 @@ public class UserResponse {
     Level level;
     Boolean status;
     Boolean noPassword;
-    Set<RoleResponse> roles;
+    RoleResponse role;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     LocalDateTime otpExpiryTime;

@@ -12,10 +12,6 @@ import com.project.pharmacy.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
-    User toUser(SignUpRequest request);
-
     @Mapping(target = "noPassword", ignore = true)
     UserResponse toUserResponse(User user);
-
-    void updateBio(@MappingTarget User user, UserUpdateBio request);
 }

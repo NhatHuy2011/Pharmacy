@@ -1,28 +1,34 @@
-package com.project.pharmacy.dto.request.user;
-
-import java.time.LocalDate;
+package com.project.pharmacy.dto.response.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.pharmacy.validator.DobConstraint;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateBio {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class EmployeeResponse {
     String id;
+    String username;
     String firstname;
     String lastname;
-
-    @DobConstraint(min = 18, message = "Bạn phải đủ 18 tuổi để sử dụng trang web")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
-
     String sex;
+    String image;
+    String specilization;
+    String description;
+    String workExperience;
+    String education;
     String phoneNumber;
+    int workTime;
+    int salary;
+    Boolean status;
+    RoleResponse role;
 }
