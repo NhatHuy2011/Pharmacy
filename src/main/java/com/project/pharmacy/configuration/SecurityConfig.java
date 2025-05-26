@@ -37,7 +37,8 @@ public class SecurityConfig {
         "/callback",
         "/invoice",
         "/notifications/send",
-        "/delivery/**"
+        "/delivery/**",
+        "/chat/create/message"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
@@ -51,7 +52,10 @@ public class SecurityConfig {
             "/feedback/**",
             "/home/**",
             "/delivery/**",
-            "/address/detail"
+            "/address/detail",
+            "/chat/room/user",
+            "/chat/room/employee",
+            "/chat/room/message"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {
@@ -71,6 +75,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers("/ws-notifications/**")
+                .permitAll()
+                .requestMatchers("/ws-chats/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS)
                 .permitAll()

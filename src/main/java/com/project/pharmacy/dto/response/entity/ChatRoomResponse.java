@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,15 +13,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatRoomResponse {
-    String id;
+    String roomId;
     String senderId;
     String senderName;
     String senderImage;
     String receiverId;
     String receiverName;
     String receiverImage;
-    String title;
-    String image;
     String lastMessage;
-    int timeBefore;
+    Boolean roomStatus;
+    LocalDateTime lastTime;
 }

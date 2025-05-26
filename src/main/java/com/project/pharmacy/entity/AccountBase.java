@@ -44,4 +44,7 @@ public abstract class AccountBase {
     @ManyToOne
     @JoinColumn(name = "role_id")
     Role role;
+
+    @Column
+    Boolean isActive;
 }

@@ -13,7 +13,13 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatMessageResponse {
-    String id;
+    String messageId;
+    String senderId;
+    String senderName;
+    String senderImage;
+    String receiverId;
+    String receiverName;
+    String receiverImage;
     String content;
     LocalDateTime time;
 }

@@ -15,5 +15,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     Page<Employee> findAllByRole(Pageable pageable, Role role);
 
-    Optional<Employee> findByUsername(String name);
+    Optional<Employee> findByUsername(String username);
 }

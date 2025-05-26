@@ -19,6 +19,12 @@ public class ChatMessage {
     String id;
 
     @Column
+    String senderId;
+
+    @Column
+    String receiverId;
+
+    @Column
     String content;
 
     @Column

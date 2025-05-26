@@ -1,47 +1,45 @@
 package com.project.pharmacy.service.auth;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.project.pharmacy.dto.request.auth.InstrospectTokenRequest;
+import com.project.pharmacy.dto.request.auth.RefreshTokenRequest;
 import com.project.pharmacy.dto.request.auth.SignInRequest;
 import com.project.pharmacy.dto.request.auth.SignOutRequest;
-import com.project.pharmacy.dto.request.auth.RefreshTokenRequest;
 import com.project.pharmacy.dto.request.oauth.ExchangeTokenRequest;
 import com.project.pharmacy.dto.request.oauth.OutboundAuthenticationAndroid;
+import com.project.pharmacy.dto.response.auth.AuthenticationResponse;
+import com.project.pharmacy.dto.response.auth.IntrospectTokenResponse;
+import com.project.pharmacy.dto.response.oauth.ExchangeTokenResponse;
+import com.project.pharmacy.dto.response.oauth.OutboundUserResponse;
 import com.project.pharmacy.entity.*;
+import com.project.pharmacy.exception.AppException;
+import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.EmployeeRepository;
+import com.project.pharmacy.repository.InvalidatedTokenRepository;
+import com.project.pharmacy.repository.RoleRepository;
+import com.project.pharmacy.repository.UserRepository;
+import com.project.pharmacy.repository.httpclient.OutboundIdentityClient;
+import com.project.pharmacy.repository.httpclient.OutboundUserClient;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import com.project.pharmacy.dto.response.auth.AuthenticationResponse;
-import com.project.pharmacy.dto.response.oauth.ExchangeTokenResponse;
-import com.project.pharmacy.dto.response.auth.IntrospectTokenResponse;
-import com.project.pharmacy.dto.response.oauth.OutboundUserResponse;
-import com.project.pharmacy.exception.AppException;
-import com.project.pharmacy.exception.ErrorCode;
-import com.project.pharmacy.repository.InvalidatedTokenRepository;
-import com.project.pharmacy.repository.RoleRepository;
-import com.project.pharmacy.repository.UserRepository;
-import com.project.pharmacy.repository.httpclient.OutboundIdentityClient;
-import com.project.pharmacy.repository.httpclient.OutboundUserClient;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -117,6 +115,7 @@ public class AuthenticationService {
                     newUser.setImage(userInfo.getPicture());
                     newUser.setStatus(true);
                     newUser.setIsVerified(true);
+                    newUser.setIsActive(true);
                     newUser.setRole(role);
                     return userRepository.save(newUser);
                 });
@@ -134,7 +133,6 @@ public class AuthenticationService {
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        // Tìm user theo username/email
         User user = userRepository
                 .findByUsername(request.getEmail())
                 .orElseGet(() -> {
@@ -145,6 +143,7 @@ public class AuthenticationService {
                     newUser.setImage(request.getPhoto());
                     newUser.setStatus(true);
                     newUser.setIsVerified(true);
+                    newUser.setIsActive(true);
                     newUser.setRole(role);
                     return userRepository.save(newUser);
                 });
@@ -184,10 +183,21 @@ public class AuthenticationService {
             if (Boolean.FALSE.equals(employee.getStatus())) {
                 throw new AppException(ErrorCode.USER_HAS_BEEN_BAN);
             }
-            // Nếu muốn kiểm tra `isVerified` cho Employee thì cần thêm field
         }
 
         var token = generateToken(account);
+
+        if(!token.isEmpty()){
+            if (account instanceof User) {
+                User user = (User) account;
+                user.setIsActive(true);
+                userRepository.save(user);
+            } else if (account instanceof Employee) {
+                Employee employee = (Employee) account;
+                employee.setIsActive(true);
+                employeeRepository.save(employee);
+            }
+        }
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -263,6 +273,24 @@ public class AuthenticationService {
                     .build();
 
             invalidatedTokenRepository.save(invalidatedToken);
+
+            String username = signToken.getJWTClaimsSet().getSubject();
+            String role = (String) signToken.getJWTClaimsSet().getClaim("scope");
+
+            if(role.equals("ROLE_USER")){
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+                user.setIsActive(false);
+                userRepository.save(user);
+            } else {
+                Employee employee = employeeRepository.findByUsername(username)
+                        .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+                employee.setIsActive(false);
+                employeeRepository.save(employee);
+            }
+
         } catch (AppException exception) {
             log.info("Token already expired");
         }

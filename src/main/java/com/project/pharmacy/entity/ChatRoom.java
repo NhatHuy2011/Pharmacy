@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,13 +23,13 @@ public class ChatRoom {
     String senderId;
 
     @Column
-    Boolean senderStatus;
-
-    @Column
     String receiverId;
 
     @Column
-    Boolean receiverStatus;
+    String lastMessage;
+
+    @Column
+    LocalDateTime lastTime;
 
     @Column
     Boolean roomStatus;

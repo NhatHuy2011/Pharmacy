@@ -47,6 +47,9 @@ public enum ErrorCode {
     EMPLOYEE_NOT_FOUND("Employee not found", 400, HttpStatus.BAD_REQUEST),
     MISS_IMAGE("Vui lòng điền ảnh nhân viên", 400, HttpStatus.BAD_REQUEST),
 
+    //Chat room
+    CHAT_ROOM_NOT_FOUND("Chat room not found", 400, HttpStatus.BAD_REQUEST),
+
     // Cart and cart item Exception
     CART_EMPTY("Giỏ hàng trống!", 400, HttpStatus.BAD_REQUEST),
     CART_ITEM_NOT_FOUND("Cart item not found!", 400, HttpStatus.BAD_REQUEST),

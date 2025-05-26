@@ -16,9 +16,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     NotificationHandler notificationHandler;
 
+    ChatRealTimeHandler chatRealTimeHandler;
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(notificationHandler, "/ws-notifications")
+                .addHandler(chatRealTimeHandler, "/ws-chats")
                 .setAllowedOrigins("*");
     }
 }
