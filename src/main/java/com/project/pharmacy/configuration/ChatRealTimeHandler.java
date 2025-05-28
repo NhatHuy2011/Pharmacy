@@ -47,7 +47,7 @@ public class ChatRealTimeHandler extends TextWebSocketHandler {
     Map<String, WebSocketSession> employeeSessions = new ConcurrentHashMap<>();
 
     @Getter
-    Set<WebSocketSession> occupiedSessions = new HashSet<>();
+    Map<String, WebSocketSession> occupiedSessions = new ConcurrentHashMap<>();
 
     UserRepository userRepository;
 
@@ -78,8 +78,8 @@ public class ChatRealTimeHandler extends TextWebSocketHandler {
         for(Map.Entry<String, WebSocketSession> employees : employeeSessions.entrySet()){
             for (Map.Entry<String, WebSocketSession> users : userSessions.entrySet()){
                 if(chatRoomRepository.existsBySenderIdAndReceiverId(users.getKey(), employees.getKey())){
-                    occupiedSessions.add(employees.getValue());
-                    occupiedSessions.add(users.getValue());
+                    occupiedSessions.put(employees.getKey(), employees.getValue());
+                    occupiedSessions.put(users.getKey(), users.getValue());
                 }
             }
         }
@@ -87,7 +87,11 @@ public class ChatRealTimeHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        occupiedSessions.remove(session);
+        for (Map.Entry<String, WebSocketSession> entry : occupiedSessions.entrySet()) {
+            if (entry.getValue().getId().equals(session.getId())) {
+                occupiedSessions.remove(entry.getKey());
+            }
+        }
 
         for (Map.Entry<String, WebSocketSession> entry : userSessions.entrySet()) {
             if (entry.getValue().getId().equals(session.getId())) {

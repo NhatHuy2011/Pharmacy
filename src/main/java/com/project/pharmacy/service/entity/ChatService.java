@@ -1,6 +1,5 @@
 package com.project.pharmacy.service.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -189,8 +188,13 @@ public class ChatService {
 
         String payload = objectMapper.writeValueAsString(request);
 
-        for (WebSocketSession session : chatRealTimeHandler.getOccupiedSessions()){
-            session.sendMessage(new TextMessage(payload));
+        for (Map.Entry<String, WebSocketSession> entry : chatRealTimeHandler.getOccupiedSessions().entrySet()) {
+            if (entry.getKey().equals(request.getSender())) {
+                entry.getValue().sendMessage(new TextMessage(payload));
+            }
+            if (entry.getKey().equals(request.getReceiver())){
+                entry.getValue().sendMessage(new TextMessage(payload));
+            }
         }
 
         ChatMessageResponse chatMessageResponse = ChatMessageResponse.builder()
@@ -251,7 +255,7 @@ public class ChatService {
         return chatRoomResponse;
     }
 
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('NURSE')")
     public List<ChatRoomResponse> getChatRoomVacant(){
 
         List<ChatRoom> chatRooms = chatRoomRepository.findByRoomStatus(true);
@@ -276,7 +280,7 @@ public class ChatService {
         return chatRoomResponses;
     }
 
-    @PreAuthorize("hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('NURSE')")
     public void chooseRoomVacant(ChooseRoomVacant roomVacant){
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
