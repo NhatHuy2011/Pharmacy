@@ -102,7 +102,7 @@ public class EmployeeService {
         return employeeRepository.findAllByRole(pageable, role)
                 .map(employeeMapper::toEmployeeResponse);
     }
-
+    
     //Role EMPLOYEE, NURSE, DOCTOR
     public EmployeeResponse getInfo() {
         var context = SecurityContextHolder.getContext();

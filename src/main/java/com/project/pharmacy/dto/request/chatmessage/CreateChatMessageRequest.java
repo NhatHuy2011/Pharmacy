@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateChatMessageRequest {
     String roomId;
+    String messageId;
     String sender;
     String receiver;
     String content;

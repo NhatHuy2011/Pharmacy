@@ -180,6 +180,8 @@ public class ChatService {
 
         chatRoom.getMessages().add(chatMessage);
 
+        request.setMessageId(chatMessage.getId());
+        
         //Parse message to json
         ObjectMapper objectMapper = new ObjectMapper();
 
