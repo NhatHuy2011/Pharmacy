@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 @MappedSuperclass
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class AccountBase {
+public abstract class   AccountBase {
     @Column
     String username;
 

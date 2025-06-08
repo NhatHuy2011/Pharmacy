@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateOrderRequestAtCartUser {
+public class    CreateOrderRequestAtCartUser {
     String couponId;
     String addressId;
     @NotNull(message = "Vui lòng chọn phương thức thanh toán")

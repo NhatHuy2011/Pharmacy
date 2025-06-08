@@ -53,6 +53,7 @@ public class User extends AccountBase{
     List<Orders> orders;
 
     @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
     List<FeedBack> feedBacks;
 
     @OneToMany(mappedBy = "user")

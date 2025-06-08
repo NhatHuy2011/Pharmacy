@@ -132,46 +132,6 @@ public class FeedBackService {
                 .toList();
     }
 
-    public FeedBackResponse updateFeedback(UpdateFeedbackRequest request) {
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        FeedBack feedBack = user.getFeedBacks().stream()
-                .filter(feedBack1 -> feedBack1.getId().equals(request.getId()))
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.USER_DONT_FEEDBACK));
-
-        feedBack.setFeedback(request.getFeedback());
-        feedBackRepository.save(feedBack);
-
-        FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
-                .id(feedBack.getId())
-                .userId(feedBack.getUser().getId())
-                .username(feedBack.getUser().getUsername())
-                .avatar(feedBack.getUser().getImage())
-                .productId(feedBack.getProduct().getId())
-                .productName(feedBack.getProduct().getName())
-                .feedback(feedBack.getFeedback())
-                .createDate(feedBack.getCreateDate());
-
-        // Kiểm tra null cho parent
-        if (feedBack.getParent() != null) {
-            responseBuilder.parent(FeedBackResponse.builder()
-                    .id(feedBack.getParent().getId())
-                    .userId(feedBack.getParent().getUser().getId())
-                    .username(feedBack.getParent().getUser().getUsername())
-                    .avatar(feedBack.getParent().getUser().getImage())
-                    .feedback(feedBack.getParent().getFeedback())
-                    .createDate(feedBack.getParent().getCreateDate())
-                    .build());
-        }
-
-        return responseBuilder.build();
-    }
-
     public void deleteFeedbackForUser(String id){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -198,12 +158,6 @@ public class FeedBackService {
     //For ADMIN and EMPLOYEE
     @PreAuthorize("hasRole('EMPLOYEE')")
     public FeedBackResponse createFeedBackForEmployee(CreateFeedBackRequest request){
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
         FeedBack parent = null;
         if(request.getParent() != null){
             parent = feedBackRepository.findById(request.getParent())
@@ -214,7 +168,7 @@ public class FeedBackService {
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         FeedBack feedBack = FeedBack.builder()
-                .user(user)
+                .user(null)
                 .product(product)
                 .feedback(request.getFeedback())
                 .createDate(LocalDate.now())
@@ -224,9 +178,6 @@ public class FeedBackService {
 
         FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
                 .id(feedBack.getId())
-                .userId(feedBack.getUser().getId())
-                .username(feedBack.getUser().getUsername())
-                .avatar(feedBack.getUser().getImage())
                 .productId(feedBack.getProduct().getId())
                 .productName(feedBack.getProduct().getName())
                 .feedback(feedBack.getFeedback())
@@ -236,9 +187,6 @@ public class FeedBackService {
         if (feedBack.getParent() != null) {
             responseBuilder.parent(FeedBackResponse.builder()
                     .id(feedBack.getParent().getId())
-                    .userId(feedBack.getParent().getUser().getId())
-                    .username(feedBack.getParent().getUser().getUsername())
-                    .avatar(feedBack.getParent().getUser().getImage())
                     .feedback(feedBack.getParent().getFeedback())
                     .createDate(feedBack.getParent().getCreateDate())
                     .build());
@@ -253,9 +201,9 @@ public class FeedBackService {
                 .map(feedBack -> {
                     FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
                             .id(feedBack.getId())
-                            .userId(feedBack.getUser().getId())
-                            .username(feedBack.getUser().getUsername())
-                            .avatar(feedBack.getUser().getImage())
+                            .userId(feedBack.getUser() != null ? feedBack.getUser().getId() : null)
+                            .username(feedBack.getUser() != null ? feedBack.getUser().getUsername() : null)
+                            .avatar(feedBack.getUser() != null ? feedBack.getUser().getImage() : null)
                             .productId(feedBack.getProduct().getId())
                             .productName(feedBack.getProduct().getName())
                             .feedback(feedBack.getFeedback())
@@ -265,9 +213,9 @@ public class FeedBackService {
                     if (feedBack.getParent() != null) {
                         responseBuilder.parent(FeedBackResponse.builder()
                                 .id(feedBack.getParent().getId())
-                                .userId(feedBack.getParent().getUser().getId())
-                                .username(feedBack.getParent().getUser().getUsername())
-                                .avatar(feedBack.getParent().getUser().getImage())
+                                .userId(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getId() : null)
+                                .username(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getUsername() : null)
+                                .avatar(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getImage() : null)
                                 .feedback(feedBack.getParent().getFeedback())
                                 .createDate(feedBack.getParent().getCreateDate())
                                 .build());
@@ -286,6 +234,40 @@ public class FeedBackService {
         deleteFeedbackRecursive(feedBack);
     }
 
+    //FOR USER AND EMPLOYEE
+    @PreAuthorize("hasRole('USER') or hasRole('EMPLOYEE')")
+    public FeedBackResponse updateFeedback(UpdateFeedbackRequest request) {
+        FeedBack feedBack = feedBackRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.FEEDBACK_NOT_FOUND));
+
+        feedBack.setFeedback(request.getFeedback());
+        feedBackRepository.save(feedBack);
+
+        FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
+                .id(feedBack.getId())
+                .userId(feedBack.getUser() != null ? feedBack.getUser().getId() : null)
+                .username(feedBack.getUser() != null ? feedBack.getUser().getUsername() : null)
+                .avatar(feedBack.getUser() != null ? feedBack.getUser().getImage() : null)
+                .productId(feedBack.getProduct().getId())
+                .productName(feedBack.getProduct().getName())
+                .feedback(feedBack.getFeedback())
+                .createDate(feedBack.getCreateDate());
+
+        // Kiểm tra null cho parent
+        if (feedBack.getParent() != null) {
+            responseBuilder.parent(FeedBackResponse.builder()
+                    .id(feedBack.getParent().getId())
+                    .userId(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getId() : null)
+                    .username(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getUsername() : null)
+                    .avatar(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getImage() : null)
+                    .feedback(feedBack.getParent().getFeedback())
+                    .createDate(feedBack.getParent().getCreateDate())
+                    .build());
+        }
+
+        return responseBuilder.build();
+    }
+
     //For ALL
     //Xem feedback goc
     public List<FeedBackResponse> getFeedBackByProduct(String id){
@@ -299,9 +281,9 @@ public class FeedBackService {
                 .map(feedBack -> {
                     return FeedBackResponse.builder()
                             .id(feedBack.getId())
-                            .userId(feedBack.getUser().getId())
-                            .username(feedBack.getUser().getUsername())
-                            .avatar(feedBack.getUser().getImage())
+                            .userId(feedBack.getUser() != null ? feedBack.getUser().getId() : null)
+                            .username(feedBack.getUser() != null ? feedBack.getUser().getUsername() : null)
+                            .avatar(feedBack.getUser() != null ? feedBack.getUser().getImage() : null)
                             .productId(product.getId())
                             .productName(product.getName())
                             .feedback(feedBack.getFeedback())
@@ -320,9 +302,9 @@ public class FeedBackService {
                 .map(feedBack -> {
                     FeedBackResponse.FeedBackResponseBuilder responseBuilder = FeedBackResponse.builder()
                             .id(feedBack.getId())
-                            .userId(feedBack.getUser().getId())
-                            .username(feedBack.getUser().getUsername())
-                            .avatar(feedBack.getUser().getImage())
+                            .userId(feedBack.getUser() != null ? feedBack.getUser().getId() : null)
+                            .username(feedBack.getUser() != null ? feedBack.getUser().getUsername() : null)
+                            .avatar(feedBack.getUser() != null ? feedBack.getUser().getImage() : null)
                             .productId(feedBack.getProduct().getId())
                             .productName(feedBack.getProduct().getName())
                             .feedback(feedBack.getFeedback())
@@ -332,9 +314,9 @@ public class FeedBackService {
                     if (feedBack.getParent() != null) {
                         responseBuilder.parent(FeedBackResponse.builder()
                                 .id(feedBack.getParent().getId())
-                                .userId(feedBack.getParent().getUser().getId())
-                                .username(feedBack.getParent().getUser().getUsername())
-                                .avatar(feedBack.getParent().getUser().getImage())
+                                .userId(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getId() : null)
+                                .username(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getUsername() : null)
+                                .avatar(feedBack.getParent().getUser() != null ? feedBack.getParent().getUser().getImage() : null)
                                 .feedback(feedBack.getParent().getFeedback())
                                 .createDate(feedBack.getParent().getCreateDate())
                                 .build());

@@ -8,13 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, String> {
-    boolean existsBySenderId(String senderId);
-
-    boolean existsByReceiverId(String receiverId);
-
     boolean existsBySenderIdAndReceiverId(String senderId, String receiverId);
-
-    ChatRoom findBySenderIdAndReceiverId(String senderId, String receiverId);
 
     List<ChatRoom> findAllBySenderId(String senderId);
 

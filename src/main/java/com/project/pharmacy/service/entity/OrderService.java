@@ -482,7 +482,7 @@ public class OrderService {
 	}
 
 	//Home Guest
-	public OrderResponse createOrderAtHomeGuest(CreateOrderRequestAtHomeGuest request, HttpSession session){
+		public OrderResponse createOrderAtHomeGuest(CreateOrderRequestAtHomeGuest request, HttpSession session){
 		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
