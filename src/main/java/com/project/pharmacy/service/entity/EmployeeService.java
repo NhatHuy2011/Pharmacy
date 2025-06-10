@@ -1,6 +1,7 @@
 package com.project.pharmacy.service.entity;
 
 import com.project.pharmacy.dto.request.employee.CreateEmployeeRequest;
+import com.project.pharmacy.dto.request.employee.UpdateEmployeeRequest;
 import com.project.pharmacy.dto.response.entity.EmployeeResponse;
 import com.project.pharmacy.dto.response.entity.UserResponse;
 import com.project.pharmacy.entity.Employee;
@@ -78,6 +79,35 @@ public class EmployeeService {
         return employeeMapper.toEmployeeResponse(employee);
     }
 
+    @PreAuthorize(("hasRole('ADMIN')"))
+    public EmployeeResponse updateEmployee(UpdateEmployeeRequest request, MultipartFile file) throws IOException {
+        Employee employee = employeeRepository.findById(request.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        employeeMapper.updateEmpployee(employee, request);
+        employee.setFirstname(request.getFirstname());
+        employee.setLastname(request.getLastname());
+        employee.setDob(request.getDob());
+        employee.setSex(request.getSex());
+        employee.setPhoneNumber(request.getPhoneNumber());
+
+        String image;
+        if (file != null && !file.isEmpty()) {
+            image = cloudinaryService.uploadImage(file);
+            employee.setImage(image);
+        }
+
+        if(request.getRole()!=null){
+            Role role = roleRepository.findByName(request.getRole())
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+            employee.setRole(role);
+        }
+
+        employeeRepository.save(employee);
+
+        return employeeMapper.toEmployeeResponse(employee);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public void banEmployee(String id) {
         Employee employee = employeeRepository.findById(id)
@@ -93,6 +123,7 @@ public class EmployeeService {
         employee.setStatus(true);
         employeeRepository.save(employee);
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public Page<EmployeeResponse> getAllEmployee(Pageable pageable, String roleName) {

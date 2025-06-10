@@ -1,6 +1,7 @@
 package com.project.pharmacy.controller.entity;
 
 import com.project.pharmacy.dto.request.employee.CreateEmployeeRequest;
+import com.project.pharmacy.dto.request.employee.UpdateEmployeeRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.EmployeeResponse;
 import com.project.pharmacy.dto.response.entity.UserResponse;
@@ -32,6 +33,14 @@ public class EmployeeController {
                 .build();
     }
 
+    @PutMapping("/employee")
+    public ApiResponse<EmployeeResponse> updateEmployee(@RequestPart("updateEmployee") UpdateEmployeeRequest request,
+                                                        @RequestPart("file") MultipartFile file) throws IOException {
+        return ApiResponse.<EmployeeResponse>builder()
+                .result(employeeService.updateEmployee(request, file))
+                .build();
+    }
+
     @GetMapping("/employee")
     public ApiResponse<Page<EmployeeResponse>> getAllEmployee(
             @RequestParam(defaultValue = "0") int page,
@@ -41,6 +50,22 @@ public class EmployeeController {
         Page<EmployeeResponse> employeeResponses = employeeService.getAllEmployee(pageable, name);
         return ApiResponse.<Page<EmployeeResponse>>builder()
                 .result(employeeResponses)
+                .build();
+    }
+
+    @PutMapping("/employee/ban/{id}")
+    public ApiResponse<Void> banEmployee(@PathVariable String id){
+        employeeService.banEmployee(id);
+        return ApiResponse.<Void>builder()
+                .message("Ban employee successful")
+                .build();
+    }
+
+    @PutMapping("/employee/unban/{id}")
+    public ApiResponse<Void> unbanEmployee(@PathVariable String id){
+        employeeService.unbanEmployee(id);
+        return ApiResponse.<Void>builder()
+                .message("Unban employee successful")
                 .build();
     }
 

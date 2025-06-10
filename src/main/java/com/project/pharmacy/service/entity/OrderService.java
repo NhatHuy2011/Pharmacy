@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import com.project.pharmacy.entity.*;
 import lombok.AccessLevel;
@@ -652,35 +651,6 @@ public class OrderService {
 		orderRepository.save(orders);
 	}
 
-	//For ALL (Follow order)
-	public OrderResponse getOrderDetails(String id){
-		Orders orders = orderRepository.findById(id)
-				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-
-		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
-
-		List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
-				.map(orderItem -> {
-					return OrderItemResponse.builder()
-							.id(orderItem.getId())
-							.productId(orderItem.getPrice().getProduct().getId())
-							.productName(orderItem.getPrice().getProduct().getName())
-							.unitName(orderItem.getPrice().getUnit().getName())
-							.priceId(orderItem.getPrice().getId())
-							.quantity(orderItem.getQuantity())
-							.price(orderItem.getPrice().getPrice())
-							.amount(orderItem.getAmount())
-							.image(orderItem.getImage())
-							.build();
-				})
-				.toList();
-
-		orderResponse.setOrderItemResponses(orderItemResponses);
-		orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
-
-		return orderResponse;
-	}
-
 	//FOR NURSE
 	@PreAuthorize("hasRole('NURSE')")
 	public OrderResponse createOrderAtShop(CreateOrderAtShopRequest request){
@@ -696,7 +666,7 @@ public class OrderService {
 				.isConfirm(true)
 				.build();
 		orderRepository.save(orders);
-		
+
 		List<OrderItem> orderItems = new ArrayList<>();
 		int totalPrice = 0;
 		for(PriceDTO priceDTO : request.getListPrices()){
@@ -741,17 +711,44 @@ public class OrderService {
 		return orderResponse;
 	}
 
-	@PreAuthorize("hasRole('NURSE')")
-	public String confirmOrdersForNurse(ConfirmOrderForNurse request){
-		Orders orders = orderRepository.findById(request.getOrderId())
+	//For ALL (Follow order)
+	public OrderResponse getOrderDetails(String id){
+		Orders orders = orderRepository.findById(id)
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-		if(request.isConfirm()){
-			orders.setStatus(OrderStatus.SUCCESS);
-			orderRepository.save(orders);
-			return "Cập nhật đơn hàng thành công";
+
+		OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+		List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+				.map(orderItem -> {
+					return OrderItemResponse.builder()
+							.id(orderItem.getId())
+							.productId(orderItem.getPrice().getProduct().getId())
+							.productName(orderItem.getPrice().getProduct().getName())
+							.unitName(orderItem.getPrice().getUnit().getName())
+							.priceId(orderItem.getPrice().getId())
+							.quantity(orderItem.getQuantity())
+							.price(orderItem.getPrice().getPrice())
+							.amount(orderItem.getAmount())
+							.image(orderItem.getImage())
+							.build();
+				})
+				.toList();
+
+		orderResponse.setOrderItemResponses(orderItemResponses);
+		orderResponse.setUserId(orders.getUser() != null ? orders.getUser().getId() : null);
+
+		return orderResponse;
+	}
+
+	public Boolean cancelOrders(String orderId){
+		Orders orders = orderRepository.findById(orderId)
+				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+		if(orders.getIsConfirm()){
+			return false;
 		} else{
-			orderRepository.deleteById(request.getOrderId());
-			return "Xoá đơn hàng thành công";
+			orderRepository.delete(orders);
+			return true;
 		}
 	}
 }

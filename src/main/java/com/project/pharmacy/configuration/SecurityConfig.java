@@ -63,7 +63,8 @@ public class SecurityConfig {
         "/user/forgot-password",
         "/user/reset-password",
         "/user/refresh-otp",
-        "/cart/guest"
+        "/cart/guest",
+        "/order/cancel/**"
     };
 
     private final String[] PUBLIC_DELETE_ENDPOINTS = {"/cart/guest"};

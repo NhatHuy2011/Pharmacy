@@ -114,11 +114,20 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("/nurse")
-    public ApiResponse<Void> confirmOrderForNurse(@RequestBody ConfirmOrderForNurse request){
-        return ApiResponse.<Void>builder()
-                .message(orderService.confirmOrdersForNurse(request))
-                .build();
+    @PutMapping("/cancel/{id}")
+    public ApiResponse<Boolean> confirmOrderForNurse(@PathVariable String id){
+        Boolean result = orderService.cancelOrders(id);
+        if(result){
+            return ApiResponse.<Boolean>builder()
+                    .result(true)
+                    .message("Huỷ đơn hàng thành công!")
+                    .build();
+        }else {
+            return ApiResponse.<Boolean>builder()
+                    .result(false)
+                    .message("Đơn hàng của bạn đã được xác nhận. Huỷ đơn hàng thất bại!")
+                    .build();
+        }
     }
 
     //Public
