@@ -1,24 +1,30 @@
 package com.project.pharmacy.service.entity;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
 import com.project.pharmacy.dto.request.auth.ForgotPasswordRequest;
 import com.project.pharmacy.dto.request.auth.ForgotVerifyEmailRequest;
 import com.project.pharmacy.dto.request.auth.RefreshOTP;
 import com.project.pharmacy.dto.request.auth.SignUpRequest;
-import com.project.pharmacy.dto.request.employee.CreateEmployeeRequest;
 import com.project.pharmacy.dto.request.oauth.PasswordCreateRequest;
 import com.project.pharmacy.dto.request.user.*;
+import com.project.pharmacy.dto.response.entity.UserResponse;
 import com.project.pharmacy.dto.response.statistic.DaylyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.MonthlyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.YearlyStatisticResponse;
+import com.project.pharmacy.entity.Role;
+import com.project.pharmacy.entity.User;
 import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.exception.AppException;
+import com.project.pharmacy.exception.ErrorCode;
+import com.project.pharmacy.mapper.UserMapper;
 import com.project.pharmacy.repository.OrderRepository;
+import com.project.pharmacy.repository.RoleRepository;
+import com.project.pharmacy.repository.UserRepository;
 import com.project.pharmacy.service.cloudinary.CloudinaryService;
 import com.project.pharmacy.service.email.EmailService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,19 +34,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.pharmacy.dto.response.entity.UserResponse;
-import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
-import com.project.pharmacy.exception.AppException;
-import com.project.pharmacy.exception.ErrorCode;
-import com.project.pharmacy.mapper.UserMapper;
-import com.project.pharmacy.repository.RoleRepository;
-import com.project.pharmacy.repository.UserRepository;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Service

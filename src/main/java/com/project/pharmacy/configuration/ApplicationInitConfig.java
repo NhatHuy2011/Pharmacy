@@ -1,25 +1,18 @@
 package com.project.pharmacy.configuration;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.project.pharmacy.entity.Employee;
-import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.entity.Role;
+import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
+import com.project.pharmacy.repository.RoleRepository;
+import com.project.pharmacy.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
-import com.project.pharmacy.repository.RoleRepository;
-import com.project.pharmacy.repository.UserRepository;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 @Configuration
 @RequiredArgsConstructor

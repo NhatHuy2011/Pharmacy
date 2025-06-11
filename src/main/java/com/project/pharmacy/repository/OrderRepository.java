@@ -61,7 +61,8 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     //FOR ADMIN OR EMPLOYEE
     @Query("Select Count(o.id) " +
             " From Orders o " +
-            " Where o.isConfirm = false ")
+            " Where o.isConfirm = false " +
+            " AND o.status = 'SUCCESS' ")
     Long totalOrderNotConfirm();
 
     //FOR USER

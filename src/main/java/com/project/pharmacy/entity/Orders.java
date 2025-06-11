@@ -69,4 +69,7 @@ public class Orders {
 
     @Column
     Long leadTime;
+
+    @Column(columnDefinition = "LONGTEXT")
+    String linkOrder;
 }

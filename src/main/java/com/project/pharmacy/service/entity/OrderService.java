@@ -8,6 +8,7 @@ import com.project.pharmacy.dto.response.delivery.CalcuteExpectedDeliveryTimeRes
 import com.project.pharmacy.dto.response.delivery.DeliveryResponse;
 import com.project.pharmacy.dto.response.entity.OrderItemResponse;
 import com.project.pharmacy.dto.response.entity.OrderResponse;
+import com.project.pharmacy.dto.response.payment.RefundPaymentResponse;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
@@ -16,7 +17,9 @@ import com.project.pharmacy.mapper.OrdersMapper;
 import com.project.pharmacy.repository.*;
 import com.project.pharmacy.repository.httpclient.DeliveryClient;
 import com.project.pharmacy.service.delivery.DeliveryService;
+import com.project.pharmacy.service.payment.VNPayService;
 import com.project.pharmacy.utils.CartTemporary;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +65,8 @@ public class OrderService {
 	DeliveryService deliveryService;
 
 	DeliveryClient deliveryClient;
+
+	VNPayService vnPayService;
 
 	@NonFinal
 	@Value("${ghn.district_id}")
@@ -740,16 +745,23 @@ public class OrderService {
 		return orderResponse;
 	}
 
-	public Boolean cancelOrders(String orderId){
-		Orders orders = orderRepository.findById(orderId)
+	public RefundPaymentResponse cancelOrders(HttpServletRequest request){
+		Orders orders = orderRepository.findById(request.getParameter("orderId"))
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
+		RefundPaymentResponse response = new RefundPaymentResponse();
+
 		if(orders.getIsConfirm()){
-			return false;
+			response.setIsSuccess(false);
 		} else{
-			orderRepository.delete(orders);
-			return true;
+			response = vnPayService.refundVNPay(request);
+			response.setIsSuccess(true);
+
+			orders.setStatus(OrderStatus.CANCELLED);
+			orderRepository.save(orders);
 		}
+
+		return response;
 	}
 }
 

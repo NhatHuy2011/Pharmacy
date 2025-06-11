@@ -1,13 +1,12 @@
 package com.project.pharmacy.service.payment;
 
-import com.project.pharmacy.utils.ZaloPayUtil;
 import com.project.pharmacy.entity.Orders;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.OrderRepository;
-import jakarta.xml.bind.DatatypeConverter;
+import com.project.pharmacy.utils.ZaloPayUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,13 +23,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;

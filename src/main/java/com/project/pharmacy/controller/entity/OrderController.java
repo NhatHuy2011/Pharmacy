@@ -3,7 +3,9 @@ package com.project.pharmacy.controller.entity;
 import com.project.pharmacy.dto.request.order.*;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.OrderResponse;
+import com.project.pharmacy.dto.response.payment.RefundPaymentResponse;
 import com.project.pharmacy.service.entity.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -114,28 +116,28 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("/cancel/{id}")
-    public ApiResponse<Boolean> confirmOrderForNurse(@PathVariable String id){
-        Boolean result = orderService.cancelOrders(id);
-        if(result){
-            return ApiResponse.<Boolean>builder()
-                    .result(true)
-                    .message("Huỷ đơn hàng thành công!")
-                    .build();
-        }else {
-            return ApiResponse.<Boolean>builder()
-                    .result(false)
-                    .message("Đơn hàng của bạn đã được xác nhận. Huỷ đơn hàng thất bại!")
-                    .build();
-        }
-    }
-
     //Public
     @GetMapping("{id}")
     public ApiResponse<OrderResponse> getOrderDetails(@PathVariable String id) {
         return ApiResponse.<OrderResponse>builder()
                 .result(orderService.getOrderDetails(id))
                 .build();
+    }
+
+    @PostMapping("/cancel")
+    public ApiResponse<RefundPaymentResponse> confirmOrderForNurse(HttpServletRequest request){
+        RefundPaymentResponse result = orderService.cancelOrders(request);
+        if(result.getIsSuccess()){
+            return ApiResponse.<RefundPaymentResponse>builder()
+                    .result(result)
+                    .message("Huỷ đơn hàng thành công. Tiền đã được hoàn về ví của bạn!")
+                    .build();
+        }else {
+            return ApiResponse.<RefundPaymentResponse>builder()
+                    .result(result)
+                    .message("Đơn hàng của bạn đã được xác nhận. Huỷ đơn hàng thất bại!")
+                    .build();
+        }
     }
 }
 

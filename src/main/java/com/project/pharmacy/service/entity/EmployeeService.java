@@ -3,16 +3,13 @@ package com.project.pharmacy.service.entity;
 import com.project.pharmacy.dto.request.employee.CreateEmployeeRequest;
 import com.project.pharmacy.dto.request.employee.UpdateEmployeeRequest;
 import com.project.pharmacy.dto.response.entity.EmployeeResponse;
-import com.project.pharmacy.dto.response.entity.UserResponse;
 import com.project.pharmacy.entity.Employee;
 import com.project.pharmacy.entity.Role;
-import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.EmployeeMapper;
 import com.project.pharmacy.repository.EmployeeRepository;
 import com.project.pharmacy.repository.RoleRepository;
-import com.project.pharmacy.repository.UserRepository;
 import com.project.pharmacy.service.cloudinary.CloudinaryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

@@ -32,6 +32,7 @@ public class SecurityConfig {
         "/cart/guest",
         "/order/guest/**",
         "/vnpay/create-payment/**",
+        "/order/cancel/**",
         "/momo/create-payment",
         "/zalopay/create-payment",
         "/callback",
@@ -63,8 +64,7 @@ public class SecurityConfig {
         "/user/forgot-password",
         "/user/reset-password",
         "/user/refresh-otp",
-        "/cart/guest",
-        "/order/cancel/**"
+        "/cart/guest"
     };
 
     private final String[] PUBLIC_DELETE_ENDPOINTS = {"/cart/guest"};

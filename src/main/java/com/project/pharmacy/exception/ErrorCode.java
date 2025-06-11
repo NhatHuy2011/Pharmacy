@@ -57,7 +57,10 @@ public enum ErrorCode {
     // Order exception
     UPDATE_ADDRESS("Vui lòng cập nhật địa chỉ mới!", 400, HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND("Địa chỉ không tồn tại!", 400, HttpStatus.BAD_REQUEST),
+
+    //Order
     ORDER_NOT_FOUND("Đơn hàng không tồn tại", 400, HttpStatus.BAD_REQUEST),
+    ORDER_LINK_NOT_FOUND("Đơn hàng chưa được thanh toán. Không thể hoàn tiền", 400, HttpStatus.BAD_REQUEST),
 
     //Coupon exception
     COUPON_NOT_FOUND("Mã giảm giá không tồn tại", 400, HttpStatus.BAD_REQUEST),
@@ -78,6 +81,7 @@ public enum ErrorCode {
 
     //Payment
     PAYMENT_ERRROR("Thanh toán thất bại", 400, HttpStatus.BAD_REQUEST),
+    VNPAY_REFUND_FAILED("Hoàn tiền VNPay lỗi: ", 400, HttpStatus.BAD_REQUEST),
 
     //Feedback exception
     FEEDBACK_NOT_FOUND("Feedback not found!", 400, HttpStatus.BAD_REQUEST),

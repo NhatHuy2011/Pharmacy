@@ -1,12 +1,10 @@
 package com.project.pharmacy.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.project.pharmacy.entity.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.project.pharmacy.entity.Image;
+import java.util.List;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, String> {

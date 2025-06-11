@@ -1,15 +1,12 @@
 package com.project.pharmacy.service.payment;
 
-import com.project.pharmacy.utils.MoMoUtil;
 import com.project.pharmacy.entity.Orders;
-import com.project.pharmacy.entity.User;
-import com.project.pharmacy.enums.Level;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.repository.OrderRepository;
-import com.project.pharmacy.repository.UserRepository;
+import com.project.pharmacy.utils.MoMoUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,10 +19,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

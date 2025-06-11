@@ -1,10 +1,5 @@
 package com.project.pharmacy.configuration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.pharmacy.dto.request.chatmessage.CreateChatMessageRequest;
-import com.project.pharmacy.entity.ChatMessage;
-import com.project.pharmacy.entity.ChatRoom;
 import com.project.pharmacy.entity.Employee;
 import com.project.pharmacy.entity.User;
 import com.project.pharmacy.exception.AppException;
@@ -21,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -29,10 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
