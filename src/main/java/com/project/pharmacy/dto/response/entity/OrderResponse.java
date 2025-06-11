@@ -31,4 +31,6 @@ public class OrderResponse {
     int coupon;
     int newTotalPrice;
     Long leadTime;
+    String linkOrder;
+    Boolean isReceived;
 }

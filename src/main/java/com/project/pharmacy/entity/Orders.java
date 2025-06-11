@@ -72,4 +72,7 @@ public class Orders {
 
     @Column(columnDefinition = "LONGTEXT")
     String linkOrder;
+
+    @Column
+    Boolean isReceived;
 }

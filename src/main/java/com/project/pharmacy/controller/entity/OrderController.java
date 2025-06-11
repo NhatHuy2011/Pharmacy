@@ -65,6 +65,14 @@ public class OrderController {
                 .build();
     }
 
+    @PutMapping("/user/receiver/{id}")
+    public ApiResponse<Void> receiverOrderUser(@PathVariable String id){
+        orderService.receiverOrderUser(id);
+        return ApiResponse.<Void>builder()
+                .message("Nhận hàng thành công. Bạn có thể đánh giá đơn hàng!")
+                .build();
+    }
+
     //For Employee and Admin
     @GetMapping("/success")
     public ApiResponse<Page<OrderResponse>> getAll(@RequestParam(defaultValue = "0") int page,
@@ -130,7 +138,7 @@ public class OrderController {
         if(result.getIsSuccess()){
             return ApiResponse.<RefundPaymentResponse>builder()
                     .result(result)
-                    .message("Huỷ đơn hàng thành công. Tiền đã được hoàn về ví của bạn!")
+                    .message("Huỷ đơn hàng thành công!")
                     .build();
         }else {
             return ApiResponse.<RefundPaymentResponse>builder()

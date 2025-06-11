@@ -35,8 +35,11 @@ public class CallbackService {
         if (user == null){
             if(request.getCode() == 0 | request.getCode() == 1){
                 orders.setStatus(OrderStatus.SUCCESS);
+                orders.setIsReceived(false);
             } else {
                 orders.setStatus(OrderStatus.FAILED);
+                orders.setIsConfirm(false);
+                orders.setIsReceived(false);
             }
             orderRepository.save(orders);
 

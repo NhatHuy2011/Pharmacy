@@ -129,6 +129,7 @@ public class OrderService {
 				.totalPrice(cart.getTotalPrice())
 				.coupon(amountCoupon)
 				.isConfirm(false)
+				.isReceived(false)
     			.build();
 
 		//Tạo request để giao hàng
@@ -264,6 +265,7 @@ public class OrderService {
 				.coupon(amountCoupon)
 				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
+				.isReceived(false)
 				.build();
 
 		//Tạo request để giao hàng
@@ -372,6 +374,14 @@ public class OrderService {
 				.toList();
 	}
 
+	@PreAuthorize("hasRole('USER')")
+	public void receiverOrderUser(String orderId){
+		Orders orders = orderRepository.findById(orderId)
+				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+		orders.setIsReceived(true);
+		orderRepository.save(orders);
+	}
+
 	//For Guest
 	//Cart Guest
 	public OrderResponse createOrderAtCartGuest(CreateOrderRequestAtCartGuest request, HttpSession session){
@@ -403,6 +413,7 @@ public class OrderService {
 				.address(address)
 				.totalPrice(cartTemporary.getTotalPrice())
 				.isConfirm(false)
+				.isReceived(false)
 				.build();
 
 		//Tạo request để giao hàng
@@ -516,6 +527,7 @@ public class OrderService {
 				.isConfirm(false)
 				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
+				.isReceived(false)
 				.build();
 
 		//Tạo request để giao hàng
@@ -587,7 +599,7 @@ public class OrderService {
 		return orderResponse;
 	}
 
-	//For Employee and ADMIN
+	//FOR EMPLOYEE AND ADMIN
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
 	public Page<OrderResponse> getAllByStatus(Pageable pageable){
 		Page<Orders> ordersPage = orderRepository.findByStatus(OrderStatus.SUCCESS, pageable);
@@ -620,7 +632,7 @@ public class OrderService {
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
 	public Page<OrderResponse> getAllOrderCOD(Pageable pageable){
-		Page<Orders> ordersPage = orderRepository.findByPaymentMethod(PaymentMethod.CASH, pageable);
+		Page<Orders> ordersPage = orderRepository.findByPaymentMethodAndStatus(PaymentMethod.CASH, OrderStatus.PENDING, pageable);
 
 		return ordersPage.map(orders -> {
 			OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
@@ -669,6 +681,7 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
 				.isConfirm(true)
+				.isReceived(true)
 				.build();
 		orderRepository.save(orders);
 
@@ -716,7 +729,7 @@ public class OrderService {
 		return orderResponse;
 	}
 
-	//For ALL (Follow order)
+	//FOR ALL (FOLLOW ORDER)
 	public OrderResponse getOrderDetails(String id){
 		Orders orders = orderRepository.findById(id)
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
@@ -754,11 +767,20 @@ public class OrderService {
 		if(orders.getIsConfirm()){
 			response.setIsSuccess(false);
 		} else{
-			response = vnPayService.refundVNPay(request);
-			response.setIsSuccess(true);
-
-			orders.setStatus(OrderStatus.CANCELLED);
-			orderRepository.save(orders);
+			if(orders.getStatus()==OrderStatus.SUCCESS){
+				response = vnPayService.refundVNPay(request);
+				response.setIsSuccess(true);
+				orders.setStatus(OrderStatus.CANCELLED);
+				orders.setIsConfirm(false);
+				orders.setIsReceived(false);
+				orderRepository.save(orders);
+			} else {
+				orders.setStatus(OrderStatus.CANCELLED);
+				orders.setIsConfirm(false);
+				orders.setIsReceived(false);
+				orderRepository.save(orders);
+				response.setIsSuccess(true);
+			}
 		}
 
 		return response;

@@ -21,7 +21,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Orders, String> {
     Page<Orders> findByStatus(OrderStatus status, Pageable pageable);
 
-    Page<Orders> findByPaymentMethod(PaymentMethod paymentMethod, Pageable pageable);
+    Page<Orders> findByPaymentMethodAndStatus(PaymentMethod paymentMethod, OrderStatus status, Pageable pageable);
 
     //FOR ADMIN
     @Query("Select Sum(o.totalPrice) " +
