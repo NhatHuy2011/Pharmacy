@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, String> {
-    List<Coupon> findAllByLevelUserAndCouponType(Level levelUser, CouponType couponType);
+    List<Coupon> findAllByLevelUser(Level levelUser);
 
     List<Coupon> findAllByCouponType(CouponType couponType);
 

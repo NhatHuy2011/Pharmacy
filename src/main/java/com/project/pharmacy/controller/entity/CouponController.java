@@ -62,9 +62,9 @@ public class CouponController {
     }
 
     @GetMapping("/user")
-    public ApiResponse<List<CouponResponse>> getCouponByLevelUser(@RequestParam CouponType couponType){
+    public ApiResponse<List<CouponResponse>> getCouponByLevelUser(){
         return ApiResponse.<List<CouponResponse>>builder()
-                .result(couponService.getCouponByLevelUser(couponType))
+                .result(couponService.getCouponByLevelUser())
                 .build();
     }
 

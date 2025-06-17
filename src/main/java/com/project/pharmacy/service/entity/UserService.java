@@ -145,7 +145,7 @@ public class UserService {
             coupon.setImage(url);
             coupon.setCreateDate(LocalDate.now());
             coupon.setExpireDate(LocalDate.now().plusDays(7));
-            coupon.setCouponType(CouponType.DELIVERY);
+            coupon.setCouponType(CouponType.OTHER);
             coupon.setLevelUser(Level.DONG);
             coupon.setDescription("Mã giảm giá xin lỗi từ PHARMACY");
 

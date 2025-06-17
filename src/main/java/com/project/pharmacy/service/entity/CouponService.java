@@ -112,14 +112,14 @@ public class CouponService {
                 .toList();
     }
 
-    public List<CouponResponse> getCouponByLevelUser(CouponType couponType){
+    public List<CouponResponse> getCouponByLevelUser(){
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        List<Coupon> couponByLevels = couponRepository.findAllByLevelUserAndCouponType(user.getLevel(), couponType);
+        List<Coupon> couponByLevels = couponRepository.findAllByLevelUser(user.getLevel());
 
         List<CouponResponse> couponResponses = couponByLevels.stream()
                 .map(couponMapper::toCouponResponse)
