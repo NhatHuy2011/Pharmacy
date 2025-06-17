@@ -5,13 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class    CreateOrderRequestAtCartUser {
-    String couponId;
+public class CreateOrderRequestAtCartUser {
+    List<String> couponIds;
     String addressId;
     @NotNull(message = "Vui lòng chọn phương thức thanh toán")
     PaymentMethod paymentMethod;

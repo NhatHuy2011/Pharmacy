@@ -10,21 +10,26 @@ import com.project.pharmacy.dto.response.entity.UserResponse;
 import com.project.pharmacy.dto.response.statistic.DaylyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.MonthlyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.YearlyStatisticResponse;
+import com.project.pharmacy.entity.Coupon;
 import com.project.pharmacy.entity.Role;
 import com.project.pharmacy.entity.User;
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.enums.Level;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.UserMapper;
+import com.project.pharmacy.repository.CouponRepository;
 import com.project.pharmacy.repository.OrderRepository;
 import com.project.pharmacy.repository.RoleRepository;
 import com.project.pharmacy.repository.UserRepository;
 import com.project.pharmacy.service.cloudinary.CloudinaryService;
 import com.project.pharmacy.service.email.EmailService;
+import com.project.pharmacy.utils.CustomMultipartFile;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +44,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -59,6 +63,8 @@ public class UserService {
     OrderRepository ordersRepository;
 
     EmailService emailService;
+
+    CouponRepository couponRepository;
 
     // For GUEST
     public UserResponse createUser(SignUpRequest request) {
@@ -113,15 +119,51 @@ public class UserService {
         return String.format("%06d", random.nextInt(1000000)); // Mã OTP gồm 6 chữ số
     }
 
-    public void sendEmailWhenPriceOverQuantity(String email){
-        emailService.sendSimpleEmail(
-                email,
-                "PHARMACY SORRY",
-                "Xin lỗi bạn vì phải thông báo với bạn rằng 1 trong số sản phẩm bạn mua đã hết hàng!"
-                        + "Chúng tôi sẽ cố gắng giao hàng đến bạn nhưng sẽ không thể như thời gian đã dự kiến."
-                        + "Chúng tôi tặng bạn một mã giảm giá để thay cho lời xin lỗi của chúng tôi"
-                        + "Bạn có thể dùng để mua hàng những lần sau nhé. Thanks you! "
-                        + UUID.randomUUID());
+    public void sendEmailWhenPriceOverQuantity(String email) {
+        try {
+            // 1. Load ảnh từ resources
+            ClassPathResource imgFile = new ClassPathResource("coupon.png");
+            byte[] bytes = imgFile.getInputStream().readAllBytes();
+
+            // 2. Tạo MultipartFile thủ công
+            MultipartFile multipartFile = new CustomMultipartFile(
+                    bytes,
+                    "coupon",
+                    "coupon.png",
+                    "image/png"
+            );
+
+            // 3. Upload lên Cloudinary
+            String url = cloudinaryService.uploadImage(multipartFile);
+
+            // 4. Tạo coupon
+            Coupon coupon = new Coupon();
+            coupon.setName("Xin lỗi vì sự cố đơn hàng");
+            coupon.setPercent(10);
+            coupon.setMax(30000);
+            coupon.setOrderRequire(100000);
+            coupon.setImage(url);
+            coupon.setCreateDate(LocalDate.now());
+            coupon.setExpireDate(LocalDate.now().plusDays(7));
+            coupon.setCouponType(CouponType.DELIVERY);
+            coupon.setLevelUser(Level.DONG);
+            coupon.setDescription("Mã giảm giá xin lỗi từ PHARMACY");
+
+            couponRepository.save(coupon);
+
+            // 5. Gửi email cho người dùng
+            emailService.sendSimpleEmail(
+                    email,
+                    "PHARMACY SORRY",
+                    "Xin lỗi bạn vì sản phẩm đã hết hàng!\n"
+                            + "Chúng tôi tặng bạn một mã giảm giá để thay lời xin lỗi:\n"
+                            + "Mã giảm giá ID: " + coupon.getId() + "\n"
+                            + "Bạn có thể dùng trong 7 ngày tới. Cảm ơn bạn!"
+            );
+
+        } catch (IOException e) {
+            throw new RuntimeException("Không thể upload ảnh coupon", e);
+        }
     }
 
     public void verifyEmailSignUp(UserVerifiedEmailSignUp request) {

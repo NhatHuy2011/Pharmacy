@@ -57,7 +57,7 @@ public class SecurityConfig {
             "/chat/room/user",
             "/chat/room/employee",
             "/chat/room/message",
-            "/over/quantity"
+            "/user/over/quantity"
     };
 
     private final String[] PUBLIC_PUT_ENDPOINTS = {

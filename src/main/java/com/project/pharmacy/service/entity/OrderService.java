@@ -104,21 +104,24 @@ public class OrderService {
 				.findFirst()
 				.orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_FOUND));
 
-		//Tạo mã giảm giá
-		Coupon coupon;
-		int amountCoupon = 0;
-		if (request.getCouponId() != null) {
-			coupon = couponRepository.findById(request.getCouponId())
-					.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
+		//Tính tiền giảm giá
+		int totalDiscountAmount = 0;
 
-			if(coupon.getOrderRequire() > cart.getTotalPrice()){
-				int amount = coupon.getOrderRequire() - cart.getTotalPrice();
+		List<String> couponIds = request.getCouponIds();
+		if (couponIds != null && !couponIds.isEmpty()) {
+			for (String couponId : couponIds) {
+				Coupon coupon = couponRepository.findById(couponId)
+						.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
 
-				throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
-						String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
+				if (coupon.getOrderRequire() > cart.getTotalPrice()) {
+					int amount = coupon.getOrderRequire() - cart.getTotalPrice();
+					throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
+							String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
+				}
+
+				int discount = Math.min((coupon.getPercent() * cart.getTotalPrice()) / 100, coupon.getMax());
+				totalDiscountAmount += discount;
 			}
-
-			amountCoupon = Math.min((coupon.getPercent() * cart.getTotalPrice()) / 100, coupon.getMax());
 		}
 
 		//Tạo đơn hàng
@@ -130,7 +133,7 @@ public class OrderService {
 				.orderItems(new ArrayList<>())
 				.paymentMethod(request.getPaymentMethod())
 				.totalPrice(cart.getTotalPrice())
-				.coupon(amountCoupon)
+				.coupon(totalDiscountAmount)
 				.isConfirm(false)
 				.isReceived(false)
     			.build();
@@ -154,7 +157,7 @@ public class OrderService {
 		order.setDeliveryTotal(feeResponse.getData().getTotal());
 		order.setServiceFee(feeResponse.getData().getServiceFee());
 		order.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		order.setNewTotalPrice(cart.getTotalPrice() - amountCoupon + feeResponse.getData().getTotal());
+		order.setNewTotalPrice(cart.getTotalPrice() - totalDiscountAmount + feeResponse.getData().getTotal());
 
 		//Tạo request để tính thời gian giao hàng
 		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
@@ -240,21 +243,24 @@ public class OrderService {
 		Image firstImage = imageRepository.findFirstByProductId(price.getProduct().getId());
 		String url = firstImage.getSource();
 
-		//Tạo mã giảm giá
-		Coupon coupon;
-		int amountCoupon = 0;
-		if (request.getCouponId() != null) {
-			coupon = couponRepository.findById(request.getCouponId())
-					.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
+		//Tính tiền giảm giá
+		int totalDiscountAmount = 0;
 
-			if (coupon.getOrderRequire() > price.getPrice()) {
-				int amount = coupon.getOrderRequire() - price.getPrice();
+		List<String> couponIds = request.getCouponIds();
+		if (couponIds != null && !couponIds.isEmpty()) {
+			for (String couponId : couponIds) {
+				Coupon coupon = couponRepository.findById(couponId)
+						.orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
 
-				throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
-						String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
+				if (coupon.getOrderRequire() > price.getPrice()) {
+					int amount = coupon.getOrderRequire() - price.getPrice();
+					throw new AppException(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE,
+							String.format(ErrorCode.COUPON_DONT_MATCH_ORDERREQUIRE.getMessage(), amount));
+				}
+
+				int discount = Math.min((coupon.getPercent() * price.getPrice()) / 100, coupon.getMax());
+				totalDiscountAmount += discount;
 			}
-
-			amountCoupon = Math.min((coupon.getPercent() * price.getPrice()) / 100, coupon.getMax());
 		}
 
 		//Tạo đơn hàng
@@ -265,7 +271,7 @@ public class OrderService {
 				.status(OrderStatus.PENDING)
 				.paymentMethod(request.getPaymentMethod())
 				.isConfirm(false)
-				.coupon(amountCoupon)
+				.coupon(totalDiscountAmount)
 				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
 				.isReceived(false)
@@ -290,7 +296,7 @@ public class OrderService {
 		orders.setDeliveryTotal(feeResponse.getData().getTotal());
 		orders.setServiceFee(feeResponse.getData().getServiceFee());
 		orders.setInsuranceFee(feeResponse.getData().getInsuranceFee());
-		orders.setNewTotalPrice(price.getPrice() - amountCoupon + feeResponse.getData().getTotal());
+		orders.setNewTotalPrice(price.getPrice() - totalDiscountAmount + feeResponse.getData().getTotal());
 
 		//Tạo request để tính thời gian giao hàng
 		CalculateExpectedDeliveryTimeRequest deliveryTimeRequest = CalculateExpectedDeliveryTimeRequest.builder()
