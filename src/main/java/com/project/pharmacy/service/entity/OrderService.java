@@ -769,11 +769,17 @@ public class OrderService {
 		User user = userRepository.findByPhoneNumber(phone)
 				.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-		return user.getOrders().stream()
-				.map(orders -> {
-					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+		List<Orders> orders = new ArrayList<>();
+		user.getOrders().forEach(orders1 -> {
+			if(orders1.getStatus() == OrderStatus.SUCCESS && orders1.getIsConfirm() && orders1.getIsReceived()){
+				orders.add(orders1);
+			}
+		});
+		return orders.stream()
+				.map(orders1 -> {
+					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders1);
 
-					List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+					List<OrderItemResponse> orderItemResponses = orders1.getOrderItems().stream()
 							.map(orderItem -> {
 								return OrderItemResponse.builder()
 										.id(orderItem.getId())
@@ -790,7 +796,7 @@ public class OrderService {
 							.toList();
 
 					orderResponse.setOrderItemResponses(orderItemResponses);
-					orderResponse.setUserId(orders.getUser().getId());
+					orderResponse.setUserId(orders1.getUser().getId());
 
 					return orderResponse;
 				})
