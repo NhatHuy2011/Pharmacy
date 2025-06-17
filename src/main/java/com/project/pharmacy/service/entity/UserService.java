@@ -25,6 +25,8 @@ import com.project.pharmacy.repository.UserRepository;
 import com.project.pharmacy.service.cloudinary.CloudinaryService;
 import com.project.pharmacy.service.email.EmailService;
 import com.project.pharmacy.utils.CustomMultipartFile;
+import com.project.pharmacy.utils.EmailTemplateUtils;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -67,7 +69,7 @@ public class UserService {
     CouponRepository couponRepository;
 
     // For GUEST
-    public UserResponse createUser(SignUpRequest request) {
+    public UserResponse createUser(SignUpRequest request) throws MessagingException {
         if (userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -103,13 +105,12 @@ public class UserService {
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);
 
-        // Gửi OTP qua email
-        emailService.sendSimpleEmail(
+        String html = EmailTemplateUtils.buildOtpEmail(otpCode);
+        emailService.sendHtmlEmail(
                 user.getEmail(),
-                "OTP Verification",
-                "OTP sẽ hết hạn trong vòng 5p. "
-                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
-                        + otpCode);
+                "PHARMACY VERIFY EMAIL",
+                html
+        );
 
         return userMapper.toUserResponse(user);
     }
@@ -151,18 +152,17 @@ public class UserService {
 
             couponRepository.save(coupon);
 
-            // 5. Gửi email cho người dùng
-            emailService.sendSimpleEmail(
+            String html = EmailTemplateUtils.buildOutOfStockEmail(coupon.getId());
+            emailService.sendHtmlEmail(
                     email,
                     "PHARMACY SORRY",
-                    "Xin lỗi bạn vì sản phẩm đã hết hàng!\n"
-                            + "Chúng tôi tặng bạn một mã giảm giá để thay lời xin lỗi:\n"
-                            + "Mã giảm giá ID: " + coupon.getId() + "\n"
-                            + "Bạn có thể dùng trong 7 ngày tới. Cảm ơn bạn!"
+                    html
             );
 
         } catch (IOException e) {
             throw new RuntimeException("Không thể upload ảnh coupon", e);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -187,17 +187,18 @@ public class UserService {
     }
 
     // OTP het han
-    public void refreshOtp(RefreshOTP request) {
+    public void refreshOtp(RefreshOTP request) throws MessagingException {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
         String otpCode = generateOTP();
-        emailService.sendSimpleEmail(
-                request.getEmail(),
-                "OTP Verification",
-                "OTP sẽ hết hạn trong vòng 5p. "
-                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
-                        + otpCode);
+
+        String html = EmailTemplateUtils.buildOtpEmail(otpCode);
+        emailService.sendHtmlEmail(
+                user.getEmail(),
+                "PHARMACY VERIFY EMAIL",
+                html
+        );
 
         user.setOtpCode(otpCode);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
@@ -205,7 +206,7 @@ public class UserService {
     }
 
     // User quen mat khau
-    public UserResponse forgotPassword(ForgotPasswordRequest request) {
+    public UserResponse forgotPassword(ForgotPasswordRequest request) throws MessagingException {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_MATCH));
 
@@ -214,12 +215,12 @@ public class UserService {
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5)); // Set thời gian hết hạn OTP là 5 phút
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(
-                user.getEmail(),
-                "Password Reset OTP",
-                "OTP sẽ hết hạn trong vòng 5p. "
-                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
-                        + otpCode);
+         String html = EmailTemplateUtils.buildOtpEmail(otpCode);
+            emailService.sendHtmlEmail(
+                    user.getEmail(),
+                    "PHARMACY VERIFY EMAIL",
+                    html
+            );
 
         return userMapper.toUserResponse(user);
     }
@@ -299,7 +300,7 @@ public class UserService {
     }
 
     //Cập nhật Email cho User
-    public UserResponse updateEmail(UserUpdateEmail request) {
+    public UserResponse updateEmail(UserUpdateEmail request) throws MessagingException {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
@@ -315,12 +316,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(
+        String html = EmailTemplateUtils.buildOtpEmail(otp);
+        emailService.sendHtmlEmail(
                 user.getEmail(),
-                "Email Update OTP",
-                "OTP sẽ hết hạn trong vòng 5p. "
-                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
-                        + otp);
+                "PHARMACY VERIFY EMAIL",
+                html
+        );
 
         return userMapper.toUserResponse(user);
     }
@@ -349,7 +350,7 @@ public class UserService {
     }
 
     //User quên xác thực Email  -> Guest
-    public UserResponse forgotVerifyEmail(ForgotVerifyEmailRequest request) {
+    public UserResponse forgotVerifyEmail(ForgotVerifyEmailRequest request) throws MessagingException {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -364,12 +365,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        emailService.sendSimpleEmail(
+        String html = EmailTemplateUtils.buildOtpEmail(otp);
+        emailService.sendHtmlEmail(
                 user.getEmail(),
-                "Email Update OTP",
-                "OTP sẽ hết hạn trong vòng 5p. "
-                        + "Vui lòng không chia sẻ OTP này cho bất cứ ai. Mã OTP của bạn là "
-                        + otp);
+                "PHARMACY VERIFY EMAIL",
+                html
+        );
 
         return userMapper.toUserResponse(user);
     }

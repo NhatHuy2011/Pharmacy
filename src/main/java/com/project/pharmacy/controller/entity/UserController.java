@@ -12,6 +12,7 @@ import com.project.pharmacy.dto.response.statistic.DaylyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.MonthlyStatisticResponse;
 import com.project.pharmacy.dto.response.statistic.YearlyStatisticResponse;
 import com.project.pharmacy.service.entity.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class UserController {
 
     // Role USER
     @PostMapping
-    public ApiResponse<UserResponse> createUser(@RequestBody @Valid SignUpRequest request) {
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid SignUpRequest request) throws MessagingException {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
@@ -51,7 +52,7 @@ public class UserController {
     }
 
     @PutMapping("/refresh-otp")
-    public ApiResponse<Void> refreshOtp(@RequestBody RefreshOTP request) {
+    public ApiResponse<Void> refreshOtp(@RequestBody RefreshOTP request) throws MessagingException {
         userService.refreshOtp(request);
         return ApiResponse.<Void>builder()
                 .message("OTP đã được gửi lại qua email của bạn. Vui lòng kiểm tra!")
@@ -59,7 +60,7 @@ public class UserController {
     }
 
     @PutMapping("/forgot-password")
-    public ApiResponse<UserResponse> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+    public ApiResponse<UserResponse> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) throws MessagingException {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.forgotPassword(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
@@ -103,7 +104,7 @@ public class UserController {
 
     //Cập nhật Email cho User đã xác thực -> User
     @PutMapping("/update-email")
-    public ApiResponse<UserResponse> updateEmail(@RequestBody @Valid UserUpdateEmail request) {
+    public ApiResponse<UserResponse> updateEmail(@RequestBody @Valid UserUpdateEmail request) throws MessagingException {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateEmail(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
@@ -121,7 +122,7 @@ public class UserController {
 
     //Gửi mã OTP cho User quên xác thực email -> Guest
     @PutMapping("/forgot-verify-email")
-    public ApiResponse<UserResponse> forgotVerifyEmail(@RequestBody ForgotVerifyEmailRequest request) {
+    public ApiResponse<UserResponse> forgotVerifyEmail(@RequestBody ForgotVerifyEmailRequest request) throws MessagingException {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.forgotVerifyEmail(request))
                 .message("Vui lòng nhập mã OTP được gửi qua email của bạn")
