@@ -131,6 +131,12 @@ public class OrderController {
                 .build();
     }
 
+    @GetMapping("/nurse/phone")
+    public ApiResponse<List<OrderResponse>> getOrderByPhone(@RequestParam String phone){
+        return ApiResponse.<List<OrderResponse>>builder()
+                .result(orderService.getOrderByUserPhone(phone))
+                .build();
+    }
     //Public
     @GetMapping("{id}")
     public ApiResponse<OrderResponse> getOrderDetails(@PathVariable String id) {

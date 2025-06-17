@@ -763,6 +763,39 @@ public class OrderService {
 		return orderResponse;
 	}
 
+	//Xem lich su don hang theo số điện thoại
+	@PreAuthorize("hasRole('NURSE')")
+	public List<OrderResponse> getOrderByUserPhone(String phone){
+		User user = userRepository.findByPhoneNumber(phone)
+				.orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+		return user.getOrders().stream()
+				.map(orders -> {
+					OrderResponse orderResponse = ordersMapper.toOrderResponse(orders);
+
+					List<OrderItemResponse> orderItemResponses = orders.getOrderItems().stream()
+							.map(orderItem -> {
+								return OrderItemResponse.builder()
+										.id(orderItem.getId())
+										.productId(orderItem.getPrice().getProduct().getId())
+										.productName(orderItem.getPrice().getProduct().getName())
+										.unitName(orderItem.getPrice().getUnit().getName())
+										.priceId(orderItem.getPrice().getId())
+										.quantity(orderItem.getQuantity())
+										.price(orderItem.getPrice().getPrice())
+										.amount(orderItem.getAmount())
+										.image(orderItem.getImage())
+										.build();
+							})
+							.toList();
+
+					orderResponse.setOrderItemResponses(orderItemResponses);
+					orderResponse.setUserId(orders.getUser().getId());
+
+					return orderResponse;
+				})
+				.toList();
+	}
 	//FOR ALL (FOLLOW ORDER)
 	public OrderResponse getOrderDetails(String id){
 		Orders orders = orderRepository.findById(id)
