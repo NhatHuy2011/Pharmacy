@@ -12,5 +12,6 @@ public class PriceUpdateRequest {
     String priceId;
     String productId;
     int price;
+    int quantity;
     String description;
 }

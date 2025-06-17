@@ -19,9 +19,6 @@ public class ProductCreateRequest {
     @NotNull(message = "Vui lòng nhập tên sản phẩm")
     String name;
 
-    @NotNull(message = "Vui lòng nhập số lượng sản phẩm")
-    int quantity;
-
     @NotNull(message = "Vui lòng chọn danh mục cho sản phẩm")
     String categoryId;
 

@@ -4,6 +4,7 @@ import com.project.pharmacy.dto.request.coupon.CreateCouponRequest;
 import com.project.pharmacy.dto.request.coupon.UpdateCouponRequest;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.CouponResponse;
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.service.entity.CouponService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -30,13 +31,6 @@ public class CouponController {
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<List<CouponResponse>> getAll(){
-        return ApiResponse.<List<CouponResponse>>builder()
-                .result(couponService.getAllCoupon())
-                .build();
-    }
-
     @PutMapping
     public ApiResponse<CouponResponse> updateCoupon(@RequestPart("updateCoupon") UpdateCouponRequest request,
                                                     @RequestPart("file") MultipartFile file) throws IOException {
@@ -53,10 +47,31 @@ public class CouponController {
                 .build();
     }
 
-    @GetMapping("/user")
-    public ApiResponse<List<CouponResponse>> getCouponByLevelUser(){
+    @GetMapping
+    public ApiResponse<List<CouponResponse>> getAll(){
         return ApiResponse.<List<CouponResponse>>builder()
-                .result(couponService.getCouponByLevelUser())
+                .result(couponService.getAllCoupon())
+                .build();
+    }
+
+    @GetMapping("/type")
+    public ApiResponse<List<CouponResponse>> getAllByType(@RequestParam CouponType couponType){
+        return ApiResponse.<List<CouponResponse>>builder()
+                .result(couponService.getAllCouponByType(couponType))
+                .build();
+    }
+
+    @GetMapping("/user")
+    public ApiResponse<List<CouponResponse>> getCouponByLevelUser(@RequestParam CouponType couponType){
+        return ApiResponse.<List<CouponResponse>>builder()
+                .result(couponService.getCouponByLevelUser(couponType))
+                .build();
+    }
+
+    @GetMapping("/user/id")
+    public ApiResponse<CouponResponse> getCouponById(@RequestParam String couponId){
+        return ApiResponse.<CouponResponse>builder()
+                .result(couponService.getCouponById(couponId))
                 .build();
     }
 }

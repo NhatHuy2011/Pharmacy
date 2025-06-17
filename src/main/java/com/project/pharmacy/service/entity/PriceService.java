@@ -3,9 +3,9 @@ package com.project.pharmacy.service.entity;
 import java.util.List;
 
 import com.project.pharmacy.dto.response.entity.ProductResponse;
-import com.project.pharmacy.entity.Image;
+import com.project.pharmacy.entity.*;
 import com.project.pharmacy.mapper.PriceMapper;
-import com.project.pharmacy.repository.ImageRepository;
+import com.project.pharmacy.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,14 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.pharmacy.dto.request.price.PriceCreateRequest;
 import com.project.pharmacy.dto.request.price.PriceUpdateRequest;
 import com.project.pharmacy.dto.response.entity.PriceResponse;
-import com.project.pharmacy.entity.Price;
-import com.project.pharmacy.entity.Product;
-import com.project.pharmacy.entity.Unit;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
-import com.project.pharmacy.repository.PriceRepository;
-import com.project.pharmacy.repository.ProductRepository;
-import com.project.pharmacy.repository.UnitRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +49,7 @@ public class PriceService {
         }
 
         if (request.getPrice() <= 0) {
-            throw new AppException(ErrorCode.PRICE_NOT_ZERO);
+            throw new AppException(ErrorCode.PRICE_NOT_NEGATIVE);
         }
 
         List<Price> prices = priceRepository.findByProductId(request.getProductId());
@@ -70,6 +64,7 @@ public class PriceService {
                 .product(product)
                 .unit(unit)
                 .price(request.getPrice())
+                .quantity(request.getQuantity())
                 .description(request.getDescription())
                 .build();
         priceRepository.save(price);
@@ -106,27 +101,15 @@ public class PriceService {
         Price price = priceRepository.findById(request.getPriceId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 
-        int oldPrice = price.getPrice();
-
-        if (request.getPrice() > 0) {
-            price.setPrice(request.getPrice());
-            price.setDescription(request.getDescription());
-            priceRepository.save(price);
-        } else {
-            throw new AppException(ErrorCode.PRICE_NOT_ZERO);
+        if(request.getPrice() < 0 || request.getQuantity() < 0){
+            throw new AppException(ErrorCode.PRICE_NOT_NEGATIVE);
         }
 
-        List<Price> prices = priceRepository.findByProductId(request.getProductId());
+        price.setPrice(request.getPrice());
+        price.setQuantity(request.getQuantity());
+        price.setDescription(request.getDescription());
 
-        double priceRatio = (double) request.getPrice() / oldPrice;
-
-        for (Price price1 : prices) {
-            if (!price1.getUnit().getId().equals(price.getUnit().getId())) {
-                int newPrice = (int) (price1.getPrice() * priceRatio);
-                price1.setPrice(newPrice);
-                priceRepository.save(price1);
-            }
-        }
+        priceRepository.save(price);
     }
 
     @Transactional

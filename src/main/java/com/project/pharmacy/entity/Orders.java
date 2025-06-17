@@ -75,4 +75,7 @@ public class Orders {
 
     @Column
     Boolean isReceived;
+
+    @Column
+    String email;
 }

@@ -18,7 +18,6 @@ import lombok.experimental.FieldDefaults;
 public class ProductResponse {
     String id;
     String name;
-    Integer quantity;
     String benefits;
     String ingredients;
     String constraindication;

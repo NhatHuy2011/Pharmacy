@@ -15,7 +15,8 @@ public class PriceResponse {
     String id;
     ProductResponse product;
     UnitResponse unit;
-    int price;
+    Integer price;
+    Integer quantity;
     String description;
     String image;
 }

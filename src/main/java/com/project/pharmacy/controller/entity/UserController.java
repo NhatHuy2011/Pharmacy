@@ -189,6 +189,14 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/over/quantity")
+    public ApiResponse<Void> sendEmailWhenPriceOverQuantity(@RequestParam String email){
+        userService.sendEmailWhenPriceOverQuantity(email);
+        return ApiResponse.<Void>builder()
+                .message("Vui lòng check email của bạn")
+                .build();
+    }
+
     // Role ADMIN
     @GetMapping
     public ApiResponse<Page<UserResponse>> getAll(

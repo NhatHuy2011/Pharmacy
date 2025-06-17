@@ -23,9 +23,6 @@ public class Product {
     @Column(nullable = false)
     String name;
 
-    @Column(nullable = false)
-    Integer quantity;
-
     @Lob
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     String benefits;

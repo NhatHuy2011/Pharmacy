@@ -2,6 +2,7 @@ package com.project.pharmacy.dto.request.coupon;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.validator.DateExpirationConstraint;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -29,6 +30,9 @@ public class CreateCouponRequest {
 
     @NotNull(message = "Vui lòng điền cấp độ áp dụng cho user")
     Level levelUser;
+
+    @NotNull(message = "Vui lòng điền loại mã giảm giá")
+    CouponType couponType;
 
     @NotNull(message = "Vui lòng điền thông tin miêu tả")
     String description;

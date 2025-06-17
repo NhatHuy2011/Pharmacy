@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.request.coupon;
 
 import com.project.pharmacy.enums.Level;
+import com.project.pharmacy.enums.CouponType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +20,7 @@ public class UpdateCouponRequest {
     int max;
     int orderRequire;
     Level levelUser;
+    CouponType couponType;
     String description;
     LocalDate expireDate;
 }

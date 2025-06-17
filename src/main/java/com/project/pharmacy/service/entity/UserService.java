@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -110,6 +111,17 @@ public class UserService {
     public String generateOTP() {
         Random random = new Random();
         return String.format("%06d", random.nextInt(1000000)); // Mã OTP gồm 6 chữ số
+    }
+
+    public void sendEmailWhenPriceOverQuantity(String email){
+        emailService.sendSimpleEmail(
+                email,
+                "PHARMACY SORRY",
+                "Xin lỗi bạn vì phải thông báo với bạn rằng 1 trong số sản phẩm bạn mua đã hết hàng!"
+                        + "Chúng tôi sẽ cố gắng giao hàng đến bạn nhưng sẽ không thể như thời gian đã dự kiến."
+                        + "Chúng tôi tặng bạn một mã giảm giá để thay cho lời xin lỗi của chúng tôi"
+                        + "Bạn có thể dùng để mua hàng những lần sau nhé. Thanks you! "
+                        + UUID.randomUUID());
     }
 
     public void verifyEmailSignUp(UserVerifiedEmailSignUp request) {

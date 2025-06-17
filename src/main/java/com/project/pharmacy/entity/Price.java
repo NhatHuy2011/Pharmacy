@@ -27,7 +27,10 @@ public class Price {
     Unit unit;
 
     @Column(nullable = false)
-    int price;
+    Integer price;
+
+    @Column
+    Integer quantity;
 
     String description;
 

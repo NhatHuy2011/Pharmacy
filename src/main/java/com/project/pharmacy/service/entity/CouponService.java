@@ -7,6 +7,7 @@ import com.project.pharmacy.dto.response.entity.CouponResponse;
 import com.project.pharmacy.entity.Coupon;
 import com.project.pharmacy.entity.Notification;
 import com.project.pharmacy.entity.User;
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.CouponMapper;
@@ -50,6 +51,7 @@ public class CouponService {
         String url = cloudinaryService.uploadImage(file);
 
         Coupon coupon = couponMapper.toCoupon(request);
+        coupon.setCouponType(request.getCouponType());
         coupon.setImage(url);
         coupon.setCreateDate(LocalDate.now());
 
@@ -71,13 +73,6 @@ public class CouponService {
         return couponMapper.toCouponResponse(coupon);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    public List<CouponResponse> getAllCoupon(){
-        return couponRepository.findAll().stream()
-                .map(couponMapper::toCouponResponse)
-                .toList();
-    }
-
     @PreAuthorize("hasRole('EMPLOYEE')")
     public CouponResponse updateCoupon(UpdateCouponRequest request, MultipartFile file) throws IOException {
         Coupon coupon = couponRepository.findById(request.getId())
@@ -86,6 +81,7 @@ public class CouponService {
         String url = cloudinaryService.uploadImage(file);
 
         coupon.setImage(url);
+        coupon.setCouponType(request.getCouponType());
 
         couponMapper.updateCoupon(coupon, request);
 
@@ -102,20 +98,41 @@ public class CouponService {
         couponRepository.delete(coupon);
     }
 
-    @PreAuthorize("hasRole('USER')")
-    public List<CouponResponse> getCouponByLevelUser(){
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public List<CouponResponse> getAllCouponByType(CouponType couponType){
+        return couponRepository.findAllByCouponType(couponType).stream()
+                .map(couponMapper::toCouponResponse)
+                .toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public List<CouponResponse> getAllCoupon(){
+        return couponRepository.findAll().stream()
+                .map(couponMapper::toCouponResponse)
+                .toList();
+    }
+
+    public List<CouponResponse> getCouponByLevelUser(CouponType couponType){
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        List<Coupon> couponByLevels = couponRepository.findAllByLevelUser(user.getLevel());
+        List<Coupon> couponByLevels = couponRepository.findAllByLevelUserAndCouponType(user.getLevel(), couponType);
 
         List<CouponResponse> couponResponses = couponByLevels.stream()
                 .map(couponMapper::toCouponResponse)
                 .toList();
 
         return couponResponses;
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public CouponResponse getCouponById(String id){
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COUPON_NOT_FOUND));
+
+        return couponMapper.toCouponResponse(coupon);
     }
 }

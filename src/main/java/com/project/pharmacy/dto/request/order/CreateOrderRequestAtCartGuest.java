@@ -24,6 +24,8 @@ public class CreateOrderRequestAtCartGuest {
     String village;
     @NotNull(message = "Vui lòng nhập địa chỉ")
     String address;
+    @NotNull(message = "Vui lòng nhập email")
+    String email;
 
     AddressCategory addressCategory;
 

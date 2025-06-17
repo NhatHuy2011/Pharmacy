@@ -18,5 +18,8 @@ public class PriceCreateRequest {
     String unitId;
 
     int price;
+
+    int quantity;
+
     String description;
 }

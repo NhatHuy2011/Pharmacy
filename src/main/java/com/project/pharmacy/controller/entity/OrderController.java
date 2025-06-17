@@ -3,6 +3,7 @@ package com.project.pharmacy.controller.entity;
 import com.project.pharmacy.dto.request.order.*;
 import com.project.pharmacy.dto.response.common.ApiResponse;
 import com.project.pharmacy.dto.response.entity.OrderResponse;
+import com.project.pharmacy.dto.response.entity.PriceResponse;
 import com.project.pharmacy.dto.response.payment.RefundPaymentResponse;
 import com.project.pharmacy.service.entity.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,11 +110,17 @@ public class OrderController {
     }
 
     @PutMapping("{id}")
-    public ApiResponse<Void> confirmOrder(@PathVariable String id){
-        orderService.confirmOrders(id);
-        return ApiResponse.<Void>builder()
-                .message("Cập nhật đơn hàng thành công")
-                .build();
+    public ApiResponse<List<PriceResponse>> confirmOrder(@PathVariable String id){
+        if(orderService.confirmOrders(id).isEmpty()){
+            return ApiResponse.<List<PriceResponse>>builder()
+                    .message("Cập nhật đơn hàng thành công")
+                    .build();
+        } else {
+            return ApiResponse.<List<PriceResponse>>builder()
+                    .message("Có sản phẩm vượt quá số lượng trong kho")
+                    .result(orderService.confirmOrders(id))
+                    .build();
+        }
     }
 
     //FOR NURSE

@@ -6,17 +6,18 @@ import com.project.pharmacy.dto.request.order.*;
 import com.project.pharmacy.dto.response.delivery.CalculateDeliveryOrderFeeResponse;
 import com.project.pharmacy.dto.response.delivery.CalcuteExpectedDeliveryTimeResponse;
 import com.project.pharmacy.dto.response.delivery.DeliveryResponse;
-import com.project.pharmacy.dto.response.entity.OrderItemResponse;
-import com.project.pharmacy.dto.response.entity.OrderResponse;
+import com.project.pharmacy.dto.response.entity.*;
 import com.project.pharmacy.dto.response.payment.RefundPaymentResponse;
 import com.project.pharmacy.enums.OrderStatus;
 import com.project.pharmacy.enums.PaymentMethod;
 import com.project.pharmacy.exception.AppException;
 import com.project.pharmacy.exception.ErrorCode;
 import com.project.pharmacy.mapper.OrdersMapper;
+import com.project.pharmacy.mapper.PriceMapper;
 import com.project.pharmacy.repository.*;
 import com.project.pharmacy.repository.httpclient.DeliveryClient;
 import com.project.pharmacy.service.delivery.DeliveryService;
+import com.project.pharmacy.service.email.EmailService;
 import com.project.pharmacy.service.payment.VNPayService;
 import com.project.pharmacy.utils.CartTemporary;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,6 +68,8 @@ public class OrderService {
 	DeliveryClient deliveryClient;
 
 	VNPayService vnPayService;
+
+	PriceMapper priceMapper;
 
 	@NonFinal
 	@Value("${ghn.district_id}")
@@ -414,6 +417,7 @@ public class OrderService {
 				.totalPrice(cartTemporary.getTotalPrice())
 				.isConfirm(false)
 				.isReceived(false)
+				.email(request.getEmail())
 				.build();
 
 		//Tạo request để giao hàng
@@ -528,6 +532,7 @@ public class OrderService {
 				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
 				.isReceived(false)
+				.email(request.getEmail())
 				.build();
 
 		//Tạo request để giao hàng
@@ -661,11 +666,40 @@ public class OrderService {
 	}
 
 	@PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-	public void confirmOrders(String orderId){
+	public List<PriceResponse> confirmOrders(String orderId){
 		Orders orders = orderRepository.findById(orderId)
 				.orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+		List<PriceResponse> priceResponses = new ArrayList<>();
+
+		orders.getOrderItems()
+				.forEach(orderItem -> {
+					Price price = priceRepository.findById(orderItem.getPrice().getId())
+							.orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+					if(price.getQuantity() - orderItem.getQuantity() < 0) {
+						throw new AppException(ErrorCode.PRICE_OVER_QUANTITY);
+					} else {
+						price.setQuantity(price.getQuantity() - orderItem.getQuantity());
+					}
+
+					PriceResponse priceResponse =  priceMapper.toPriceResponse(price);
+					priceResponse.setProduct(ProductResponse.builder()
+							.id(price.getProduct().getId())
+							.name(price.getProduct().getName())
+							.build());
+					priceResponse.setUnit(UnitResponse.builder()
+							.id(price.getUnit().getId())
+							.name(price.getUnit().getName())
+							.build());
+
+					priceResponses.add(priceResponse);
+				});
+
 		orders.setIsConfirm(true);
 		orderRepository.save(orders);
+
+		return priceResponses;
 	}
 
 	//FOR NURSE

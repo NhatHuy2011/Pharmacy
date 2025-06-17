@@ -18,16 +18,16 @@ public class Employee extends AccountBase{
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     String specilization;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     String description;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     String workExperience;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     String education;
 
     @Column

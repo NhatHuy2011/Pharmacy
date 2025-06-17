@@ -1,6 +1,7 @@
 package com.project.pharmacy.dto.response.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.enums.Level;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +21,7 @@ public class CouponResponse {
     int max;
     int orderRequire;
     Level levelUser;
+    CouponType couponType;
     String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate createDate;

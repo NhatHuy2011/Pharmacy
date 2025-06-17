@@ -106,7 +106,8 @@ public enum ErrorCode {
     OTP_INCORRECT("Mã OTP không chính xác", 400, HttpStatus.BAD_REQUEST),
 
     // Price exception
-    PRICE_NOT_ZERO("Giá phải lớn hơn 0", 400, HttpStatus.BAD_REQUEST),
+    PRICE_NOT_NEGATIVE("Vui lòng không nhập số âm", 400, HttpStatus.BAD_REQUEST),
+    PRICE_OVER_QUANTITY("Số lượng hàng trong kho vượt mức cho phép", 400, HttpStatus.BAD_REQUEST),
 
     // Valid RequirePart
     MISSING_PART("Missing required part", 400, HttpStatus.BAD_REQUEST),

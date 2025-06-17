@@ -27,6 +27,9 @@ public class CreateOrderRequestAtHomeGuest {
     @NotNull(message = "Vui lòng nhập địa chỉ")
     String address;
 
+    @NotNull(message = "Vui lòng nhập email")
+    String email;
+
     AddressCategory addressCategory;
 
     @NotNull(message = "Vui lòng chọn phương thức thanh toán")

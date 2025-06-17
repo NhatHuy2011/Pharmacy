@@ -1,5 +1,6 @@
 package com.project.pharmacy.entity;
 
+import com.project.pharmacy.enums.CouponType;
 import com.project.pharmacy.enums.Level;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,10 @@ public class Coupon {
     @Enumerated(EnumType.STRING)
     @Column(name = "levelUser", columnDefinition = "ENUM('DONG', 'BAC', 'VANG', 'BACHKIM', 'KIMCUONG') DEFAULT 'DONG'")
     Level levelUser;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "couponType", columnDefinition = "ENUM('PRODUCT', 'DELIVERY') DEFAULT 'PRODUCT'")
+    CouponType couponType;
 
     @Column
     String description;
