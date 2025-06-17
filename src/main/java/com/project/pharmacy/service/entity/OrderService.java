@@ -681,6 +681,7 @@ public class OrderService {
 						throw new AppException(ErrorCode.PRICE_OVER_QUANTITY);
 					} else {
 						price.setQuantity(price.getQuantity() - orderItem.getQuantity());
+						priceRepository.save(price);
 					}
 
 					PriceResponse priceResponse =  priceMapper.toPriceResponse(price);
