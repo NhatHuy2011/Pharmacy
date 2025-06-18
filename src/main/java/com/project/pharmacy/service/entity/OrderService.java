@@ -678,34 +678,38 @@ public class OrderService {
 
 		List<PriceResponse> priceResponses = new ArrayList<>();
 
-		orders.getOrderItems()
-				.forEach(orderItem -> {
-					Price price = priceRepository.findById(orderItem.getPrice().getId())
-							.orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+		boolean result = true;
 
-					if(price.getQuantity() - orderItem.getQuantity() < 0) {
-						throw new AppException(ErrorCode.PRICE_OVER_QUANTITY);
-					} else {
-						price.setQuantity(price.getQuantity() - orderItem.getQuantity());
-						priceRepository.save(price);
-					}
+		for (OrderItem orderItem : orders.getOrderItems()) {
+			Price price = priceRepository.findById(orderItem.getPrice().getId())
+					.orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-					PriceResponse priceResponse =  priceMapper.toPriceResponse(price);
-					priceResponse.setProduct(ProductResponse.builder()
-							.id(price.getProduct().getId())
-							.name(price.getProduct().getName())
-							.build());
-					priceResponse.setUnit(UnitResponse.builder()
-							.id(price.getUnit().getId())
-							.name(price.getUnit().getName())
-							.build());
+			PriceResponse priceResponse =  new PriceResponse();
 
-					priceResponses.add(priceResponse);
-				});
+			if(price.getQuantity() < orderItem.getQuantity()) {
+				priceResponse.setProduct(ProductResponse.builder()
+						.id(price.getProduct().getId())
+						.name(price.getProduct().getName())
+						.build());
+				priceResponse.setUnit(UnitResponse.builder()
+						.id(price.getUnit().getId())
+						.name(price.getUnit().getName())
+						.build());
+				priceResponse.setQuantity(price.getQuantity());
+				priceResponses.add(priceResponse);
 
-		orders.setIsConfirm(true);
-		orderRepository.save(orders);
+				result = false;
+			} else {
+				price.setQuantity(price.getQuantity() - orderItem.getQuantity());
+				priceRepository.save(price);
+			}
+		}
 
+		if(result){
+			orders.setIsConfirm(true);
+			orderRepository.save(orders);
+		}
+		
 		return priceResponses;
 	}
 

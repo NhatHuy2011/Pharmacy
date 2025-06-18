@@ -111,14 +111,16 @@ public class OrderController {
 
     @PutMapping("{id}")
     public ApiResponse<List<PriceResponse>> confirmOrder(@PathVariable String id){
-        if(orderService.confirmOrders(id).isEmpty()){
+        List<PriceResponse> responses = orderService.confirmOrders(id);
+
+        if(responses.isEmpty()){
             return ApiResponse.<List<PriceResponse>>builder()
                     .message("Cập nhật đơn hàng thành công")
                     .build();
         } else {
             return ApiResponse.<List<PriceResponse>>builder()
                     .message("Có sản phẩm vượt quá số lượng trong kho")
-                    .result(orderService.confirmOrders(id))
+                    .result(responses)
                     .build();
         }
     }
