@@ -91,6 +91,7 @@ public class PriceService {
                     PriceResponse priceResponse = priceMapper.toPriceResponse(price);
                     priceResponse.setProduct(productResponse);
                     priceResponse.setImage(url);
+                    priceResponse.setDateExpiration(price.getProduct().getDateExpiration());
 
                     return priceResponse;
                 });
