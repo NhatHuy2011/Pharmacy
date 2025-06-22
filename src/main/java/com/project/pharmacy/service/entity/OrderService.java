@@ -136,6 +136,7 @@ public class OrderService {
 				.coupon(totalDiscountAmount)
 				.isConfirm(false)
 				.isReceived(false)
+				.email(user.getEmail())
     			.build();
 
 		//Tạo request để giao hàng
@@ -275,6 +276,7 @@ public class OrderService {
 				.totalPrice(price.getPrice())
 				.orderItems(new ArrayList<>())
 				.isReceived(false)
+				.email(user.getEmail())
 				.build();
 
 		//Tạo request để giao hàng
@@ -507,7 +509,7 @@ public class OrderService {
 	}
 
 	//Home Guest
-		public OrderResponse createOrderAtHomeGuest(CreateOrderRequestAtHomeGuest request, HttpSession session){
+	public OrderResponse createOrderAtHomeGuest(CreateOrderRequestAtHomeGuest request, HttpSession session){
 		Price price = priceRepository.findById(request.getPriceId())
 				.orElseThrow(() -> new AppException(ErrorCode.PRICE_NOT_FOUND));
 

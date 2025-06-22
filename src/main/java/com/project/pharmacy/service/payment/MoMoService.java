@@ -97,6 +97,7 @@ public class MoMoService {
         post.setEntity(stringEntity);
 
         CloseableHttpResponse res = client.execute(post);
+
         BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
         StringBuilder resultJsonStr = new StringBuilder();
         String line;

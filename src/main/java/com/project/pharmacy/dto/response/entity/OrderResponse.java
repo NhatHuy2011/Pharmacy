@@ -33,4 +33,5 @@ public class OrderResponse {
     Long leadTime;
     String linkOrder;
     Boolean isReceived;
+    String email;
 }
