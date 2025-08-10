@@ -1,7 +1,5 @@
 # 💊 Pharmacy Project - Hệ Thống Quản Lý Nhà Thuốc
 
-Pharmacy là một hệ thống quản lý nhà thuốc được xây dựng bằng Spring Boot. Dự án này hỗ trợ quản lý sản phẩm, đơn thuốc, người dùng, báo cáo doanh thu, kết nối với dịch vụ bên ngoài (qua Feign Clients), xác thực OAuth2 và JWT, cũng như tích hợp Cloudinary để lưu trữ hình ảnh.
-
 ---
 
 ## 🚀 Tính năng chính
@@ -12,7 +10,7 @@ Pharmacy là một hệ thống quản lý nhà thuốc được xây dựng b�
 - ✅ Tích hợp nhiều phương thức thanh toán: MOMO, ZALOPAY, VNPAY
 - ✅ Tính toán phí vận chuyển và ước lượng thời gian giao hàng thông qua API Giao Hàng Nhanh
 - ✅ Hỗ trợ tính năng trò chuyện và nhận thông báo real-time qua WebSocket
-- ✅ Hỗ trợ tạo đơn hàng và sinh link thanh toán khi người dùng tiến hành mua hàng
+- ✅ Hỗ trợ tạo đơn hàng và sinh link thanh toán khi người dùng tiến hành mua hàng tại cửa hàng
 
 ---
 
@@ -33,14 +31,14 @@ Pharmacy là một hệ thống quản lý nhà thuốc được xây dựng b�
   - Lombok
   - Cloudinary
   - Spring WebSocket
-  - Jakarta XML Binding
-  - JSON (org.json)
-
+  - Spring Doc OpenAPI
 ---
 
 ## 📄 API Documentation
 
 👉 Link tài liệu API với Postman: https://documenter.getpostman.com/view/35578029/2sB3BDKWu7
+
+👉 Link tài liệu API với Swagger: http://localhost:8080/api/v1/pharmacy/swagger-ui/index.html
 
 ---
 
@@ -50,9 +48,8 @@ Pharmacy là một hệ thống quản lý nhà thuốc được xây dựng b�
 
 - Java 17 trở lên
 - Maven 3.8+
-- MySQL đang chạy
-- Tài khoản Cloudinary (nếu dùng ảnh)
-- File cấu hình `application.yml` hoặc `application.properties`
+- MySQL 8.3+
+- File cấu hình `application.yml`
 
 ### Các bước cài đặt:
 
