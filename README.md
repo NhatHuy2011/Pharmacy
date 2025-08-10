@@ -20,20 +20,6 @@
 
 ---
 
-- **Ngôn ngữ:** Java 17
-- **Framework:** Spring Boot 3.3.2
-- **Cơ sở dữ liệu:** MySQL
-- **Thư viện chính:**
-  - Spring Data JPA
-  - Spring Security + OAuth2
-  - Feign Client
-  - MapStruct
-  - Lombok
-  - Cloudinary
-  - Spring WebSocket
-  - Spring Doc OpenAPI
----
-
 ## 📄 API Documentation
 
 👉 Link tài liệu API với Postman: https://documenter.getpostman.com/view/35578029/2sB3BDKWu7
@@ -55,7 +41,7 @@
 
 1. **Clone repository:**
    ```bash
-   git clone https://github.com/your-username/pharmacy.git
+   git clone https://github.com/NhatHuy2011/pharmacy.git
    cd pharmacy
 2. **Khởi chạy project**
    ```bash
